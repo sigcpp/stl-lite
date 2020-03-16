@@ -44,8 +44,7 @@ namespace sigcpp
 
 		void swap(array& a) noexcept(std::is_nothrow_swappable_v<T>)
 		{
-			for (size_type i = 0; i < N; i++)
-				std::swap(elements[i], a[i]);
+			std::swap(elements, a.elements);
 		}
 	
 		//capacity
@@ -66,7 +65,6 @@ namespace sigcpp
 		}
 
 		constexpr const_reference at(size_type pos) const { return at(pos); }
-
 
 		constexpr reference front() { return elements[0]; }
 		constexpr const_reference front() const { return elements[0]; }
