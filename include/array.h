@@ -1,8 +1,11 @@
 /*
 * array.h
 * Sean Murthy 
-* (c) 2020 sigcpp https://sigcpp.github.io
+* (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
+* Attribution and copyright notice shown on lines 3 and 4 must be retained.
+* That information may be relocated but be conspicuous in all derived work.
+* 
 * Define a class template for arrays
 * - see C++17 [array.overview] https://timsong-cpp.github.io/cppwp/n4659/array
 */
@@ -17,7 +20,6 @@
 
 namespace sigcpp
 {
-
 	template<typename T, std::size_t N>
 	struct array
 	{
@@ -35,7 +37,6 @@ namespace sigcpp
 		//using reverse_iterator = std::reverse_iterator<iterator>;
 		//using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-
 		//underlying array
 		value_type elements[N];
 
@@ -46,16 +47,17 @@ namespace sigcpp
 		{
 			std::swap(elements, a.elements);
 		}
-	
+
 		//capacity
 		constexpr bool empty() const noexcept { return N == 0; }
 		constexpr size_type size() const noexcept { return N; }
 		constexpr size_type max_size() const noexcept { return N; }
 
-		// element access
+		//unchecked element access
 		constexpr reference operator[](size_type pos) { return elements[pos]; }
 		constexpr const_reference operator[](size_type pos) const { return elements[pos]; }
 
+		//checked element access
 		constexpr reference at(size_type pos)
 		{
 			if (pos < N)
@@ -70,8 +72,9 @@ namespace sigcpp
 		constexpr const_reference front() const { return elements[0]; }
 
 		constexpr reference back() { return elements[N-1]; }
-		constexpr const_reference back() const { return elements[N - 1]; }
+		constexpr const_reference back() const { return elements[N-1]; }
 
+		//underlying raw data
 		constexpr pointer data() noexcept { return elements; }
 		constexpr const_pointer data() const noexcept { return elements;  }
 
