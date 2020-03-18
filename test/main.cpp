@@ -68,12 +68,6 @@ int main()
    test(p.back() == 0, "p.back()");
 
 
-   //zero-size array
-   array<char, 0> c;
-   test(c.empty(), "c.empty()");
-   //...more tests needed
-
-
    //forward iterators
    array<unsigned, 5> u{ 5, 9, 3, 1, 6 };
    unsigned uExpected[] = { 5, 9, 3, 1, 6 };
@@ -92,6 +86,16 @@ int main()
    for (auto it = u.rbegin(); it != u.rend() && iteratorTest; it++, i++)
       iteratorTest = *it == urExpected[i];
    test(iteratorTest, "reverse iterator");
+
+   //zero-size array
+   array<char, 0> c;
+   test(c.empty(), "c.empty()");
+
+   //iterator on empty array: the loop body should not execute
+   iteratorTest = true;
+   for (const auto e : c)
+      iteratorTest = false;
+   test(iteratorTest, "fwd iterator on empty array");
 
 
    //fill
@@ -115,8 +119,8 @@ int main()
    m.swap(n);
 
    bool swapTest = true;
-   for (std::size_t i = 0; i < m.size() && swapTest; i++)
-      swapTest = m[i] == mExpected[i] && n[i] == nExpected[i];
+   for (std::size_t idx = 0; idx < m.size() && swapTest; idx++)
+      swapTest = m[idx] == mExpected[idx] && n[idx] == nExpected[idx];
    test(swapTest, "m.swap(n)");
 
 
