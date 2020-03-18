@@ -29,6 +29,7 @@ int main()
    //non-empty array with partial init: last two elements are 0
    array<short, 5> p{ 8, -2, 7};
 
+
    //capacity
    test(!s.empty(), "s.empty()");
    test(s.size() == 3, "s.size()");
@@ -37,6 +38,7 @@ int main()
    test(!p.empty(), "p.empty()");
    test(p.size() == 5, "p.size()");
    test(p.max_size() == p.size(), "p.max_size()");
+
 
    //element access
    test(s[0] == 8, "s[0]");
@@ -65,10 +67,36 @@ int main()
    test(p.front() != -2, "p.front() != -2");
    test(p.back() == 0, "p.back()");
 
+
+   //forward iterators
+   array<unsigned, 5> u{ 5, 9, 3, 1, 6 };
+   unsigned uExpected[] = { 5, 9, 3, 1, 6 };
+
+   bool iteratorTest = true;
+   std::size_t i = 0;
+   for (auto it = u.begin(); it != u.end() && iteratorTest; it++, i++)
+      iteratorTest = *it == uExpected[i];
+   test(iteratorTest, "forward iterator");
+
+   //reverse iterators
+   unsigned urExpected[] = { 6, 1, 3, 9, 5 };
+
+   iteratorTest = true;
+   i = 0;
+   for (auto it = u.rbegin(); it != u.rend() && iteratorTest; it++, i++)
+      iteratorTest = *it == urExpected[i];
+   test(iteratorTest, "reverse iterator");
+
    //zero-size array
    array<char, 0> c;
    test(c.empty(), "c.empty()");
-   //...more tests needed
+
+   //iterator on empty array: the loop body should not execute
+   iteratorTest = true;
+   for (const auto e : c)
+      iteratorTest = false;
+   test(iteratorTest, "fwd iterator on empty array");
+
 
    //fill
    array<char, 5> a;
@@ -76,11 +104,11 @@ int main()
 
    //test until one of the elements is *not* the fill value
    //-false from any_of call means fill succeeded
-   //-use data() member because array template doesn't yet support iters
-   bool fillTest = !std::any_of(a.data(), a.data() + a.size(), 
+   bool fillTest = !std::any_of(a.begin(), a.end(), 
                                 [](char c) { return c != 'x'; }
                                );
    test(fillTest, "a.fill()");
+
 
    //swap
    array<int, 3> m{ 8, 5, 4 };
@@ -91,9 +119,10 @@ int main()
    m.swap(n);
 
    bool swapTest = true;
-   for (std::size_t i = 0; i < 3 && swapTest; i++)
-      swapTest = m[i] == mExpected[i] && n[i] == nExpected[i];
+   for (std::size_t idx = 0; idx < m.size() && swapTest; idx++)
+      swapTest = m[idx] == mExpected[idx] && n[idx] == nExpected[idx];
    test(swapTest, "m.swap(n)");
+
 
    //summarize
    summarizeTests();
