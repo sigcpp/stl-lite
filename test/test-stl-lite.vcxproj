@@ -107,6 +107,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/w14061 /w14062 /w14242 /w14254 /w14266 /w14287 /w14296 /w14355 /w14547 /w14548 /w14549 /w14555 /w14596 /w14608 /w14738 /w14800 /w14822 /w14946 /w14986 /w15038 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
