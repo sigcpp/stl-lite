@@ -1,9 +1,13 @@
 /*
-* main.cpp
+* array-test.cpp
 * Sean Murthy
-* (c) 2020 sigcpp https://sigcpp.github.io
+* (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
-* Test stl-lite
+* Attribution and copyright notice shown on lines 3 and 4 must be retained.
+* That information may be relocated but be conspicuous in all derived work.
+*
+* Test array template
+* - see C++17 [array.overview] https://timsong-cpp.github.io/cppwp/n4659/array
 */
 
 #include <iostream>
