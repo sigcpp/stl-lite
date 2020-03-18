@@ -13,19 +13,35 @@
 #include <iostream>
 #include <exception>
 #include <algorithm>
+#include <string>
 
 #include "../include/array.h"
 
+#include "tester.h"
+
 using std::cout;
 
-void test(bool success, const char* msg);
-void summarizeTests();
+
+void runTests();
 
 int main()
 {
+   try
+   {
+      cout << "\nRunning tests: ";
+      runTests();
+      summarizeTests();
+   }
+   catch (const std::string& msg)
+   {
+      cout << '\n' << msg << '\n';
+   }
+}
+
+void runTests()
+{
    using sigcpp::array;
 
-   cout << "\nRunning tests ";
 
    //non-empty array with full init
    array<short, 3> s{ 8, -2, 7 };
@@ -35,41 +51,41 @@ int main()
 
 
    //capacity
-   test(!s.empty(), "s.empty()");
-   test(s.size() == 3, "s.size()");
-   test(s.max_size() == s.size(), "s.max_size()");
+   assert(!s.empty(), "s.empty()");
+   assert(s.size() == 3, "s.size()");
+   assert(s.max_size() == s.size(), "s.max_size()");
 
-   test(!p.empty(), "p.empty()");
-   test(p.size() == 5, "p.size()");
-   test(p.max_size() == p.size(), "p.max_size()");
+   assert(!p.empty(), "p.empty()");
+   assert(p.size() == 5, "p.size()");
+   assert(p.max_size() == p.size(), "p.max_size()");
 
 
    //element access
-   test(s[0] == 8, "s[0]");
-   test(s[1] == -2, "s[1]");
-   test(s[2] == 7, "s[2]");
-   test(s[1] != 8, "s[1] != 8");
+   assert(s[0] == 8, "s[0]");
+   assert(s[1] == -2, "s[1]");
+   assert(s[2] == 7, "s[2]");
+   assert(s[1] != 8, "s[1] != 8");
 
-   test(p[0] == 8, "p[0]");
-   test(p[2] == 7, "p[2]");
-   test(p[4] == 0, "p[4]");
+   assert(p[0] == 8, "p[0]");
+   assert(p[2] == 7, "p[2]");
+   assert(p[4] == 0, "p[4]");
 
-   test(s.at(0) == 8, "s.at(0)");
-   test(s.at(1) == -2, "s.at(1)");
-   test(s.at(2) == 7, "s.at(2)");
+   assert(s.at(0) == 8, "s.at(0)");
+   assert(s.at(1) == -2, "s.at(1)");
+   assert(s.at(2) == 7, "s.at(2)");
 
-   test(p.at(0) == 8, "p.at(0)");
-   test(p.at(2) == 7, "p.at(2)");
-   test(p.at(4) == 0, "p.at(4)");
+   assert(p.at(0) == 8, "p.at(0)");
+   assert(p.at(2) == 7, "p.at(2)");
+   assert(p.at(4) == 0, "p.at(4)");
 
-   test(s.front() == 8, "s.front()");
-   test(s.front() != -2, "s.front() != -2");
-   test(s.back() == 7, "s.back()");
-   test(s.back() != -2, "s.back() != -2");
+   assert(s.front() == 8, "s.front()");
+   assert(s.front() != -2, "s.front() != -2");
+   assert(s.back() == 7, "s.back()");
+   assert(s.back() != -2, "s.back() != -2");
 
-   test(p.front() == 8, "p.front()");
-   test(p.front() != -2, "p.front() != -2");
-   test(p.back() == 0, "p.back()");
+   assert(p.front() == 8, "p.front()");
+   assert(p.front() != -2, "p.front() != -2");
+   assert(p.back() == 0, "p.back()");
 
 
    //forward iterators
@@ -80,7 +96,7 @@ int main()
    std::size_t i = 0;
    for (auto it = u.begin(); it != u.end() && iteratorTest; it++, i++)
       iteratorTest = *it == uExpected[i];
-   test(iteratorTest, "forward iterator");
+   assert(iteratorTest, "forward iterator");
 
    //reverse iterators
    unsigned urExpected[] = { 6, 1, 3, 9, 5 };
@@ -89,17 +105,17 @@ int main()
    i = 0;
    for (auto it = u.rbegin(); it != u.rend() && iteratorTest; it++, i++)
       iteratorTest = *it == urExpected[i];
-   test(iteratorTest, "reverse iterator");
+   assert(iteratorTest, "reverse iterator");
 
    //zero-size array
    array<char, 0> c;
-   test(c.empty(), "c.empty()");
+   assert(c.empty(), "c.empty()");
 
    //iterator on empty array: the loop body should not execute
    iteratorTest = true;
    for (const auto e : c)
       iteratorTest = false;
-   test(iteratorTest, "fwd iterator on empty array");
+   assert(iteratorTest, "fwd iterator on empty array");
 
 
    //fill
@@ -111,7 +127,7 @@ int main()
    bool fillTest = !std::any_of(a.begin(), a.end(), 
                                 [](char c) { return c != 'x'; }
                                );
-   test(fillTest, "a.fill()");
+   assert(fillTest, "a.fill()");
 
 
    //swap
@@ -125,36 +141,7 @@ int main()
    bool swapTest = true;
    for (std::size_t idx = 0; idx < m.size() && swapTest; idx++)
       swapTest = m[idx] == mExpected[idx] && n[idx] == nExpected[idx];
-   test(swapTest, "m.swap(n)");
-
-
-   //summarize
-   summarizeTests();
-}
-
-
-//counter for number of tests run
-static unsigned testCount;
-
-//track number of tests and check test result
-void test(bool success, const char* msg)
-{
-   testCount++;
-
-   if (success)
-      cout << '.';
-   else
-   {
-      cout << "\nFailed Test " << testCount << ": " << msg;
-      throw std::exception();
-   }
-}
-
-
-//print a simple test report
-void summarizeTests()
-{
-   cout << "\nTests successful (" << testCount << " tests)\n";
+   assert(swapTest, "m.swap(n)");
 }
 
 
