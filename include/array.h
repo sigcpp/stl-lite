@@ -16,6 +16,7 @@
 #include <cstddef>
 #include <stdexcept>
 #include <utility>
+#include <algorithm>
 #include <type_traits>
 
 namespace sigcpp
@@ -41,11 +42,11 @@ namespace sigcpp
 		value_type elements[N];
 
 		//utility
-		void fill(const T& u) { for (auto& v : elements) v = u; }
+		void fill(const T& u) { std::fill_n(elements, N, u); }
 
 		void swap(array& a) noexcept(std::is_nothrow_swappable_v<T>)
 		{
-			std::swap(elements, a.elements);
+			std::swap_ranges(elements, elements + N, a.elements);
 		}
 
 		//capacity
@@ -71,12 +72,12 @@ namespace sigcpp
 		constexpr reference front() { return elements[0]; }
 		constexpr const_reference front() const { return elements[0]; }
 
-		constexpr reference back() { return elements[N-1]; }
-		constexpr const_reference back() const { return elements[N-1]; }
+		constexpr reference back() { return empty() ? front() : elements[N-1]; }
+		constexpr const_reference back() const { return empty() ? front() : elements[N - 1]; }
 
 		//underlying raw data
-		constexpr pointer data() noexcept { return elements; }
-		constexpr const_pointer data() const noexcept { return elements;  }
+		constexpr pointer data() noexcept { return empty() ? nullptr : elements; }
+		constexpr const_pointer data() const noexcept { return empty() ? nullptr : elements; }
 
 	}; //template array
 
