@@ -53,22 +53,34 @@ namespace sigcpp
 		//iterators
 		constexpr iterator begin() noexcept 
 		{ 
-			return empty() ? nullptr : elements; 
+			if constexpr (N == 0)
+				return nullptr;
+			else
+				return elements; 
 		}
 		
 		constexpr const_iterator begin() const noexcept 
 		{ 
-			return empty() ? nullptr : elements; 
+			if constexpr (N == 0)
+				return nullptr;
+			else
+				return elements;
 		}
 
 		constexpr iterator end() noexcept
 		{
-			return empty() ? nullptr : elements + N;
+			if constexpr (N == 0)
+				return nullptr;
+			else
+				return elements + N;
 		}
 
 		constexpr const_iterator end() const noexcept
 		{
-			return empty() ? nullptr : elements + N;
+			if constexpr (N == 0)
+				return nullptr;
+			else
+				return elements + N;
 		}
 
 		constexpr reverse_iterator rbegin() noexcept 
@@ -123,7 +135,13 @@ namespace sigcpp
 				throw new std::out_of_range("array index out of range");
 		}
 
-		constexpr const_reference at(size_type pos) const { return at(pos); }
+		constexpr const_reference at(size_type pos) const
+		{
+			if (pos < N)
+				return elements[pos];
+			else
+				throw new std::out_of_range("array index out of range");
+		}
 
 		constexpr reference front() { return elements[0]; }
 		constexpr const_reference front() const { return elements[0]; }
@@ -132,15 +150,27 @@ namespace sigcpp
 		
 		constexpr const_reference back() const 
 		{ 
-			return empty() ? front() : elements[N - 1]; 
+			if constexpr (N == 0)
+				return front();
+			else
+				return elements[N - 1];
 		}
 
 		//underlying raw data
-		constexpr pointer data() noexcept { return empty() ? nullptr : elements; }
-		
+		constexpr pointer data() noexcept 
+		{
+			if constexpr (N == 0)
+				return nullptr;
+			else
+				return elements;
+		}
+
 		constexpr const_pointer data() const noexcept 
 		{ 
-			return empty() ? nullptr : elements; 
+			if constexpr (N == 0)
+				return nullptr;
+			else
+				return elements;
 		}
 
 	}; //template array
