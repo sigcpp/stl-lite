@@ -27,8 +27,8 @@ by [Sean Murthy](https://github.com/smurthys).
 
 ## Contributing
 
-Please feel free to submit an issue or create a pull request. If submitting a pull request, 
-please be sure to rebase your clone/fork with the `dev` branch. Naturally, code contributions 
+Please feel free to submit issues or create pull requests. If creating a pull request, 
+please rebase your clone/fork with the `dev` branch. Naturally, code contributions 
 are expected to include and pass unit tests.
 
 Please contact us if you are a student or faculty member interested in joining SIGCPP. 
