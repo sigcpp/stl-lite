@@ -9,6 +9,8 @@ demonstrate to students how to:
 
 Students also have opportunity to contribute to the implementation.
 
+By design, the implemention **targets C++17 or C++20** (as noted in source files).
+
 **Caveat:** Due to schedule and other constraints, the material in this repo is not always
 correct, complete, or compliant. For the most part, the master branch tends to be the most
 "reliable", but there are no guarantees.
@@ -21,7 +23,7 @@ See [`LICENSE.MD`](LICENSE)
 
 ## Credits
 
-This repo is an initiative of [SIGCPP](https://sigcpp.github.io/) (Special Interest Group on C++). The repo is administered
+This project is an initiative of [SIGCPP](https://sigcpp.github.io/) (Special Interest Group on C++). The repo is administered
 by [Sean Murthy](https://github.com/smurthys).
 
 
