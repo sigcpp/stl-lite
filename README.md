@@ -21,7 +21,7 @@ See [`LICENSE.MD`](LICENSE)
 
 ## Credits
 
-This repo is an initiative of SIGCPP (Special Interest Group on C++). The repo is administered
+This repo is an initiative of [SIGCPP](https://sigcpp.github.io/) (Special Interest Group on C++). The repo is administered
 by [Sean Murthy](https://github.com/smurthys).
 
 
