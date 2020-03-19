@@ -1,7 +1,7 @@
 # stl-lite
 
-This repository implements selected parts of C++ STL. A key purposes of this repo is 
-to demonstrate to students how to:
+This repository implements selected parts of C++ STL. A key purpose of this repo is to
+demonstrate to students how to:
 - interpret the C++ standard and other technical documents;
 - implement STL parts "reasonably well";
 - develop unit tests; and
