@@ -7,7 +7,9 @@
 * That information may be relocated but be conspicuous in all derived work.
 * 
 * Define a class template for arrays
-* - see C++17 [array.overview] https://timsong-cpp.github.io/cppwp/n4659/array
+* - see C++17 [array.overview], [array.syn]
+* - https://timsong-cpp.github.io/cppwp/n4659/array
+* - https://timsong-cpp.github.io/cppwp/n4659/array.syn
 */
 
 #ifndef SIGCPP_ARRAY_H
@@ -18,6 +20,8 @@
 #include <utility>
 #include <algorithm>
 #include <type_traits>
+
+#include "array_iterator.h"
 
 namespace sigcpp
 {
@@ -33,9 +37,8 @@ namespace sigcpp
 		using size_type = size_t;
 		using difference_type = ptrdiff_t;
 
-		//unchecked iterators: not standards-compliant; implementing for demo
-		using iterator = T*; 
-		using const_iterator = const T*;
+		using iterator = array_iterator<pointer>; 
+		using const_iterator = array_iterator<const_pointer>;
 		using reverse_iterator = std::reverse_iterator<iterator>;
 		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -56,7 +59,7 @@ namespace sigcpp
 			if constexpr (N == 0)
 				return nullptr;
 			else
-				return elements; 
+				return array_iterator(elements); 
 		}
 		
 		constexpr const_iterator begin() const noexcept 
@@ -64,7 +67,7 @@ namespace sigcpp
 			if constexpr (N == 0)
 				return nullptr;
 			else
-				return elements;
+				return array_iterator(elements);
 		}
 
 		constexpr iterator end() noexcept
@@ -72,7 +75,7 @@ namespace sigcpp
 			if constexpr (N == 0)
 				return nullptr;
 			else
-				return elements + N;
+				return array_iterator(elements + N);
 		}
 
 		constexpr const_iterator end() const noexcept
@@ -80,7 +83,7 @@ namespace sigcpp
 			if constexpr (N == 0)
 				return nullptr;
 			else
-				return elements + N;
+				return array_iterator(elements + N);
 		}
 
 		constexpr reverse_iterator rbegin() noexcept 
