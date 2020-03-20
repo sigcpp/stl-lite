@@ -4,10 +4,12 @@
 * (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
 * Attribution and copyright notice shown on lines 3 and 4 must be retained.
-* That information may be relocated but be conspicuous in all derived work.
+* That info may be relocated but it must be conspicuous in all derived work.
 * 
 * Define a class template for arrays
-* - see C++17 [array.overview] https://timsong-cpp.github.io/cppwp/n4659/array
+* - see C++17 [array.overview], [array.syn]
+* - https://timsong-cpp.github.io/cppwp/n4659/array
+* - https://timsong-cpp.github.io/cppwp/n4659/array.syn
 */
 
 #ifndef SIGCPP_ARRAY_H
@@ -40,14 +42,14 @@ namespace sigcpp
 		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
 		//underlying array
-		value_type elements[N];
+		value_type values[N];
 
 		//utility
-		void fill(const T& u) { std::fill_n(elements, N, u); }
+		void fill(const T& u) { std::fill_n(values, N, u); }
 
 		void swap(array& a) noexcept(std::is_nothrow_swappable_v<T>)
 		{
-			std::swap_ranges(elements, elements + N, a.elements);
+			std::swap_ranges(values, values + N, a.values);
 		}
 
 		//iterators
@@ -56,7 +58,7 @@ namespace sigcpp
 			if constexpr (N == 0)
 				return nullptr;
 			else
-				return elements; 
+				return values; 
 		}
 		
 		constexpr const_iterator begin() const noexcept 
@@ -64,7 +66,7 @@ namespace sigcpp
 			if constexpr (N == 0)
 				return nullptr;
 			else
-				return elements;
+				return values;
 		}
 
 		constexpr iterator end() noexcept
@@ -72,7 +74,7 @@ namespace sigcpp
 			if constexpr (N == 0)
 				return nullptr;
 			else
-				return elements + N;
+				return values + N;
 		}
 
 		constexpr const_iterator end() const noexcept
@@ -80,7 +82,7 @@ namespace sigcpp
 			if constexpr (N == 0)
 				return nullptr;
 			else
-				return elements + N;
+				return values + N;
 		}
 
 		constexpr reverse_iterator rbegin() noexcept 
@@ -119,18 +121,18 @@ namespace sigcpp
 		constexpr size_type max_size() const noexcept { return N; }
 
 		//unchecked element access
-		constexpr reference operator[](size_type pos) { return elements[pos]; }
+		constexpr reference operator[](size_type pos) { return values[pos]; }
 		
 		constexpr const_reference operator[](size_type pos) const 
 		{ 
-			return elements[pos]; 
+			return values[pos]; 
 		}
 
 		//checked element access
 		constexpr reference at(size_type pos)
 		{
 			if (pos < N)
-				return elements[pos];
+				return values[pos];
 			else
 				throw new std::out_of_range("array index out of range");
 		}
@@ -138,22 +140,22 @@ namespace sigcpp
 		constexpr const_reference at(size_type pos) const
 		{
 			if (pos < N)
-				return elements[pos];
+				return values[pos];
 			else
 				throw new std::out_of_range("array index out of range");
 		}
 
-		constexpr reference front() { return elements[0]; }
-		constexpr const_reference front() const { return elements[0]; }
+		constexpr reference front() { return values[0]; }
+		constexpr const_reference front() const { return values[0]; }
 
-		constexpr reference back() { return empty() ? front() : elements[N-1]; }
+		constexpr reference back() { return empty() ? front() : values[N-1]; }
 		
 		constexpr const_reference back() const 
 		{ 
 			if constexpr (N == 0)
 				return front();
 			else
-				return elements[N - 1];
+				return values[N - 1];
 		}
 
 		//underlying raw data
@@ -162,7 +164,7 @@ namespace sigcpp
 			if constexpr (N == 0)
 				return nullptr;
 			else
-				return elements;
+				return values;
 		}
 
 		constexpr const_pointer data() const noexcept 
@@ -170,7 +172,7 @@ namespace sigcpp
 			if constexpr (N == 0)
 				return nullptr;
 			else
-				return elements;
+				return values;
 		}
 
 	}; //template array
