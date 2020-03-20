@@ -4,7 +4,7 @@
 * (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
 * Attribution and copyright notice shown on lines 3 and 4 must be retained.
-* That information may be relocated but be conspicuous in all derived work.
+* That info may be relocated but it must be conspicuous in all derived work.
 *
 * Define a template for random-access iterators: wraps a raw array
 * - see C++17 [iterator.requirements]
