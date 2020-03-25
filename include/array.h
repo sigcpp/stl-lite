@@ -24,6 +24,8 @@
 #include <iterator>
 #include <type_traits>
 
+#include "array_iterator.h"
+
 namespace sigcpp
 {
 	template<typename T, std::size_t N>
@@ -38,9 +40,9 @@ namespace sigcpp
 		using size_type = std::size_t;
 		using difference_type = std::ptrdiff_t;
 
-		//unchecked iterators: not standards-compliant; implementing for demo
-		using iterator = T*; 
-		using const_iterator = const T*;
+		//unchecked iterators: simple but standards-compliant
+		using iterator = array_iterator<pointer>; 
+		using const_iterator = array_iterator<const_pointer>;
 		using reverse_iterator = std::reverse_iterator<iterator>;
 		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -56,51 +58,42 @@ namespace sigcpp
 		}
 
 		//iterators
-		constexpr iterator begin() noexcept 
-		{ 
-			return const_cast<iterator>(_begin());
-		}
-		
-		constexpr const_iterator begin() const noexcept { return _begin(); }
-
-		constexpr iterator end() noexcept
-		{
-			return const_cast<iterator>(_end());
-		}
-
-		constexpr const_iterator end() const noexcept { return _end(); }
+		constexpr iterator begin() noexcept { return _iterator(); }
+		constexpr const_iterator begin() const noexcept { return _cIterator(); }
+		constexpr iterator end() noexcept { return _iterator(N); }
+		constexpr const_iterator end() const noexcept { return _cIterator(N); }
 
 		constexpr reverse_iterator rbegin() noexcept 
 		{ 
-			return reverse_iterator(const_cast<iterator>(_end()));
+			return reverse_iterator(_iterator(N));
 		}
 		
 		constexpr const_reverse_iterator rbegin() const noexcept 
 		{ 
-			return const_reverse_iterator(_end()); 
+			return const_reverse_iterator(_cIterator(N));
 		}
 		
 		constexpr reverse_iterator rend() noexcept
 		{
-			return reverse_iterator(const_cast<iterator>(_begin()));
+			return reverse_iterator(_iterator());
 		}
 
 		constexpr const_reverse_iterator rend() const noexcept
 		{
-			return const_reverse_iterator(_begin());
+			return const_reverse_iterator(_cIterator());
 		}
 
-		constexpr const_iterator cbegin() const noexcept { return _begin(); }
-		constexpr const_iterator cend() const noexcept { return _end(); }
+		constexpr const_iterator cbegin() const noexcept { return _cIterator(); }
+		constexpr const_iterator cend() const noexcept { return _cIterator(N); }
 		
 		constexpr const_reverse_iterator crbegin() const noexcept 
 		{ 
-			return reverse_iterator(const_cast<iterator>(_end()));
+			return const_reverse_iterator(_cIterator(N));
 		}
 		
 		constexpr const_reverse_iterator crend() const noexcept 
 		{ 
-			return const_reverse_iterator(_begin());
+			return const_reverse_iterator(_cIterator());
 		}
 
 		//capacity
@@ -128,7 +121,6 @@ namespace sigcpp
 		constexpr const_reference front() const { return values[0]; }
 
 		constexpr reference back() { return const_cast<reference>(_back()); }
-
 		constexpr const_reference back() const { return _back(); }
 
 		//underlying raw data
@@ -141,20 +133,20 @@ namespace sigcpp
 
 	private:
 		//utility functions to eliminate redundancy in public members
-		constexpr const_iterator _begin() const noexcept
+		constexpr iterator _iterator(difference_type n = 0) noexcept
 		{
 			if constexpr (N == 0)
-				return nullptr;
+				return iterator();
 			else
-				return values;
+				return iterator(values + n);
 		}
 
-		constexpr const_iterator _end() const noexcept
+		constexpr const_iterator _cIterator(difference_type n = 0) const noexcept
 		{
 			if constexpr (N == 0)
-				return nullptr;
+				return const_iterator();
 			else
-				return values + N;
+				return const_iterator(values + n);
 		}
 
 		constexpr const_reference _at(size_type pos) const
