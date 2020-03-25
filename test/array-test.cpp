@@ -3,8 +3,10 @@
 * Sean Murthy
 * (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
-* Attribution and copyright notice shown on lines 3 and 4 must be retained.
-* That information may be relocated but be conspicuous in all derived work.
+* Attribution and copyright notice must be retained.
+* - Attribution may be augmented to include additional authors
+* - Copyright notice cannot be altered
+* Attribution and copyright info may be relocated but they must be conspicuous.
 *
 * Test array template
 * - see C++17 [array.overview] https://timsong-cpp.github.io/cppwp/n4659/array
@@ -28,14 +30,15 @@ int main()
 {
    try
    {
-      cout << "\nRunning tests: ";
+      cout << "Running tests: ";
       runTests();
-      summarizeTests();
    }
    catch (const std::string& msg)
    {
-      cout << '\n' << msg << '\n';
+      cout << msg << '\n';
    }
+
+   summarizeTests();
 }
 
 void runTests()
@@ -94,7 +97,7 @@ void runTests()
 
    bool iteratorTest = true;
    std::size_t i = 0;
-   for (auto it = u.begin(); it != u.end() && iteratorTest; it++, i++)
+   for (auto it = u.begin(); it != u.end() && iteratorTest; ++it, ++i)
       iteratorTest = *it == uExpected[i];
    assert(iteratorTest, "forward iterator");
 
@@ -103,7 +106,7 @@ void runTests()
 
    iteratorTest = true;
    i = 0;
-   for (auto it = u.rbegin(); it != u.rend() && iteratorTest; it++, i++)
+   for (auto it = u.rbegin(); it != u.rend() && iteratorTest; ++it, ++i)
       iteratorTest = *it == urExpected[i];
    assert(iteratorTest, "reverse iterator");
 
@@ -139,7 +142,7 @@ void runTests()
    m.swap(n);
 
    bool swapTest = true;
-   for (std::size_t idx = 0; idx < m.size() && swapTest; idx++)
+   for (std::size_t idx = 0; idx < m.size() && swapTest; ++idx)
       swapTest = m[idx] == mExpected[idx] && n[idx] == nExpected[idx];
    assert(swapTest, "m.swap(n)");
 }
