@@ -3,9 +3,11 @@
 * Sean Murthy 
 * (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
-* Attribution and copyright notice shown on lines 3 and 4 must be retained.
-* That info may be relocated but it must be conspicuous in all derived work.
-* 
+* Attribution and copyright notice must be retained.
+* - Attribution may be augmented to include additional authors
+* - Copyright notice cannot be altered
+* Attribution and copyright info may be relocated but they must be conspicuous.
+*
 * Define a class template for arrays
 * - see C++17 [array.overview], [array.syn]
 * - https://timsong-cpp.github.io/cppwp/n4659/array
