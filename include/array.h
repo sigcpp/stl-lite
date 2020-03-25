@@ -95,7 +95,7 @@ namespace sigcpp
 		
 		constexpr const_reverse_iterator crbegin() const noexcept 
 		{ 
-			return reverse_iterator(const_cast<iterator>(_begin()));
+			return reverse_iterator(const_cast<iterator>(_end()));
 		}
 		
 		constexpr const_reverse_iterator crend() const noexcept 
