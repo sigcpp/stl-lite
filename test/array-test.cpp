@@ -28,14 +28,15 @@ int main()
 {
    try
    {
-      cout << "\nRunning tests: ";
+      cout << "Running tests: ";
       runTests();
-      summarizeTests();
    }
    catch (const std::string& msg)
    {
-      cout << '\n' << msg << '\n';
+      cout << msg << '\n';
    }
+
+   summarizeTests();
 }
 
 void runTests()
@@ -94,7 +95,7 @@ void runTests()
 
    bool iteratorTest = true;
    std::size_t i = 0;
-   for (auto it = u.begin(); it != u.end() && iteratorTest; it++, i++)
+   for (auto it = u.begin(); it != u.end() && iteratorTest; ++it, ++i)
       iteratorTest = *it == uExpected[i];
    assert(iteratorTest, "forward iterator");
 
@@ -103,7 +104,7 @@ void runTests()
 
    iteratorTest = true;
    i = 0;
-   for (auto it = u.rbegin(); it != u.rend() && iteratorTest; it++, i++)
+   for (auto it = u.rbegin(); it != u.rend() && iteratorTest; ++it, ++i)
       iteratorTest = *it == urExpected[i];
    assert(iteratorTest, "reverse iterator");
 
@@ -139,7 +140,7 @@ void runTests()
    m.swap(n);
 
    bool swapTest = true;
-   for (std::size_t idx = 0; idx < m.size() && swapTest; idx++)
+   for (std::size_t idx = 0; idx < m.size() && swapTest; ++idx)
       swapTest = m[idx] == mExpected[idx] && n[idx] == nExpected[idx];
    assert(swapTest, "m.swap(n)");
 }
