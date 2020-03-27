@@ -12,7 +12,6 @@
 */
 
 #include <iostream>
-#include <exception>
 #include <sstream>
 #include <climits>
 
@@ -44,7 +43,7 @@ static unsigned testsFailed;
 bool lastOutputEndedInLineBreak{ false };
 
 //track number of tests and check test result
-void assert(bool success, const char* hint)
+void verify(bool success, const char* hint)
 {
    ++testsDone;
    std::ostringstream message;
