@@ -36,9 +36,18 @@ void setMaxFailThreshold()
 }
 
 
-//counter for number of tests run, failed
+//number of tests run and failed
 static unsigned testsDone;
+unsigned getTestsDone()
+{
+   return testsDone;
+}
+
 static unsigned testsFailed;
+unsigned getTestsFailed()
+{
+   return testsFailed;
+}
 
 bool lastOutputEndedInLineBreak{ false };
 
