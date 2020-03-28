@@ -17,5 +17,8 @@ void setPassReportMode(passReportMode mode);
 void setFailThreshold(unsigned short value);
 void setMaxFailThreshold();
 
+unsigned getTestsDone();
+unsigned getTestsFailed();
+
 void verify(bool success, const char* msg);
 void summarizeTests();
