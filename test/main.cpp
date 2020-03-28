@@ -36,4 +36,6 @@ int main()
 
    //TODO: conditionally print summary to appropriate destination
    summarizeTests();
+
+   return getTestsFailed();
 }
