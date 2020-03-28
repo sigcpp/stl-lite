@@ -8,7 +8,7 @@
 * - Copyright notice cannot be altered
 * Attribution and copyright info may be relocated but they must be conspicuous.
 *
-* Intialize tester and start a specific set of unit tests
+* Intialize tester and start unit tests
 */
 
 #include <iostream>
@@ -23,12 +23,9 @@ void runTests();
 int main()
 {
    //TODO: configure the tester based on cmd-line
-
-   std::array<int, 0> a;
-
    try
    {
-      std::cout << "Running tests: "; //TODO: conditionally print: which destination?
+      std::cout << "Running tests:\n"; //TODO: conditionally print: which destination?
       runTests();
    }
    catch (const std::string& msg)
