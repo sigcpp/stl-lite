@@ -35,6 +35,11 @@ void setMaxFailThreshold()
    failThreshold = USHRT_MAX;
 }
 
+static std::ostream* pOut{ &std::cout };
+void setOutput(std::ostream& o)
+{
+    pOut = &o;
+}
 
 //number of tests run and failed
 static unsigned testsDone;
@@ -83,7 +88,7 @@ void verify(bool success, const char* hint)
          throw message.str();
    }
 
-   std::cout << message.str();
+   *pOut << message.str();
 }
 
 
@@ -94,14 +99,14 @@ void summarizeTests()
    //-assume if an exception was thrown earlier on test failure, the client
    //-printed the msg and caused a line break after printing the msg
    if (!lastOutputEndedInLineBreak)
-      std::cout << '\n';
+      *pOut << '\n';
    else if (testsFailed <= failThreshold)
-      std::cout << '\n';
+      *pOut << '\n';
 
-   std::cout << "Tests completed: " << testsDone << '\n';
-   std::cout << "Tests passed: " << testsDone - testsFailed << '\n';
-   std::cout << "Tests failed: " << testsFailed << '\n';
+   *pOut << "Tests completed: " << testsDone << '\n';
+   *pOut << "Tests passed: " << testsDone - testsFailed << '\n';
+   *pOut << "Tests failed: " << testsFailed << '\n';
 
    if (testsFailed > failThreshold)
-      std::cout << "Tests stopped after " << testsFailed << " failure(s)\n";
+      *pOut << "Tests stopped after " << testsFailed << " failure(s)\n";
 }

@@ -11,11 +11,14 @@
 * Declare testing infrastructure
 */
 
+#include <iostream>
+
 enum class passReportMode { none, indicate, detail };
 
 void setPassReportMode(passReportMode mode);
 void setFailThreshold(unsigned short value);
 void setMaxFailThreshold();
+void setOutput(std::ostream& o);
 
 unsigned getTestsDone();
 unsigned getTestsFailed();
