@@ -58,42 +58,55 @@ namespace sigcpp
 		}
 
 		//iterators
-		constexpr iterator begin() noexcept { return _iterator(); }
-		constexpr const_iterator begin() const noexcept { return _cIterator(); }
-		constexpr iterator end() noexcept { return _iterator(N); }
-		constexpr const_iterator end() const noexcept { return _cIterator(N); }
+		constexpr iterator begin() noexcept { return _begin(); }
+		constexpr const_iterator begin() const noexcept { return cbegin(); }
+		constexpr iterator end() noexcept { return _end(); }
+		constexpr const_iterator end() const noexcept { return cend(); }
 
 		constexpr reverse_iterator rbegin() noexcept 
 		{ 
-			return reverse_iterator(_iterator(N));
+			return reverse_iterator(_end());
 		}
 		
 		constexpr const_reverse_iterator rbegin() const noexcept 
 		{ 
-			return const_reverse_iterator(_cIterator(N));
+			return crbegin();
 		}
 		
 		constexpr reverse_iterator rend() noexcept
 		{
-			return reverse_iterator(_iterator());
+			return reverse_iterator(_begin());
 		}
 
 		constexpr const_reverse_iterator rend() const noexcept
 		{
-			return const_reverse_iterator(_cIterator());
+			return crend();
 		}
 
-		constexpr const_iterator cbegin() const noexcept { return _cIterator(); }
-		constexpr const_iterator cend() const noexcept { return _cIterator(N); }
-		
+		constexpr const_iterator cbegin() const noexcept 
+		{ 
+			if constexpr (N == 0)
+				return const_iterator();
+			else
+				return const_iterator(values);
+		}
+
+		constexpr const_iterator cend() const noexcept
+		{
+			if constexpr (N == 0)
+				return const_iterator();
+			else
+				return const_iterator(values + N);
+		}
+
 		constexpr const_reverse_iterator crbegin() const noexcept 
 		{ 
-			return const_reverse_iterator(_cIterator(N));
+			return const_reverse_iterator(cend());
 		}
 		
 		constexpr const_reverse_iterator crend() const noexcept 
 		{ 
-			return const_reverse_iterator(_cIterator());
+			return const_reverse_iterator(cbegin());
 		}
 
 		//capacity
@@ -133,20 +146,20 @@ namespace sigcpp
 
 	private:
 		//utility functions to eliminate redundancy in public members
-		constexpr iterator _iterator(difference_type n = 0) noexcept
+		constexpr iterator _begin() noexcept
 		{
 			if constexpr (N == 0)
 				return iterator();
 			else
-				return iterator(values + n);
+				return iterator(values);
 		}
 
-		constexpr const_iterator _cIterator(difference_type n = 0) const noexcept
+		constexpr iterator _end() noexcept
 		{
 			if constexpr (N == 0)
-				return const_iterator();
+				return iterator();
 			else
-				return const_iterator(values + n);
+				return iterator(values + N);
 		}
 
 		constexpr const_reference _at(size_type pos) const
