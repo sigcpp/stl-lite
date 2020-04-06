@@ -39,4 +39,4 @@ Students and faculty from any university, anywhere in the world, are welcome.
 
 ## Contact
 
-E-mail `sigcpp` at the domain `outlook.com`. Please include an appropriate subject line.
+Please use the contact information on the [SIGCPP web site](https://sigcpp.github.io/).

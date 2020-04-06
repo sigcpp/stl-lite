@@ -33,10 +33,10 @@ namespace sigcpp
 	{
 		//types
 		using value_type = T;
-		using pointer = T*;
-		using const_pointer = const T*;
-		using reference = T&;
-		using const_reference = const T&;
+		using pointer = value_type*;
+		using const_pointer = const value_type*;
+		using reference = value_type&;
+		using const_reference = const value_type&;
 		using size_type = std::size_t;
 		using difference_type = std::ptrdiff_t;
 
