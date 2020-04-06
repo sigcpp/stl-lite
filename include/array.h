@@ -56,51 +56,55 @@ namespace sigcpp
 		}
 
 		//iterators
-		constexpr iterator begin() noexcept 
-		{ 
-			return const_cast<iterator>(_begin());
-		}
-		
-		constexpr const_iterator begin() const noexcept { return _begin(); }
-
-		constexpr iterator end() noexcept
-		{
-			return const_cast<iterator>(_end());
-		}
-
-		constexpr const_iterator end() const noexcept { return _end(); }
+		constexpr iterator begin() noexcept { return _begin(); }
+		constexpr const_iterator begin() const noexcept { return cbegin(); }
+		constexpr iterator end() noexcept { return _end(); }
+		constexpr const_iterator end() const noexcept { return cend(); }
 
 		constexpr reverse_iterator rbegin() noexcept 
 		{ 
-			return reverse_iterator(const_cast<iterator>(_end()));
+			return reverse_iterator(_end());
 		}
 		
 		constexpr const_reverse_iterator rbegin() const noexcept 
 		{ 
-			return const_reverse_iterator(_end()); 
+			return crbegin(); 
 		}
 		
 		constexpr reverse_iterator rend() noexcept
 		{
-			return reverse_iterator(const_cast<iterator>(_begin()));
+			return reverse_iterator(_begin());
 		}
 
 		constexpr const_reverse_iterator rend() const noexcept
 		{
-			return const_reverse_iterator(_begin());
+			return crend();
 		}
 
-		constexpr const_iterator cbegin() const noexcept { return _begin(); }
-		constexpr const_iterator cend() const noexcept { return _end(); }
+		constexpr const_iterator cbegin() const noexcept 
+		{ 
+			if constexpr (N == 0)
+				return nullptr;
+			else
+				return values;
+		}
+
+		constexpr const_iterator cend() const noexcept
+		{
+			if constexpr (N == 0)
+				return nullptr;
+			else
+				return values + N;
+		}
 		
 		constexpr const_reverse_iterator crbegin() const noexcept 
 		{ 
-			return reverse_iterator(const_cast<iterator>(_end()));
+			return const_reverse_iterator(cend());
 		}
 		
 		constexpr const_reverse_iterator crend() const noexcept 
 		{ 
-			return const_reverse_iterator(_begin());
+			return const_reverse_iterator(cbegin());
 		}
 
 		//capacity
@@ -141,20 +145,14 @@ namespace sigcpp
 
 	private:
 		//utility functions to eliminate redundancy in public members
-		constexpr const_iterator _begin() const noexcept
+		constexpr iterator _begin() noexcept
 		{
-			if constexpr (N == 0)
-				return nullptr;
-			else
-				return values;
+			return const_cast<iterator>(cbegin());
 		}
 
-		constexpr const_iterator _end() const noexcept
+		constexpr iterator _end() noexcept
 		{
-			if constexpr (N == 0)
-				return nullptr;
-			else
-				return values + N;
+			return const_cast<iterator>(cend());
 		}
 
 		constexpr const_reference _at(size_type pos) const
