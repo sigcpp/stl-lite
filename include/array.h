@@ -46,8 +46,8 @@ namespace sigcpp
 		using reverse_iterator = std::reverse_iterator<iterator>;
 		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-		//underlying array
-		value_type values[N];
+		//underlying array: create array with one element if size is zero
+		value_type values[N==0 ? 1 : N];
 
 		//utility
 		void fill(const T& u) { std::fill_n(values, N, u); }
