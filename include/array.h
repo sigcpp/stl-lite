@@ -24,6 +24,8 @@
 #include <iterator>
 #include <type_traits>
 
+#include "array_iterator.h"
+
 namespace sigcpp
 {
 	template<typename T, std::size_t N>
@@ -38,9 +40,9 @@ namespace sigcpp
 		using size_type = std::size_t;
 		using difference_type = std::ptrdiff_t;
 
-		//unchecked iterators: not standards-compliant; implementing for demo
-		using iterator = T*; 
-		using const_iterator = const T*;
+		//unchecked iterators: simple but standards-compliant
+		using iterator = array_iterator<pointer>; 
+		using const_iterator = array_iterator<const_pointer>;
 		using reverse_iterator = std::reverse_iterator<iterator>;
 		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -68,7 +70,7 @@ namespace sigcpp
 		
 		constexpr const_reverse_iterator rbegin() const noexcept 
 		{ 
-			return crbegin(); 
+			return crbegin();
 		}
 		
 		constexpr reverse_iterator rend() noexcept
@@ -132,7 +134,6 @@ namespace sigcpp
 		constexpr const_reference front() const { return values[0]; }
 
 		constexpr reference back() { return const_cast<reference>(_back()); }
-
 		constexpr const_reference back() const { return _back(); }
 
 		//underlying raw data

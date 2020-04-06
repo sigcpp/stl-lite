@@ -12,7 +12,6 @@
 */
 
 #include <iostream>
-#include <exception>
 #include <sstream>
 #include <climits>
 
@@ -44,20 +43,20 @@ static unsigned testsFailed;
 bool lastOutputEndedInLineBreak{ false };
 
 //track number of tests and check test result
-void assert(bool success, const char* hint)
+void verify(bool success, const char* hint)
 {
    ++testsDone;
    std::ostringstream message;
 
-   lastOutputEndedInLineBreak = false;
+   //assume stream is at start of line on first call 
+   lastOutputEndedInLineBreak = testsDone == 1;
+
    if (success)
    {
       if (passMode == passReportMode::indicate)
          message << '.';
       else if (passMode == passReportMode::detail)
       {
-         if (testsDone == 1)
-            message << '\n';
          message << "Test# " << testsDone << ": Pass (" << hint << ")\n";
          lastOutputEndedInLineBreak = true;
       }
@@ -66,7 +65,7 @@ void assert(bool success, const char* hint)
    {
       ++testsFailed;
 
-      if (passMode != passReportMode::detail)
+      if (!lastOutputEndedInLineBreak)
          message << '\n';
       message << "Test# " << testsDone << ": FAIL (" << hint << ")\n";
       lastOutputEndedInLineBreak = true;
