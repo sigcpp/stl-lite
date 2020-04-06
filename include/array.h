@@ -33,16 +33,16 @@ namespace sigcpp
 	{
 		//types
 		using value_type = T;
-		using pointer = T*;
-		using const_pointer = const T*;
-		using reference = T&;
-		using const_reference = const T&;
+		using pointer = value_type*;
+		using const_pointer = const value_type*;
+		using reference = value_type&;
+		using const_reference = const value_type&;
 		using size_type = std::size_t;
 		using difference_type = std::ptrdiff_t;
 
 		//unchecked iterators: simple but standards-compliant
-		using iterator = array_iterator<pointer>; 
-		using const_iterator = array_iterator<const_pointer>;
+		using iterator = pointer; 
+		using const_iterator = const_pointer;
 		using reverse_iterator = std::reverse_iterator<iterator>;
 		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
