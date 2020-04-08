@@ -14,15 +14,21 @@
 #include <iostream>
 #include <string>
 #include <array>
+#include <vector>
+#include <string_view>
+#include <cstddef>
 
 #include "tester.h"
 
 //must be defined in a unit-specific source file such as "array-test.cpp"
 void runTests();
 
-int main()
+int main(int argc, char* argv[])
 {
-   //TODO: configure the tester based on cmd-line
+    std::vector<std::string_view> arguments;
+    for (int i = 0; i < argc; ++i)
+        arguments.emplace_back(argv[i]);
+
    try
    {
       std::cout << "Running tests:\n"; //TODO: conditionally print: which destination?
