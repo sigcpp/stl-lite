@@ -1,6 +1,6 @@
 /*
-* main.cpp
-* Sean Murthy
+* driver.cpp
+* Sean Murthy, Nick DeMarco
 * (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
 * Attribution and copyright notice must be retained.
