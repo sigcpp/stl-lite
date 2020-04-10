@@ -12,9 +12,11 @@
 */
 
 #include <iostream>
+#include <string>
 
 enum class passReportMode { none, indicate, detail };
 
+void setHeaderText(std::string text);
 void setPassReportMode(passReportMode mode);
 void setFailThreshold(unsigned short value);
 void setMaxFailThreshold();

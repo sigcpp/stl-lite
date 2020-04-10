@@ -13,9 +13,16 @@
 
 #include <iostream>
 #include <sstream>
+#include <string>
 #include <climits>
 
 #include "tester.h"
+
+static std::string headerText("Running tests");
+void setHeaderText(std::string text)
+{
+   headerText = text;
+}
 
 static passReportMode passMode { passReportMode::indicate };
 void setPassReportMode(passReportMode mode)
@@ -60,6 +67,9 @@ bool lastOutputEndedInLineBreak{ false };
 void verify(bool success, const char* hint)
 {
    ++testsDone;
+   if (testsDone == 1 && !headerText.empty())
+      *pOut << headerText << ":\n";
+
    std::ostringstream message;
 
    //assume stream is at start of line on first call 
