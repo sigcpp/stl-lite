@@ -28,8 +28,6 @@ void runTests();
 
 void processCmdLine(std::vector<std::string_view> arguments);
 
-void setDefaults();
-
 int main(int argc, char* argv[])
 {
     std::vector<std::string_view> arguments;
@@ -45,15 +43,8 @@ static const std::string defaultHeaderText("Running $exe");
 
 void processCmdLine(std::vector<std::string_view> arguments)
 {
-   if (arguments.size() == 0)
-   {
-      setDefaults();
-      return;
-   }
-
    bool printHeader{ true };
    bool printSummary{ true };
-   std::ofstream fileOut;
    std::string headerText(defaultHeaderText);
    std::string passReportMode("auto");
    unsigned short failThreshold(0);
@@ -77,25 +68,26 @@ void processCmdLine(std::vector<std::string_view> arguments)
          std::from_chars(v.data(), v.data() + v.size(), failThreshold);
          setFailThreshold(failThreshold);
       }
-      else if (arguments[i] == "-f")
+      else if (arguments[i] == "-f" || arguments[i] == "-fo" || arguments[i] == "-fa")
       {
          fileOpenMode = arguments[i];
          outputFilename = arguments[i + 1];
-         setOutput(fileOut);
-      }
-      else if (arguments[i] == "-fo")
-      {
-         fileOpenMode = arguments[i];
-         outputFilename = arguments[i + 1];
-         setOutput(fileOut);
-      }
-      else if (arguments[i] == "-fa")
-      {
-         fileOpenMode = arguments[i];
-         outputFilename = arguments[i + 1];
-         setOutput(fileOut);
       }
    } //done parsing cmd-line arguments
+
+   if (passReportMode == "detail")
+       setPassReportMode(passReportMode::detail);
+   else if (passReportMode == "indicate")
+       setPassReportMode(passReportMode::indicate);
+   else if (passReportMode == "none")
+       setPassReportMode(passReportMode::none);
+   else if (passReportMode == "auto")
+   {
+      if (fileOpenMode.empty())
+         setPassReportMode(passReportMode::none);
+      else
+         setPassReportMode(passReportMode::indicate);
+   }
 
    //extract the exe name without path or filename extension
    //the result is used to expand the macro $exe
@@ -121,48 +113,29 @@ void processCmdLine(std::vector<std::string_view> arguments)
          outputFilename.replace(macroPosition, 4, filenameNoExtension);
    }
 
-   if (passReportMode == "detail")
-       setPassReportMode(passReportMode::detail);
-   else if (passReportMode == "indicate")
-       setPassReportMode(passReportMode::indicate);
-   else if (passReportMode == "none")
-       setPassReportMode(passReportMode::none);
-   else if (passReportMode == "auto")
-   {
-      if (fileOpenMode == "-f" || fileOpenMode == "-fo" || fileOpenMode == "-fa")
-         setPassReportMode(passReportMode::detail);
-      else
-         setPassReportMode(passReportMode::indicate);
-   }
-
-   if (fileOpenMode == "-f")
-   {
-      
-      std::filesystem::path outputFilePath = outputFilename;
-      if (outputFilePath.extension() == "")
-         outputFilePath.replace_extension(".out");
-      if (!exists(outputFilePath))
-      {
-         fileOut.open(outputFilePath);
-      }
-      else
-         std::cout << "File alredy exists. To overwrite use option -fo, to append use option -fa.";
-   }
-   else if (fileOpenMode == "-fo")
-   {
-      std::filesystem::path outputFilePath = outputFilename;
-      if (outputFilePath.extension() == "")
-         outputFilePath.replace_extension(".out");
-      fileOut.open(outputFilePath);
-   }
-   else if (fileOpenMode == "-fa")
+   // the file stream must be alive when runTests() is called
+   std::ofstream fileOut;
+   if (outputFilename.empty())
+      setOutput(std::cout);
+   else
    {
       setOutput(fileOut);
+
       std::filesystem::path outputFilePath = outputFilename;
       if (outputFilePath.extension() == "")
          outputFilePath.replace_extension(".out");
-      fileOut.open(outputFilePath, std::ios::app);
-      fileOut << '\n';
+      if (fileOpenMode == "-f" && std::filesystem::exists(outputFilePath))
+      {
+         std::cerr << "Output file alredy exists";
+         return;
+      }
+
+      fileOut.open(outputFilePath, fileOpenMode == "-fa" ? std::ios::app : std::ios::out);
+      if (!fileOut.is_open())
+      {
+         std::cerr << "Error opening output file";
+         return;
+		}
    }
 
    try
@@ -176,9 +149,4 @@ void processCmdLine(std::vector<std::string_view> arguments)
 
    if (printSummary)
       summarizeTests();
-}
-
-void setDefaults()
-{
-
 }
