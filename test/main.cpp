@@ -13,10 +13,10 @@
 
 #include <iostream>
 #include <fstream>
-#include <string>
+#include <filesystem>
+#include <charconv>
 #include <array>
 #include <vector>
-#include <cstring>
 #include <string>
 #include <string_view>
 #include <cstddef>
@@ -30,24 +30,18 @@ void runTests();
 
 bool fileExists(const char* fileName);
 
-void processArguments(std::vector<std::string_view> arguments,
-    bool& printHeader, bool& printSummary, std::ostream& out);
+void processCmdLine(std::vector<std::string_view> arguments);
+void setDefaults();
 
 int main(int argc, char* argv[])
 {
     std::vector<std::string_view> arguments;
     for (int i = 0; i < argc; ++i)
         arguments.emplace_back(argv[i]);
+    processCmdLine(arguments);
 
-    bool printHeader{ true };
-    bool printSummary{ true };
-    char header[512]{ "Running " };
-    strcat_s(header, argv[0]);
-    std::ostream& out = std::cout;
-
-   try
+    try
    {
-      std::cout << "Running tests:\n"; //TODO: conditionally print: which destination?
       runTests();
    }
    catch (const std::string& msg)
@@ -62,77 +56,102 @@ int main(int argc, char* argv[])
    return getTestsFailed();
 }
 
+static const std::string defaultHeaderText("Running $exe:");
 
-void processArguments(std::vector<std::string_view> arguments,
-    bool& printHeader, bool& printSummary, std::ostream& out)
+void processCmdLine(std::vector<std::string_view> arguments)
 {
-    for (std::size_t i = 1; i < arguments.size(); i+=2)
-    {
-        if (arguments[i] == "-h")
-        {
-            if (arguments[i + 1] == "yes")
-                printHeader = true;
-            else if (arguments[i + 1] == "no")
-                printHeader = false;
-        }
-        
-        else if (arguments[i] == "-ht")
-        {
-            //process text
-        }
+   if (arguments.size() == 0)
+   {
+      setDefaults();
+      return;
+   }
 
-        else if (arguments[i] == "-p")
-        {
-            if (arguments[i + 1] == "detail")
-                setPassReportMode(passReportMode::detail);
-            else if (arguments[i + 1] == "indicate")
-                setPassReportMode(passReportMode::indicate);
-            else if (arguments[i + 1] == "none")
-                setPassReportMode(passReportMode::none);
-            else if (arguments[i + 1] == "auto")
-            {
-                for (std::size_t i = 1; i < arguments.size(); i += 2)
-                {
-                    if (arguments[i] == "-f" || arguments[i] == "-fo"
-                        || arguments[i] == "-fa")
-                        setPassReportMode(passReportMode::none);
-                    else
-                        setPassReportMode(passReportMode::indicate);
-                }
-            }
-        }
-        else if (arguments[i] == "-s")
-        {
-            if (arguments[i + 1] == "yes")
-                printSummary = true;
-            else if (arguments[i + 1] == "no")
-                printSummary = false;
-        }
-        else if (arguments[i] == "-t")
-        {
-            //need to convert arguments[i + 1] from string_view to unsigned
-            //and supply that argument to setFailThreshold() function
-        }
-        else if (arguments[i] == "-f")
-        {
-            //convert filename to c-string
-            //check if filename has a file extension, if it doesn't, append .out
-            //test if file "arguments[i + 1]" exists, if it does print error message
-            //else construct an ofstream that writes to filename
-        }
-        else if (arguments[i] == "-fo")
-        {
+   bool printHeader{ true };
+   bool printSummary{ true };
 
-        }
-        else if (arguments[i] == "-fa")
-        {
+   std::ostream& out = std::cout;
 
-        }
-    }
+   std::string headerText(defaultHeaderText);
+   std::string passReportMode("auto");
+   unsigned failThreshold(0);
+   std::string_view fileOpenMode;
+   std::string outputFilename;
+
+   for (std::size_t i = 1; i < arguments.size(); i += 2)
+   {
+      if (arguments[i] == "-h")
+         printHeader = arguments[i + 1] != "no";
+      else if (arguments[i] == "-ht")
+         headerText = arguments[i + 1];
+      else if (arguments[i] == "-p")
+         passReportMode = arguments[i + 1];
+      else if (arguments[i] == "-s")
+         printSummary = arguments[i + 1] != "no";
+      else if (arguments[i] == "-t")
+      {
+         std::string_view& v = arguments[i + 1];
+         std::from_chars(v.data(), v.data() + v.size(), failThreshold);
+      }
+      else if (arguments[i] == "-f")
+      {
+         fileOpenMode = arguments[i];
+         outputFilename = arguments[i + 1];
+      }
+      else if (arguments[i] == "-fo")
+      {
+         fileOpenMode = arguments[i];
+         outputFilename = arguments[i + 1];
+      }
+      else if (arguments[i] == "-fa")
+      {
+         fileOpenMode = arguments[i];
+         outputFilename = arguments[i + 1];
+      }
+   }
+
+   //extract the exe name without path or filename extension
+   //the result is used to expand the macro $exe
+   std::filesystem::path exePath(arguments[0]);
+   std::string filenameNoExtension = exePath.replace_extension("").filename().string();
+
+   //replace $exe macro in header text and file name
+   if (printHeader && !headerText.empty())
+   {
+      std::string::size_type macroPosition = headerText.find("$exe");
+      for (; macroPosition != std::string::npos; macroPosition = headerText.find("$exe"))
+         headerText.replace(macroPosition, 4, filenameNoExtension);
+   }
+   else
+      headerText = "";
+
+   setHeaderText(headerText);
+
+   if (!outputFilename.empty())
+   {
+      std::string::size_type macroPosition = outputFilename.find("$exe");
+      for (; macroPosition != std::string::npos; macroPosition = outputFilename.find("$exe"))
+         outputFilename.replace(macroPosition, 4, filenameNoExtension);
+   }
+
+   for (std::size_t i = 1; i < arguments.size(); i += 2)
+   {
+      if (arguments[i] == "-f" || arguments[i] == "-fo"
+         || arguments[i] == "-fa")
+         setPassReportMode(passReportMode::none);
+      else
+         setPassReportMode(passReportMode::indicate);
+   }
+
+   if (passReportMode == "detail")
+      setPassReportMode(passReportMode::detail);
+   else if (passReportMode == "indicate")
+      setPassReportMode(passReportMode::indicate);
+   else if (passReportMode == "none")
+      setPassReportMode(passReportMode::none);
+   //else if (arguments[i + 1] == "auto")
 }
 
-bool fileExists(const char* fileName)
+void setDefaults()
 {
-    struct stat buffer;
-    return (stat(fileName, &buffer) == true);
+
 }
