@@ -20,17 +20,14 @@
 #include <string>
 #include <string_view>
 #include <cstddef>
-#include <sstream>
-#include <regex>
 
 #include "tester.h"
 
 //must be defined in a unit-specific source file such as "array-test.cpp"
 void runTests();
 
-bool fileExists(const char* fileName);
-
 void processCmdLine(std::vector<std::string_view> arguments);
+
 void setDefaults();
 
 int main(int argc, char* argv[])
@@ -38,25 +35,13 @@ int main(int argc, char* argv[])
     std::vector<std::string_view> arguments;
     for (int i = 0; i < argc; ++i)
         arguments.emplace_back(argv[i]);
+    
     processCmdLine(arguments);
-
-    try
-   {
-      runTests();
-   }
-   catch (const std::string& msg)
-   {
-      std::cout << msg << '\n'; //TODO: print in appropriate stream based in cmd-line
-   }
-   //TODO handle other exceptions
-
-   //TODO: conditionally print summary to appropriate destination
-   summarizeTests();
 
    return getTestsFailed();
 }
 
-static const std::string defaultHeaderText("Running $exe:");
+static const std::string defaultHeaderText("Running $exe");
 
 void processCmdLine(std::vector<std::string_view> arguments)
 {
@@ -68,15 +53,14 @@ void processCmdLine(std::vector<std::string_view> arguments)
 
    bool printHeader{ true };
    bool printSummary{ true };
-
-   std::ostream& out = std::cout;
-
+   std::ofstream fileOut;
    std::string headerText(defaultHeaderText);
    std::string passReportMode("auto");
-   unsigned failThreshold(0);
+   unsigned short failThreshold(0);
    std::string_view fileOpenMode;
    std::string outputFilename;
 
+   // begin parsing cmd-line arguments
    for (std::size_t i = 1; i < arguments.size(); i += 2)
    {
       if (arguments[i] == "-h")
@@ -91,23 +75,27 @@ void processCmdLine(std::vector<std::string_view> arguments)
       {
          std::string_view& v = arguments[i + 1];
          std::from_chars(v.data(), v.data() + v.size(), failThreshold);
+         setFailThreshold(failThreshold);
       }
       else if (arguments[i] == "-f")
       {
          fileOpenMode = arguments[i];
          outputFilename = arguments[i + 1];
+         setOutput(fileOut);
       }
       else if (arguments[i] == "-fo")
       {
          fileOpenMode = arguments[i];
          outputFilename = arguments[i + 1];
+         setOutput(fileOut);
       }
       else if (arguments[i] == "-fa")
       {
          fileOpenMode = arguments[i];
          outputFilename = arguments[i + 1];
+         setOutput(fileOut);
       }
-   }
+   } //done parsing cmd-line arguments
 
    //extract the exe name without path or filename extension
    //the result is used to expand the macro $exe
@@ -133,22 +121,61 @@ void processCmdLine(std::vector<std::string_view> arguments)
          outputFilename.replace(macroPosition, 4, filenameNoExtension);
    }
 
-   for (std::size_t i = 1; i < arguments.size(); i += 2)
+   if (passReportMode == "detail")
+       setPassReportMode(passReportMode::detail);
+   else if (passReportMode == "indicate")
+       setPassReportMode(passReportMode::indicate);
+   else if (passReportMode == "none")
+       setPassReportMode(passReportMode::none);
+   else if (passReportMode == "auto")
    {
-      if (arguments[i] == "-f" || arguments[i] == "-fo"
-         || arguments[i] == "-fa")
-         setPassReportMode(passReportMode::none);
+      if (fileOpenMode == "-f" || fileOpenMode == "-fo" || fileOpenMode == "-fa")
+         setPassReportMode(passReportMode::detail);
       else
          setPassReportMode(passReportMode::indicate);
    }
 
-   if (passReportMode == "detail")
-      setPassReportMode(passReportMode::detail);
-   else if (passReportMode == "indicate")
-      setPassReportMode(passReportMode::indicate);
-   else if (passReportMode == "none")
-      setPassReportMode(passReportMode::none);
-   //else if (arguments[i + 1] == "auto")
+   if (fileOpenMode == "-f")
+   {
+      
+      std::filesystem::path outputFilePath = outputFilename;
+      if (outputFilePath.extension() == "")
+         outputFilePath.replace_extension(".out");
+      if (!exists(outputFilePath))
+      {
+         fileOut.open(outputFilePath);
+      }
+      else
+         std::cout << "File alredy exists. To overwrite use option -fo, to append use option -fa.";
+   }
+   else if (fileOpenMode == "-fo")
+   {
+      std::filesystem::path outputFilePath = outputFilename;
+      if (outputFilePath.extension() == "")
+         outputFilePath.replace_extension(".out");
+      fileOut.open(outputFilePath);
+   }
+   else if (fileOpenMode == "-fa")
+   {
+      setOutput(fileOut);
+      std::filesystem::path outputFilePath = outputFilename;
+      if (outputFilePath.extension() == "")
+         outputFilePath.replace_extension(".out");
+      fileOut.open(outputFilePath, std::ios::app);
+      fileOut << '\n';
+   }
+
+   try
+   {
+      runTests();
+   }
+   catch (const std::string & msg)
+   {
+      std::cout << msg << '\n'; //TODO: print in appropriate stream based in cmd-line
+   }
+
+   if (printSummary)
+      summarizeTests();
 }
 
 void setDefaults()
