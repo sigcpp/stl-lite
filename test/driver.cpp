@@ -83,7 +83,7 @@ void processCmdLine(std::vector<std::string_view> arguments)
        setPassReportMode(passReportMode::none);
    else if (passReportMode == "auto")
    {
-      if (fileOpenMode.empty())
+      if (!fileOpenMode.empty())
          setPassReportMode(passReportMode::none);
       else
          setPassReportMode(passReportMode::indicate);
@@ -94,7 +94,7 @@ void processCmdLine(std::vector<std::string_view> arguments)
    std::filesystem::path exePath(arguments[0]);
    std::string filenameNoExtension = exePath.replace_extension("").filename().string();
 
-   //replace $exe macro in header text and file name
+   //replace $exe macro in header text
    if (printHeader && !headerText.empty())
    {
       std::string::size_type macroPosition = headerText.find("$exe");
@@ -106,6 +106,7 @@ void processCmdLine(std::vector<std::string_view> arguments)
 
    setHeaderText(headerText);
 
+   //replace $exe macro in filename
    if (!outputFilename.empty())
    {
       std::string::size_type macroPosition = outputFilename.find("$exe");
