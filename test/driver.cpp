@@ -158,7 +158,7 @@ void processCmdLine(const std::vector<string_view>& arguments)
    }
    catch (const std::string & msg)
    {
-      std::cout << msg << '\n'; //TODO: print in appropriate stream based in cmd-line
+      (outputFilename.empty() ? std::cout : fileOut )<< msg << '\n';
    }
 
    //if print summary option is enabled
