@@ -25,7 +25,6 @@
 
 using std::string;
 using std::string_view;
-using std::ios;
 
 //must be defined in a unit-specific source file such as "array-test.cpp"
 void runTests();
@@ -108,7 +107,6 @@ void processCmdLine(const std::vector<string_view>& arguments)
       for (; pos != string::npos; pos = headerText.find("$exe"))
          headerText.replace(pos, 4, filenameNoExt);
    }
-   //else do not print a header text
    else
       headerText = "";
 
@@ -141,8 +139,8 @@ void processCmdLine(const std::vector<string_view>& arguments)
          std::cerr << "Output file alredy exists";
          return;
       }
-
       //if -fa option is enabled, set open mode to append
+      using std::ios;
       fileOut.open(fileOutPath, fileOpenMode == "-fa" ? ios::app : ios::out);
       //check for errors opening file
       if (!fileOut.is_open())
