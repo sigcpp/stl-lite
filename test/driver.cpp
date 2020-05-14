@@ -25,26 +25,26 @@
 
 using std::string;
 using std::string_view;
+using std::size_t;
 
 //must be defined in a unit-specific source file such as "array-test.cpp"
 void runTests();
 
-void processCmdLine(const std::vector<string_view>& arguments);
+void processCmdLine(char* arguments[], const size_t size);
+
+void replace_all(string& str, const string_view substr, 
+   const string& toReplace);
 
 int main(int argc, char* argv[])
 {
-    std::vector<string_view> arguments;
-    for (int i = 0; i < argc; ++i)
-        arguments.emplace_back(argv[i]);
-    
-    processCmdLine(arguments);
+    processCmdLine(argv, argc);
 
    return getTestsFailed();
 }
 
 static const string defaultHeaderText("Running $exe");
 
-void processCmdLine(const std::vector<string_view>& arguments)
+void processCmdLine(char* arguments[], const size_t size)
 {
    bool printHeader{ true };
    bool printSummary{ true };
@@ -54,38 +54,50 @@ void processCmdLine(const std::vector<string_view>& arguments)
    string_view fileOpenMode;
    string outputFilename;
 
+   constexpr string_view name_header{ "-h" }, name_header_text{ "-ht" },
+      name_summary{ "-s" }, namePRM{ "-p" }, name_file{ "-f" },
+      name_file_overwrite{ "-fo" }, name_file_append{ "-fa" },
+      name_threshold{ "-t" };
+
+   constexpr string_view value_yes{ "yes" };
+   constexpr string_view value_detail{ "detail" },
+      value_indicate{ "indicate" }, value_none{ "none" }, value_auto{ "auto" };
+
    // begin parsing cmd-line arguments
-   for (size_t i = 1; i < arguments.size(); i += 2)
+   for (size_t i = 1; i < size; i += 2)
    {
-      if (arguments[i] == "-h")
-         printHeader = arguments[i + 1] != "no";
-      else if (arguments[i] == "-ht")
-         headerText = arguments[i + 1];
-      else if (arguments[i] == "-p")
-         passReportMode = arguments[i + 1];
-      else if (arguments[i] == "-s")
-         printSummary = arguments[i + 1] != "no";
-      else if (arguments[i] == "-t")
+      string_view name(arguments[i]), value(arguments[i + 1]);
+      
+      if (name == name_header)
+         printHeader = (value == value_yes);
+      else if (name == name_header_text)
+         headerText = value;
+      else if (name == namePRM)
+         passReportMode = value;
+      else if (name == name_summary)
+         printSummary = (value == value_yes);
+      else if (name == name_threshold)
       {
          const string_view& v = arguments[i + 1];
          std::from_chars(v.data(), v.data() + v.size(), failThreshold);
          setFailThreshold(failThreshold);
       }
-      else if (arguments[i] == "-f" || arguments[i] == "-fo" || arguments[i] == "-fa")
+      else if (name == name_file || name == name_file_overwrite ||
+         name == name_file_append)
       {
-         fileOpenMode = arguments[i];
-         outputFilename = arguments[i + 1];
+         fileOpenMode = name;
+         outputFilename = value;
       }
    } //done parsing cmd-line arguments
 
    //set pass report mode to the proper value
-   if (passReportMode == "detail")
+   if (passReportMode == value_detail)
        setPassReportMode(passReportMode::detail);
-   else if (passReportMode == "indicate")
+   else if (passReportMode == value_indicate)
        setPassReportMode(passReportMode::indicate);
-   else if (passReportMode == "none")
+   else if (passReportMode == value_none)
        setPassReportMode(passReportMode::none);
-   else if (passReportMode == "auto")
+   else if (passReportMode == value_auto)
    {
       //if output to file option enabled
       if (!fileOpenMode.empty())
@@ -101,11 +113,10 @@ void processCmdLine(const std::vector<string_view>& arguments)
 
    //replace $exe macro in header text only if a header text was defined
    //and the print header option is enabled
+   constexpr string_view exeMacro{ "$exe" };
    if (printHeader && !headerText.empty())
    {
-      string::size_type pos = headerText.find("$exe");
-      for (; pos != string::npos; pos = headerText.find("$exe"))
-         headerText.replace(pos, 4, filenameNoExt);
+      replace_all(headerText, exeMacro, filenameNoExt);
    }
    else
       headerText = "";
@@ -115,9 +126,7 @@ void processCmdLine(const std::vector<string_view>& arguments)
    //if a filename was supplied, replace $exe macro in filename
    if (!outputFilename.empty())
    {
-      string::size_type pos = outputFilename.find("$exe");
-      for (; pos != string::npos; pos = outputFilename.find("$exe"))
-         outputFilename.replace(pos, 4, filenameNoExt);
+      replace_all(outputFilename, exeMacro, filenameNoExt);
    }
 
    // the file stream must be alive when runTests() is called
@@ -134,14 +143,14 @@ void processCmdLine(const std::vector<string_view>& arguments)
       if (fileOutPath.extension() == "")
          fileOutPath.replace_extension(".out");
       //if -f option enabled, make sure the file doesn't already exist
-      if (fileOpenMode == "-f" && std::filesystem::exists(fileOutPath))
+      if (fileOpenMode == name_file && std::filesystem::exists(fileOutPath))
       {
          std::cerr << "Output file alredy exists";
          return;
       }
       //if -fa option is enabled, set open mode to append
       using std::ios;
-      fileOut.open(fileOutPath, fileOpenMode == "-fa" ? ios::app : ios::out);
+      fileOut.open(fileOutPath, fileOpenMode == name_file_append ? ios::app : ios::out);
       //check for errors opening file
       if (!fileOut.is_open())
       {
@@ -162,4 +171,13 @@ void processCmdLine(const std::vector<string_view>& arguments)
    //if print summary option is enabled
    if (printSummary)
       summarizeTests();
+}
+
+//Replace all instances of a substring with a different substring
+void replace_all(string& str, const string_view substr, 
+   const string& toReplace)
+{
+   string::size_type pos = str.find(substr);
+   for (; pos != string::npos; pos = str.find(substr))
+      str.replace(pos, 4, toReplace);
 }
