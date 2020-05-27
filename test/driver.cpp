@@ -77,8 +77,7 @@ void processCmdLine(char* arguments[], const size_t size)
          printSummary = (value == option_value_yes);
       else if (option_name == option_name_threshold)
       {
-         const string_view& v = arguments[i + 1];
-         std::from_chars(v.data(), v.data() + v.size(), failThreshold);
+         std::from_chars(value.data(), value.data() + value.size(), failThreshold);
          setFailThreshold(failThreshold);
       }
       else if (option_name == option_name_file || option_name == option_name_file_overwrite ||
