@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
    return getTestsFailed();
 }
 
-void processCmdLine(char* arguments[], const size_t size)
+void processCmdLine(char* arguments[], const std::size_t size)
 {
    bool printHeader{ true };
    bool printSummary{ true };
