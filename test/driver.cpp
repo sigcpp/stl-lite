@@ -30,7 +30,7 @@ using std::size_t;
 //must be defined in a unit-specific source file such as "array-test.cpp"
 void runTests();
 
-void processCmdLine(char* arguments[], const size_t size);
+void processCmdLine(char* arguments[], const std::size_t size);
 
 void replace_all(std::string& str, const std::string& substr, 
    const std::string& new_substr);
