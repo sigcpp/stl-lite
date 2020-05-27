@@ -32,8 +32,8 @@ void runTests();
 
 void processCmdLine(char* arguments[], const size_t size);
 
-void replace_all(string& str, const string& substr, 
-   const string& toReplace);
+void replace_all(std::string& str, const std::string& substr, 
+   const std::string& new_substr);
 
 int main(int argc, char* argv[])
 {
