@@ -52,50 +52,51 @@ void processCmdLine(char* arguments[], const size_t size)
    string_view fileOpenMode;
    string outputFilename;
 
-   constexpr string_view name_header{ "-h" }, name_header_text{ "-ht" },
-      name_summary{ "-s" }, namePRM{ "-p" }, name_file{ "-f" },
-      name_file_overwrite{ "-fo" }, name_file_append{ "-fa" },
-      name_threshold{ "-t" };
+   constexpr string_view option_name_header{ "-h" }, option_name_header_text{ "-ht" },
+      option_name_summary{ "-s" }, option_name_prm{ "-p" }, option_name_file{ "-f" },
+      option_name_file_overwrite{ "-fo" }, option_name_file_append{ "-fa" },
+      option_name_threshold{ "-t" };
 
-   constexpr string_view value_yes{ "yes" };
-   constexpr string_view value_detail{ "detail" },
-      value_indicate{ "indicate" }, value_none{ "none" }, value_auto{ "auto" };
+   constexpr string_view option_value_yes{ "yes" };
+   constexpr string_view option_value_detail{ "detail" },
+      option_value_indicate{ "indicate" }, option_value_none{ "none" },
+      option_value_auto{ "auto" };
 
    //begin parsing cmd-line arguments
    for (size_t i = 1; i < size; i += 2)
    {
-      string_view name(arguments[i]), value(arguments[i + 1]);
+      string_view option_name(arguments[i]), value(arguments[i + 1]);
       
-      if (name == name_header)
-         printHeader = (value == value_yes);
-      else if (name == name_header_text)
+      if (option_name == option_name_header)
+         printHeader = (value == option_value_yes);
+      else if (option_name == option_name_header_text)
          headerText = value;
-      else if (name == namePRM)
+      else if (option_name == option_name_prm)
          passReportMode = value;
-      else if (name == name_summary)
-         printSummary = (value == value_yes);
-      else if (name == name_threshold)
+      else if (option_name == option_name_summary)
+         printSummary = (value == option_value_yes);
+      else if (option_name == option_name_threshold)
       {
          const string_view& v = arguments[i + 1];
          std::from_chars(v.data(), v.data() + v.size(), failThreshold);
          setFailThreshold(failThreshold);
       }
-      else if (name == name_file || name == name_file_overwrite ||
-         name == name_file_append)
+      else if (option_name == option_name_file || option_name == option_name_file_overwrite ||
+         option_name == option_name_file_append)
       {
-         fileOpenMode = name;
+         fileOpenMode = option_name;
          outputFilename = value;
       }
    } //done parsing cmd-line arguments
 
    //set pass report mode to the proper value
-   if (passReportMode == value_detail)
+   if (passReportMode == option_value_detail)
        setPassReportMode(passReportMode::detail);
-   else if (passReportMode == value_indicate)
+   else if (passReportMode == option_value_indicate)
        setPassReportMode(passReportMode::indicate);
-   else if (passReportMode == value_none)
+   else if (passReportMode == option_value_none)
        setPassReportMode(passReportMode::none);
-   else if (passReportMode == value_auto)
+   else if (passReportMode == option_value_auto)
    {
       //if output to file option enabled
       if (!fileOpenMode.empty())
@@ -141,14 +142,14 @@ void processCmdLine(char* arguments[], const size_t size)
       if (fileOutPath.extension() == "")
          fileOutPath.replace_extension(".out");
       //if -f option enabled, make sure the file doesn't already exist
-      if (fileOpenMode == name_file && std::filesystem::exists(fileOutPath))
+      if (fileOpenMode == option_name_file && std::filesystem::exists(fileOutPath))
       {
          std::cerr << "Output file alredy exists";
          return;
       }
       //if -fa option is enabled, set open mode to append
       using std::ios;
-      fileOut.open(fileOutPath, fileOpenMode == name_file_append ? ios::app : ios::out);
+      fileOut.open(fileOutPath, fileOpenMode == option_name_file_append ? ios::app : ios::out);
       //check for errors opening file
       if (!fileOut.is_open())
       {
