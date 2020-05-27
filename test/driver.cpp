@@ -172,10 +172,11 @@ void processCmdLine(char* arguments[], const size_t size)
 }
 
 //Replace all instances of a substring with a different substring
-void replace_all(string& str, const string& substr, 
-   const string& new_substr)
+void replace_all(std::string& str, std::const string& substr, 
+   const std::string& new_substr)
 {
-   string::size_type pos = str.find(substr);
-   for (; pos != string::npos; pos = str.find(substr, pos + substr.size()))
-      str.replace(pos, 4, new_substr);
+  auto pos = str.find(substr);
+  auto substr_size = substr.size();
+   for (; pos != std::string::npos; pos = str.find(substr, pos + substr_size))
+      str.replace(pos, substr_size, new_substr);
 }
