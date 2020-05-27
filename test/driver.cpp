@@ -32,7 +32,7 @@ void runTests();
 
 void processCmdLine(char* arguments[], const size_t size);
 
-void replace_all(string& str, const string_view substr, 
+void replace_all(string& str, const string& substr, 
    const string& toReplace);
 
 int main(int argc, char* argv[])
@@ -42,13 +42,11 @@ int main(int argc, char* argv[])
    return getTestsFailed();
 }
 
-static const string defaultHeaderText("Running $exe");
-
 void processCmdLine(char* arguments[], const size_t size)
 {
    bool printHeader{ true };
    bool printSummary{ true };
-   string headerText(defaultHeaderText);
+   string headerText("Running $exe");
    string_view passReportMode("auto");
    unsigned short failThreshold(0);
    string_view fileOpenMode;
@@ -63,7 +61,7 @@ void processCmdLine(char* arguments[], const size_t size)
    constexpr string_view value_detail{ "detail" },
       value_indicate{ "indicate" }, value_none{ "none" }, value_auto{ "auto" };
 
-   // begin parsing cmd-line arguments
+   //begin parsing cmd-line arguments
    for (size_t i = 1; i < size; i += 2)
    {
       string_view name(arguments[i]), value(arguments[i + 1]);
@@ -113,7 +111,7 @@ void processCmdLine(char* arguments[], const size_t size)
 
    //replace $exe macro in header text only if a header text was defined
    //and the print header option is enabled
-   constexpr string_view exeMacro{ "$exe" };
+   const string exeMacro{ "$exe" };
    if (printHeader && !headerText.empty())
    {
       replace_all(headerText, exeMacro, filenameNoExt);
@@ -129,7 +127,7 @@ void processCmdLine(char* arguments[], const size_t size)
       replace_all(outputFilename, exeMacro, filenameNoExt);
    }
 
-   // the file stream must be alive when runTests() is called
+   //the file stream must be alive when runTests() is called
    std::ofstream fileOut;
    //if output to file option not enabled, use standard output
    if (outputFilename.empty())
@@ -174,10 +172,10 @@ void processCmdLine(char* arguments[], const size_t size)
 }
 
 //Replace all instances of a substring with a different substring
-void replace_all(string& str, const string_view substr, 
-   const string& toReplace)
+void replace_all(string& str, const string& substr, 
+   const string& new_substr)
 {
    string::size_type pos = str.find(substr);
-   for (; pos != string::npos; pos = str.find(substr))
-      str.replace(pos, 4, toReplace);
+   for (; pos != string::npos; pos = str.find(substr, pos + substr.size()))
+      str.replace(pos, 4, new_substr);
 }
