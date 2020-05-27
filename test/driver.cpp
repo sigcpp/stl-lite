@@ -172,7 +172,7 @@ void processCmdLine(char* arguments[], const size_t size)
 }
 
 //Replace all instances of a substring with a different substring
-void replace_all(std::string& str, std::const string& substr, 
+void replace_all(std::string& str, const std::string& substr, 
    const std::string& new_substr)
 {
   auto pos = str.find(substr);
