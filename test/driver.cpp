@@ -23,10 +23,6 @@
 
 #include "tester.h"
 
-using std::string;
-using std::string_view;
-using std::size_t;
-
 //must be defined in a unit-specific source file such as "array-test.cpp"
 void runTests();
 
@@ -44,6 +40,11 @@ int main(int argc, char* argv[])
 
 void processCmdLine(char* arguments[], const std::size_t size)
 {
+   using std::string;
+   using std::string_view;
+   using std::size_t;
+   
+   //default values for cmd-line option names in name-value pairs
    bool printHeader{ true };
    bool printSummary{ true };
    string headerText("Running $exe");
@@ -52,12 +53,16 @@ void processCmdLine(char* arguments[], const std::size_t size)
    string_view fileOpenMode;
    string outputFilename;
 
+   //names in name-value pair for cmd-line options
    constexpr string_view option_name_header{ "-h" }, option_name_header_text{ "-ht" },
       option_name_summary{ "-s" }, option_name_prm{ "-p" }, option_name_file{ "-f" },
       option_name_file_overwrite{ "-fo" }, option_name_file_append{ "-fa" },
       option_name_threshold{ "-t" };
 
+   //values in name-value pair for boolean cmd-line options
    constexpr string_view option_value_yes{ "yes" };
+
+   //values for prm option name
    constexpr string_view option_value_detail{ "detail" },
       option_value_indicate{ "indicate" }, option_value_none{ "none" },
       option_value_auto{ "auto" };
@@ -65,25 +70,25 @@ void processCmdLine(char* arguments[], const std::size_t size)
    //begin parsing cmd-line arguments
    for (size_t i = 1; i < size; i += 2)
    {
-      string_view option_name(arguments[i]), value(arguments[i + 1]);
+      string_view name(arguments[i]), value(arguments[i + 1]);
       
-      if (option_name == option_name_header)
+      if (name == option_name_header)
          printHeader = (value == option_value_yes);
-      else if (option_name == option_name_header_text)
+      else if (name == option_name_header_text)
          headerText = value;
-      else if (option_name == option_name_prm)
+      else if (name == option_name_prm)
          passReportMode = value;
-      else if (option_name == option_name_summary)
+      else if (name == option_name_summary)
          printSummary = (value == option_value_yes);
-      else if (option_name == option_name_threshold)
+      else if (name == option_name_threshold)
       {
          std::from_chars(value.data(), value.data() + value.size(), failThreshold);
          setFailThreshold(failThreshold);
       }
-      else if (option_name == option_name_file || option_name == option_name_file_overwrite ||
-         option_name == option_name_file_append)
+      else if (name == option_name_file || name == option_name_file_overwrite ||
+         name == option_name_file_append)
       {
-         fileOpenMode = option_name;
+         fileOpenMode = name;
          outputFilename = value;
       }
    } //done parsing cmd-line arguments
@@ -113,9 +118,7 @@ void processCmdLine(char* arguments[], const std::size_t size)
    //and the print header option is enabled
    const string exeMacro{ "$exe" };
    if (printHeader && !headerText.empty())
-   {
       replace_all(headerText, exeMacro, filenameNoExt);
-   }
    else
       headerText = "";
 
@@ -123,9 +126,7 @@ void processCmdLine(char* arguments[], const std::size_t size)
 
    //if a filename was supplied, replace $exe macro in filename
    if (!outputFilename.empty())
-   {
       replace_all(outputFilename, exeMacro, filenameNoExt);
-   }
 
    //the file stream must be alive when runTests() is called
    std::ofstream fileOut;
