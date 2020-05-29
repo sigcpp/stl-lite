@@ -18,6 +18,7 @@
 #include <string>
 #include <string_view>
 #include <cstddef>
+#include <cassert>
 
 #include "tester.h"
 
@@ -25,6 +26,7 @@
 void runTests();
 
 void processCmdLine(char* arguments[], const std::size_t size);
+passReportMode getPassReportMode(const std::string_view value);
 
 void replace_all(std::string& str, const std::string& substr, 
    const std::string& new_substr);
@@ -60,10 +62,8 @@ void processCmdLine(char* arguments[], const std::size_t size)
    //values in name-value pair for boolean cmd-line options
    constexpr string_view option_value_yes{ "yes" };
 
-   //values for prm option name
-   constexpr string_view option_value_detail{ "detail" },
-      option_value_indicate{ "indicate" }, option_value_none{ "none" },
-      option_value_auto{ "auto" };
+   //value for auto prm 
+   constexpr string_view option_value_auto{ "auto" };
 
    //begin parsing cmd-line arguments
    for (size_t i = 1; i < size; i += 2)
@@ -91,21 +91,16 @@ void processCmdLine(char* arguments[], const std::size_t size)
       }
    } //done parsing cmd-line arguments
 
-   //set pass report mode to the proper value
-   if (passReportMode == option_value_detail)
-       setPassReportMode(passReportMode::detail);
-   else if (passReportMode == option_value_indicate)
-       setPassReportMode(passReportMode::indicate);
-   else if (passReportMode == option_value_none)
-       setPassReportMode(passReportMode::none);
-   else if (passReportMode == option_value_auto)
+   //apply pass report mode, translating "auto" based on output means
+   if (passReportMode == option_value_auto)
    {
-      //if output to file option enabled
       if (!fileOpenMode.empty())
          setPassReportMode(passReportMode::none);
       else
          setPassReportMode(passReportMode::indicate);
    }
+   else
+      setPassReportMode(getPassReportMode(passReportMode));
 
    //extract the exe name without path or filename extension
    //the result is used to expand the macro $exe
@@ -179,3 +174,27 @@ void replace_all(std::string& str, const std::string& substr,
    for (; pos != std::string::npos; pos = str.find(substr, pos + substr_size))
       str.replace(pos, substr_size, new_substr);
 }
+
+
+//convert text version of pass report mode to enum equivalent
+passReportMode getPassReportMode(const std::string_view value)
+{
+   constexpr std::string_view value_none{ "none" }, 
+                              value_indicate{ "indicate" },
+                              value_detail{ "detail" };
+
+   if (value == value_none)
+      return passReportMode::none;
+   else if (value == value_indicate)
+      return passReportMode::indicate;
+   if (value == value_detail)
+      return passReportMode::detail;
+   else
+   {
+      assert(false);
+
+      //TO DO: review exception mgmt in the entire file; using temp value
+      throw "invalid value for pass report mode";
+   }
+}
+
