@@ -26,7 +26,7 @@
 void runTests();
 
 void processCmdLine(char* arguments[], const std::size_t size);
-passReportMode getPassReportMode(const std::string_view value);
+passReportMode getPassReportMode(const std::string_view& value);
 
 void replace_all(std::string& str, const std::string& substr, 
    const std::string& new_substr);
@@ -177,7 +177,7 @@ void replace_all(std::string& str, const std::string& substr,
 
 
 //convert text version of pass report mode to enum equivalent
-passReportMode getPassReportMode(const std::string_view value)
+passReportMode getPassReportMode(const std::string_view& value)
 {
    constexpr std::string_view value_none{ "none" }, 
                               value_indicate{ "indicate" },
