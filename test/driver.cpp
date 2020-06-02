@@ -26,7 +26,7 @@
 void runTests();
 
 void processCmdLine(char* arguments[], const std::size_t size);
-passReportMode getPassReportMode(const std::string_view& value);
+passReportMode getPassReportMode(const std::string_view& value, bool fileOutput);
 
 void replace_all(std::string& str, const std::string& substr, 
    const std::string& new_substr);
@@ -48,7 +48,7 @@ void processCmdLine(char* arguments[], const std::size_t size)
    bool printHeader{ true };
    bool printSummary{ true };
    string headerText("Running $exe");
-   string_view passReportMode("auto");
+   string_view passReportMode;
    unsigned short failThreshold(0);
    string_view fileOpenMode;
    string outputFilename;
@@ -61,9 +61,6 @@ void processCmdLine(char* arguments[], const std::size_t size)
 
    //values in name-value pair for boolean cmd-line options
    constexpr string_view option_value_yes{ "yes" };
-
-   //value for auto prm 
-   constexpr string_view option_value_auto{ "auto" };
 
    //begin parsing cmd-line arguments
    for (size_t i = 1; i < size; i += 2)
@@ -91,16 +88,8 @@ void processCmdLine(char* arguments[], const std::size_t size)
       }
    } //done parsing cmd-line arguments
 
-   //apply pass report mode, translating "auto" based on output means
-   if (passReportMode == option_value_auto)
-   {
-      if (!fileOpenMode.empty())
-         setPassReportMode(passReportMode::none);
-      else
-         setPassReportMode(passReportMode::indicate);
-   }
-   else
-      setPassReportMode(getPassReportMode(passReportMode));
+   //set pass report mode, translating "auto" based on output means
+   setPassReportMode(getPassReportMode(passReportMode, !fileOpenMode.empty()));
 
    //extract the exe name without path or filename extension
    //the result is used to expand the macro $exe
@@ -177,11 +166,12 @@ void replace_all(std::string& str, const std::string& substr,
 
 
 //convert text version of pass report mode to enum equivalent
-passReportMode getPassReportMode(const std::string_view& value)
+//treats empty value as "auto" 
+//the flag fileOutput is used only if value is "auto" (or empty)
+passReportMode getPassReportMode(const std::string_view& value, bool fileOutput)
 {
-   constexpr std::string_view value_none{ "none" }, 
-                              value_indicate{ "indicate" },
-                              value_detail{ "detail" };
+   constexpr std::string_view value_none{ "none" }, value_indicate{ "indicate" },
+      value_detail{ "detail" }, value_auto{ "auto" };
 
    if (value == value_none)
       return passReportMode::none;
@@ -189,12 +179,13 @@ passReportMode getPassReportMode(const std::string_view& value)
       return passReportMode::indicate;
    if (value == value_detail)
       return passReportMode::detail;
+   if (value == value_auto || value.empty())
+      return fileOutput ? passReportMode::none : passReportMode::indicate;
    else
    {
       assert(false);
 
-      //TO DO: review exception mgmt in the entire file; using temp value
+      //TO DO: review exception mgmt in the entire file; using temp value for now
       throw "invalid value for pass report mode";
    }
 }
-
