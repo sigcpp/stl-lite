@@ -48,7 +48,7 @@ void processCmdLine(char* arguments[], const std::size_t size)
    bool printHeader{ true };
    bool printSummary{ true };
    string headerText("Running $exe");
-   string_view passReportMode;
+   string_view passReportMode; // empty value treated as "auto" in getPassReportMode
    unsigned short failThreshold(0);
    string_view fileOpenMode;
    string outputFilename;
