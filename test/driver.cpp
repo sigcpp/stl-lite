@@ -22,36 +22,59 @@
 
 #include "tester.h"
 
+
+//TODO: Separate groups of functions and struct into different files to reduce the length of driver.cpp
+
+struct Options {
+   //initialized to default values for cmd-line option names in name-value pairs
+   bool printHeader{ true };
+   bool printSummary{ true };
+   std::string headerText{ "Running $exe" };
+   std::string_view passReportMode; // empty value treated as "auto" in getPassReportMode                    
+   unsigned short failThreshold = 0;
+   std::string_view fileOpenMode;
+   std::string outputFilename;
+   std::string filenameNoExt;
+};
+
 //must be defined in a unit-specific source file such as "array-test.cpp"
 void runTests();
 
-void processCmdLine(char* arguments[], const std::size_t size);
+Options getOptions(char* arguments[], const std::size_t size);
+
+//temporary fn for development
+void testGetOptions(Options options);
+
+void applyOptions(Options options);
+
 passReportMode getPassReportMode(const std::string_view& value, bool fileOutput);
 
-void replace_all(std::string& str, const std::string& substr, 
+void replace_all(std::string& str, const std::string& substr,
    const std::string& new_substr);
 
 int main(int argc, char* argv[])
 {
-    processCmdLine(argv, argc);
+   Options options = getOptions(argv, argc);
+
+   testGetOptions(options);
+
+   applyOptions(options);
 
    return getTestsFailed();
 }
 
-void processCmdLine(char* arguments[], const std::size_t size)
+Options getOptions(char* arguments[], const std::size_t size)
 {
    using std::string;
    using std::string_view;
    using std::size_t;
-   
-   //default values for cmd-line option names in name-value pairs
-   bool printHeader{ true };
-   bool printSummary{ true };
-   string headerText("Running $exe");
-   string_view passReportMode; // empty value treated as "auto" in getPassReportMode
-   unsigned short failThreshold(0);
-   string_view fileOpenMode;
-   string outputFilename;
+
+   Options options;
+
+   std::filesystem::path exePath = arguments[0];
+   //extract the exe name without path or filename extension
+   //the result is used to expand the macro $exe
+   options.filenameNoExt = exePath.replace_extension("").filename().string();
 
    //names in name-value pair for cmd-line options
    constexpr string_view option_name_header{ "-h" }, option_name_header_text{ "-ht" },
@@ -66,78 +89,110 @@ void processCmdLine(char* arguments[], const std::size_t size)
    for (size_t i = 1; i < size; i += 2)
    {
       string_view name(arguments[i]), value(arguments[i + 1]);
-      
+
       if (name == option_name_header)
-         printHeader = (value == option_value_yes);
+         options.printHeader = (value == option_value_yes);
       else if (name == option_name_header_text)
-         headerText = value;
+         options.headerText = value;
       else if (name == option_name_prm)
-         passReportMode = value;
+         options.passReportMode = value;
       else if (name == option_name_summary)
-         printSummary = (value == option_value_yes);
+         options.printSummary = (value == option_value_yes);
       else if (name == option_name_threshold)
       {
-         std::from_chars(value.data(), value.data() + value.size(), failThreshold);
-         setFailThreshold(failThreshold);
+         std::from_chars(value.data(), value.data() + value.size(), options.failThreshold);
+         //setFailThreshold(failThreshold); // move this to other fn
       }
       else if (name == option_name_file || name == option_name_file_overwrite ||
          name == option_name_file_append)
       {
-         fileOpenMode = name;
-         outputFilename = value;
+         options.fileOpenMode = name;
+         options.outputFilename = value;
       }
    } //done parsing cmd-line arguments
+   return options;
+}
 
+//temporary fn for development
+void testGetOptions(Options options)
+{
+   std::cout << "Testing getOptions():" << '\n';
+   std::cout << "file name no extension: " << options.filenameNoExt << '\n';
+   std::cout << "fail threshold: " << options.failThreshold << '\n';
+   std::cout << std::boolalpha << "print header: " << options.printHeader << '\n';
+   std::cout << std::boolalpha << "print summary: " << options.printSummary << '\n';
+   std::cout << "header text: ";
+   if (options.printHeader)
+      std::cout << options.headerText << '\n';
+   else
+      std::cout << "header disabled" << '\n';
+   std::cout << "pass report mode: ";
+   if (options.passReportMode.empty())
+      std::cout << "auto" << '\n';
+   else
+      std::cout << options.passReportMode << '\n';
+   std::cout << "file open mode: ";
+   if (options.fileOpenMode.empty())
+      std::cout << "cout" << '\n';
+   else
+   {
+      std::cout << options.fileOpenMode << '\n';
+      std::cout << "output file name: " << options.outputFilename << '\n';
+   }
+   std::cout << '\n';
+}
+
+
+//TODO: Remove the call to runTests() and summarizeTests() in this fn and explicitly call them in main()
+void applyOptions(Options options)
+{
    //set pass report mode, translating "auto" based on output means
-   setPassReportMode(getPassReportMode(passReportMode, !fileOpenMode.empty()));
-
-   //extract the exe name without path or filename extension
-   //the result is used to expand the macro $exe
-   std::filesystem::path exePath(arguments[0]);
-   string filenameNoExt = exePath.replace_extension("").filename().string();
+   setPassReportMode(getPassReportMode(options.passReportMode, !options.fileOpenMode.empty()));
 
    //replace $exe macro in header text only if a header text was defined
    //and the print header option is enabled
-   const string exeMacro{ "$exe" };
-   if (printHeader && !headerText.empty())
-      replace_all(headerText, exeMacro, filenameNoExt);
+   const std::string exeMacro{ "$exe" };
+   if (options.printHeader && !options.headerText.empty())
+      replace_all(options.headerText, exeMacro, options.filenameNoExt);
    else
-      headerText = "";
+      options.headerText = "";
 
-   setHeaderText(headerText);
+   setHeaderText(options.headerText);
 
    //if a filename was supplied, replace $exe macro in filename
-   if (!outputFilename.empty())
-      replace_all(outputFilename, exeMacro, filenameNoExt);
+   if (!options.outputFilename.empty())
+      replace_all(options.outputFilename, exeMacro, options.filenameNoExt);
 
    //the file stream must be alive when runTests() is called
    std::ofstream fileOut;
    //if output to file option not enabled, use standard output
-   if (outputFilename.empty())
+   if (options.outputFilename.empty())
       setOutput(std::cout);
    else
    {
       setOutput(fileOut);
 
-      std::filesystem::path fileOutPath = outputFilename;
+      std::filesystem::path fileOutPath = options.outputFilename;
       //if not extension supplied, append the default ".out" extension
       if (fileOutPath.extension() == "")
          fileOutPath.replace_extension(".out");
       //if -f option enabled, make sure the file doesn't already exist
-      if (fileOpenMode == option_name_file && std::filesystem::exists(fileOutPath))
+      std::string_view option_name_file("-f");
+      if (options.fileOpenMode == option_name_file && std::filesystem::exists(fileOutPath))
       {
-         std::cerr << "Output file alredy exists";
+         std::cerr << "Output file already exists";
          return;
       }
       //if -fa option is enabled, set open mode to append
       using std::ios;
-      fileOut.open(fileOutPath, fileOpenMode == option_name_file_append ? ios::app : ios::out);
+      std::string_view option_name_file_append("-fa");
+      fileOut.open(fileOutPath, options.fileOpenMode == option_name_file_append ? ios::app : ios::out);
       //check for errors opening file
       if (!fileOut.is_open())
       {
          std::cerr << "Error opening output file";
          return;
-		}
+      }
    }
 
    try
@@ -146,11 +201,11 @@ void processCmdLine(char* arguments[], const std::size_t size)
    }
    catch (const std::string & msg)
    {
-      (outputFilename.empty() ? std::cout : fileOut )<< msg << '\n';
+      (options.outputFilename.empty() ? std::cout : fileOut) << msg << '\n';
    }
 
    //if print summary option is enabled
-   if (printSummary)
+   if (options.printSummary)
       summarizeTests();
 }
 
