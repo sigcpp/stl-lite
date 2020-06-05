@@ -30,11 +30,6 @@ Options get_options(char* arguments[], const std::size_t size)
 
    Options options;
 
-   std::filesystem::path exePath = arguments[0];
-   //extract the exe name without path or filename extension
-   //the result is used to expand the macro $exe
-   options.command_name = exePath.replace_extension("").filename().string();
-
    //names in name-value pair for cmd-line options
    constexpr string_view option_name_header{ "-h" }, option_name_header_text{ "-ht" },
       option_name_summary{ "-s" }, option_name_prm{ "-p" }, option_name_file{ "-f" },
@@ -43,8 +38,9 @@ Options get_options(char* arguments[], const std::size_t size)
 
    //values in name-value pair for boolean cmd-line options
    constexpr string_view option_value_yes{ "yes" };
+   std::string_view prm;
 
-   //begin parsing cmd-line arguments
+   //begin parsing arguments from index 1 because args[0] is command name
    for (size_t i = 1; i < size; i += 2)
    {
       string_view name(arguments[i]), value(arguments[i + 1]);
@@ -54,21 +50,26 @@ Options get_options(char* arguments[], const std::size_t size)
       else if (name == option_name_header_text)
          options.header_text = value;
       else if (name == option_name_prm)
-         options.passReportMode = value;
+         prm = value; //delay converting to prm until after file openmode is known
       else if (name == option_name_summary)
          options.summary = (value == option_value_yes);
       else if (name == option_name_threshold)
-      {
          std::from_chars(value.data(), value.data() + value.size(), options.fail_threshold);
-         //setFailThreshold(failThreshold); // move this to other fn
-      }
       else if (name == option_name_file || name == option_name_file_overwrite ||
          name == option_name_file_append)
       {
          options.fileOpenMode = name;
          options.output_filename = value;
       }
-   } //done parsing cmd-line arguments
+   }
+
+   options.prm = get_pass_report_mode(prm, !options.fileOpenMode.empty());
+
+   //extract "command name" from the first "argument"
+   //command_name is just exe filename without path or extension
+   std::filesystem::path exePath = arguments[0];
+   options.command_name = exePath.replace_extension("").filename().string();
+
    return options;
 }
 
@@ -76,9 +77,6 @@ Options get_options(char* arguments[], const std::size_t size)
 //TODO: Remove the call to runTests() and summarizeTests() in this fn and explicitly call them in main()
 void apply_options(Options options)
 {
-   //set pass report mode, translating "auto" based on output means
-   setPassReportMode(get_pass_report_mode(options.passReportMode, !options.fileOpenMode.empty()));
-
    //replace $exe macro in header text only if a header text was defined
    //and the print header option is enabled
    const std::string exeMacro{ "$exe" };

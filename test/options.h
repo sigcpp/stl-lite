@@ -23,7 +23,7 @@ struct Options {
    bool header{ true };
    bool summary{ true };
    std::string header_text{ "Running $exe" };
-   std::string_view passReportMode; // empty value treated as "auto" in getPassReportMode                    
+   passReportMode prm;
    unsigned short fail_threshold = 0;
    std::string_view fileOpenMode;
    std::string output_filename;
