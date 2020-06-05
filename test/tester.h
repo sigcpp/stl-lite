@@ -11,6 +11,9 @@
 * Declare testing infrastructure
 */
 
+#ifndef TESTER_H
+#define TESTER_H
+
 #include <iostream>
 #include <string>
 
@@ -27,3 +30,8 @@ unsigned getTestsFailed();
 
 void verify(bool success, const char* msg);
 void summarizeTests();
+
+void log(const char* s);
+void logLine(const char* s);
+
+#endif

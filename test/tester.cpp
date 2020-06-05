@@ -120,3 +120,13 @@ void summarizeTests()
    if (testsFailed > failThreshold)
       *pOut << "Tests stopped after " << testsFailed << " failure(s)\n";
 }
+
+
+void log(const char* s) {
+    *pOut << s;
+}
+
+
+void logLine(const char* s) {
+    *pOut << s << '\n';
+}
