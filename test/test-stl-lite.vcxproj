@@ -164,6 +164,10 @@
     <ClCompile Include="options.cpp" />
     <ClCompile Include="tester.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="options.h" />
+    <ClInclude Include="tester.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -50,11 +50,11 @@ Options get_options(char* arguments[], const std::size_t size)
       else if (name == option_name_header_text)
          options.header_text = value;
       else if (name == option_name_prm)
-         prm = value; //delay converting to prm until after file openmode is known
+         prm = value; //delay converting prm to enum until after file openmode is known
       else if (name == option_name_summary)
          options.summary = (value == option_value_yes);
       else if (name == option_name_threshold)
-         std::from_chars(value.data(), value.data() + value.size(), options.fail_threshold);
+          options.fail_threshold = get_fail_threshold(value);
       else if (name == option_name_file || name == option_name_file_overwrite ||
          name == option_name_file_append)
       {
@@ -124,6 +124,39 @@ void apply_options(Options options)
    }
 }
 
+
+//convert text version of pass report mode to enum equivalent
+//treats empty value as "auto" 
+//the flag fileOutput is used only if value is "auto" (or empty)
+passReportMode get_pass_report_mode(const std::string_view& value, bool fileOutput) {
+    constexpr std::string_view value_none{ "none" }, value_indicate{ "indicate" },
+        value_detail{ "detail" }, value_auto{ "auto" };
+
+    if (value == value_none)
+        return passReportMode::none;
+    else if (value == value_indicate)
+        return passReportMode::indicate;
+    if (value == value_detail)
+        return passReportMode::detail;
+    if (value == value_auto || value.empty())
+        return fileOutput ? passReportMode::none : passReportMode::indicate;
+    else
+    {
+        assert(false);
+
+        //TO DO: review exception mgmt in the entire file; using temp value for now
+        throw "invalid value for pass report mode";
+    }
+}
+
+
+unsigned short get_fail_threshold(const std::string_view& sv) {
+    long value;
+    std::from_chars(sv.data(), sv.data() + sv.size(), value);
+    return static_cast<unsigned short>(value);
+}
+
+
 //replace all instances of a substring with a new substring
 void replace_all(std::string& str, const std::string& substr, const std::string& new_substr)
 {
@@ -131,30 +164,4 @@ void replace_all(std::string& str, const std::string& substr, const std::string&
    auto substr_size = substr.size(), new_substr_size = new_substr.size();
    for (; pos != std::string::npos; pos = str.find(substr, pos + new_substr_size))
       str.replace(pos, substr_size, new_substr);
-}
-
-
-//convert text version of pass report mode to enum equivalent
-//treats empty value as "auto" 
-//the flag fileOutput is used only if value is "auto" (or empty)
-passReportMode get_pass_report_mode(const std::string_view& value, bool fileOutput)
-{
-   constexpr std::string_view value_none{ "none" }, value_indicate{ "indicate" },
-      value_detail{ "detail" }, value_auto{ "auto" };
-
-   if (value == value_none)
-      return passReportMode::none;
-   else if (value == value_indicate)
-      return passReportMode::indicate;
-   if (value == value_detail)
-      return passReportMode::detail;
-   if (value == value_auto || value.empty())
-      return fileOutput ? passReportMode::none : passReportMode::indicate;
-   else
-   {
-      assert(false);
-
-      //TO DO: review exception mgmt in the entire file; using temp value for now
-      throw "invalid value for pass report mode";
-   }
 }

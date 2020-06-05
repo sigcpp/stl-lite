@@ -37,6 +37,8 @@ void apply_options(Options options);
 
 passReportMode get_pass_report_mode(const std::string_view& value, bool fileOutput);
 
+unsigned short get_fail_threshold(const std::string_view& sv);
+
 void replace_all(std::string& str, const std::string& substr, const std::string& new_substr);
 
 #endif
