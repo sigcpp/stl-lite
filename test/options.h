@@ -20,22 +20,22 @@
 #include "tester.h"
 
 struct Options {
-   bool printHeader{ true };
-   bool printSummary{ true };
-   std::string headerText{ "Running $exe" };
+   bool header{ true };
+   bool summary{ true };
+   std::string header_text{ "Running $exe" };
    std::string_view passReportMode; // empty value treated as "auto" in getPassReportMode                    
-   unsigned short failThreshold = 0;
+   unsigned short fail_threshold = 0;
    std::string_view fileOpenMode;
-   std::string outputFilename;
-   std::string filenameNoExt;
+   std::string output_filename;
+   std::string command_name;
 };
 
 
-Options getOptions(char* arguments[], const std::size_t size);
+Options get_options(char* arguments[], const std::size_t size);
 
-void applyOptions(Options options);
+void apply_options(Options options);
 
-passReportMode getPassReportMode(const std::string_view& value, bool fileOutput);
+passReportMode get_pass_report_mode(const std::string_view& value, bool fileOutput);
 
 void replace_all(std::string& str, const std::string& substr, const std::string& new_substr);
 

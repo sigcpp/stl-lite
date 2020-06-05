@@ -22,7 +22,7 @@
 
 #include "options.h"
 
-Options getOptions(char* arguments[], const std::size_t size)
+Options get_options(char* arguments[], const std::size_t size)
 {
    using std::string;
    using std::string_view;
@@ -33,7 +33,7 @@ Options getOptions(char* arguments[], const std::size_t size)
    std::filesystem::path exePath = arguments[0];
    //extract the exe name without path or filename extension
    //the result is used to expand the macro $exe
-   options.filenameNoExt = exePath.replace_extension("").filename().string();
+   options.command_name = exePath.replace_extension("").filename().string();
 
    //names in name-value pair for cmd-line options
    constexpr string_view option_name_header{ "-h" }, option_name_header_text{ "-ht" },
@@ -50,23 +50,23 @@ Options getOptions(char* arguments[], const std::size_t size)
       string_view name(arguments[i]), value(arguments[i + 1]);
 
       if (name == option_name_header)
-         options.printHeader = (value == option_value_yes);
+         options.header = (value == option_value_yes);
       else if (name == option_name_header_text)
-         options.headerText = value;
+         options.header_text = value;
       else if (name == option_name_prm)
          options.passReportMode = value;
       else if (name == option_name_summary)
-         options.printSummary = (value == option_value_yes);
+         options.summary = (value == option_value_yes);
       else if (name == option_name_threshold)
       {
-         std::from_chars(value.data(), value.data() + value.size(), options.failThreshold);
+         std::from_chars(value.data(), value.data() + value.size(), options.fail_threshold);
          //setFailThreshold(failThreshold); // move this to other fn
       }
       else if (name == option_name_file || name == option_name_file_overwrite ||
          name == option_name_file_append)
       {
          options.fileOpenMode = name;
-         options.outputFilename = value;
+         options.output_filename = value;
       }
    } //done parsing cmd-line arguments
    return options;
@@ -74,35 +74,35 @@ Options getOptions(char* arguments[], const std::size_t size)
 
 
 //TODO: Remove the call to runTests() and summarizeTests() in this fn and explicitly call them in main()
-void applyOptions(Options options)
+void apply_options(Options options)
 {
    //set pass report mode, translating "auto" based on output means
-   setPassReportMode(getPassReportMode(options.passReportMode, !options.fileOpenMode.empty()));
+   setPassReportMode(get_pass_report_mode(options.passReportMode, !options.fileOpenMode.empty()));
 
    //replace $exe macro in header text only if a header text was defined
    //and the print header option is enabled
    const std::string exeMacro{ "$exe" };
-   if (options.printHeader && !options.headerText.empty())
-      replace_all(options.headerText, exeMacro, options.filenameNoExt);
+   if (options.header && !options.header_text.empty())
+      replace_all(options.header_text, exeMacro, options.command_name);
    else
-      options.headerText = "";
+      options.header_text = "";
 
-   setHeaderText(options.headerText);
+   setHeaderText(options.header_text);
 
    //if a filename was supplied, replace $exe macro in filename
-   if (!options.outputFilename.empty())
-      replace_all(options.outputFilename, exeMacro, options.filenameNoExt);
+   if (!options.output_filename.empty())
+      replace_all(options.output_filename, exeMacro, options.command_name);
 
    //the file stream must be alive when runTests() is called
    std::ofstream fileOut;
    //if output to file option not enabled, use standard output
-   if (options.outputFilename.empty())
+   if (options.output_filename.empty())
       setOutput(std::cout);
    else
    {
       setOutput(fileOut);
 
-      std::filesystem::path fileOutPath = options.outputFilename;
+      std::filesystem::path fileOutPath = options.output_filename;
       //if not extension supplied, append the default ".out" extension
       if (fileOutPath.extension() == "")
          fileOutPath.replace_extension(".out");
@@ -139,7 +139,7 @@ void replace_all(std::string& str, const std::string& substr, const std::string&
 //convert text version of pass report mode to enum equivalent
 //treats empty value as "auto" 
 //the flag fileOutput is used only if value is "auto" (or empty)
-passReportMode getPassReportMode(const std::string_view& value, bool fileOutput)
+passReportMode get_pass_report_mode(const std::string_view& value, bool fileOutput)
 {
    constexpr std::string_view value_none{ "none" }, value_indicate{ "indicate" },
       value_detail{ "detail" }, value_auto{ "auto" };

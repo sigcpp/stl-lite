@@ -28,9 +28,9 @@ void runTests();
 
 int main(int argc, char* argv[])
 {
-   Options options = getOptions(argv, argc);
+   Options options = get_options(argv, argc);
 
-   applyOptions(options);
+   apply_options(options);
 
    try
    {
@@ -41,8 +41,7 @@ int main(int argc, char* argv[])
        logLine(msg.data());
    }
 
-   //if print summary option is enabled
-   if (options.printSummary)
+   if (options.summary)
        summarizeTests();
 
    return getTestsFailed();
