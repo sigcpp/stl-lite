@@ -27,7 +27,8 @@ int main(int argc, char* argv[])
 {
    Options options = get_options(argv, argc);
 
-   apply_options(options);
+   std::ofstream fileOut;
+   apply_options(options, fileOut);
 
    try
    {

@@ -75,7 +75,7 @@ Options get_options(char* arguments[], const std::size_t size)
 
 
 //TODO: Remove the call to runTests() and summarizeTests() in this fn and explicitly call them in main()
-void apply_options(Options options)
+void apply_options(Options options, std::ofstream& fileOut)
 {
    //replace $exe macro in header text only if a header text was defined
    //and the print header option is enabled
@@ -91,8 +91,6 @@ void apply_options(Options options)
    if (!options.output_filename.empty())
       replace_all(options.output_filename, exeMacro, options.command_name);
 
-   //the file stream must be alive when runTests() is called
-   std::ofstream fileOut;
    //if output to file option not enabled, use standard output
    if (options.output_filename.empty())
       setOutput(std::cout);
