@@ -11,8 +11,8 @@
 * Declare testing infrastructure
 */
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef STL_LITE_OPTIONS_H
+#define STL_LITE_OPTIONS_H
 
 #include <iostream>
 #include <string>

@@ -11,8 +11,8 @@
 * Declare testing infrastructure
 */
 
-#ifndef TESTER_H
-#define TESTER_H
+#ifndef STL_LITE_TESTER_H
+#define STL_LITE_TESTER_H
 
 #include <iostream>
 #include <string>
