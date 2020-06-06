@@ -37,7 +37,7 @@ Options get_options(char* arguments[], const std::size_t size);
 
 void apply_options(Options options, std::ofstream& fileOut);
 
-pass_report_mode get_pass_report_mode(const std::string_view& value, bool fileOutput);
+pass_report_mode get_pass_report_mode(const std::string_view& value, file_open_mode fom);
 
 file_open_mode get_file_open_mode(const std::string_view& value);
 

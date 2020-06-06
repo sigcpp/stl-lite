@@ -61,7 +61,7 @@ Options get_options(char* arguments[], const std::size_t size)
       }
    }
 
-   options.prm = get_pass_report_mode(prm, !(options.output_filename.empty()));
+   options.prm = get_pass_report_mode(prm, options.fom);
 
    //extract "command name" from the first "argument"
    //command_name is just exe filename without path or extension
@@ -122,7 +122,7 @@ void apply_options(Options options, std::ofstream& fileOut)
 //convert text version of pass report mode to enum equivalent
 //treats empty value as "auto" 
 //the flag fileOutput is used only if value is "auto" (or empty)
-pass_report_mode get_pass_report_mode(const std::string_view& value, bool fileOutput) {
+pass_report_mode get_pass_report_mode(const std::string_view& value, file_open_mode fom) {
     constexpr std::string_view value_none{ "none" }, value_indicate{ "indicate" },
         value_detail{ "detail" }, value_auto{ "auto" };
 
@@ -133,7 +133,7 @@ pass_report_mode get_pass_report_mode(const std::string_view& value, bool fileOu
     if (value == value_detail)
         return pass_report_mode::detail;
     if (value == value_auto || value.empty())
-        return fileOutput ? pass_report_mode::none : pass_report_mode::indicate;
+        return fom == file_open_mode::no_file ? pass_report_mode::indicate : pass_report_mode::none;
     else
     {
         assert(false);
