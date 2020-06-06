@@ -24,8 +24,8 @@ void setHeaderText(std::string text)
    headerText = text;
 }
 
-static passReportMode passMode { passReportMode::indicate };
-void setPassReportMode(passReportMode mode)
+static pass_report_mode passMode { pass_report_mode::indicate };
+void setPassReportMode(pass_report_mode mode)
 {
    passMode = mode;
 }
@@ -77,9 +77,9 @@ void verify(bool success, const char* hint)
 
    if (success)
    {
-      if (passMode == passReportMode::indicate)
+      if (passMode == pass_report_mode::indicate)
          message << '.';
-      else if (passMode == passReportMode::detail)
+      else if (passMode == pass_report_mode::detail)
       {
          message << "Test# " << testsDone << ": Pass (" << hint << ")\n";
          lastOutputEndedInLineBreak = true;

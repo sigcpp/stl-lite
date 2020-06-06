@@ -32,9 +32,8 @@ Options get_options(char* arguments[], const std::size_t size)
 
    //names in name-value pair for cmd-line options
    constexpr string_view option_name_header{ "-h" }, option_name_header_text{ "-ht" },
-      option_name_summary{ "-s" }, option_name_prm{ "-p" }, option_name_file{ "-f" },
-      option_name_file_overwrite{ "-fo" }, option_name_file_append{ "-fa" },
-      option_name_threshold{ "-t" };
+       option_name_summary{ "-s" }, option_name_prm{ "-p" }, option_name_threshold{ "-t" },
+       option_name_file_start{ "-f" };
 
    //values in name-value pair for boolean cmd-line options
    constexpr string_view option_value_yes{ "yes" };
@@ -55,8 +54,7 @@ Options get_options(char* arguments[], const std::size_t size)
          options.summary = (value == option_value_yes);
       else if (name == option_name_threshold)
           options.fail_threshold = get_fail_threshold(value);
-      else if (name == option_name_file || name == option_name_file_overwrite ||
-         name == option_name_file_append)
+      else if (name._Starts_with(option_name_file_start))
       {
          options.fom = get_file_open_mode(name);
          options.output_filename = value;
@@ -124,18 +122,18 @@ void apply_options(Options options, std::ofstream& fileOut)
 //convert text version of pass report mode to enum equivalent
 //treats empty value as "auto" 
 //the flag fileOutput is used only if value is "auto" (or empty)
-passReportMode get_pass_report_mode(const std::string_view& value, bool fileOutput) {
+pass_report_mode get_pass_report_mode(const std::string_view& value, bool fileOutput) {
     constexpr std::string_view value_none{ "none" }, value_indicate{ "indicate" },
         value_detail{ "detail" }, value_auto{ "auto" };
 
     if (value == value_none)
-        return passReportMode::none;
+        return pass_report_mode::none;
     else if (value == value_indicate)
-        return passReportMode::indicate;
+        return pass_report_mode::indicate;
     if (value == value_detail)
-        return passReportMode::detail;
+        return pass_report_mode::detail;
     if (value == value_auto || value.empty())
-        return fileOutput ? passReportMode::none : passReportMode::indicate;
+        return fileOutput ? pass_report_mode::none : pass_report_mode::indicate;
     else
     {
         assert(false);

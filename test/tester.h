@@ -17,10 +17,10 @@
 #include <iostream>
 #include <string>
 
-enum class passReportMode { none, indicate, detail };
+enum class pass_report_mode { none, indicate, detail };
 
 void setHeaderText(std::string text);
-void setPassReportMode(passReportMode mode);
+void setPassReportMode(pass_report_mode mode);
 void setFailThreshold(unsigned short value);
 void setMaxFailThreshold();
 void setOutput(std::ostream& o);

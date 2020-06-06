@@ -25,7 +25,7 @@ struct Options {
    bool header{ true };
    bool summary{ true };
    std::string header_text{ "Running $exe" };
-   passReportMode prm;
+   pass_report_mode prm{ pass_report_mode::indicate };
    unsigned short fail_threshold = 0;
    file_open_mode fom{ file_open_mode::no_file };
    std::string output_filename;
@@ -37,7 +37,7 @@ Options get_options(char* arguments[], const std::size_t size);
 
 void apply_options(Options options, std::ofstream& fileOut);
 
-passReportMode get_pass_report_mode(const std::string_view& value, bool fileOutput);
+pass_report_mode get_pass_report_mode(const std::string_view& value, bool fileOutput);
 
 file_open_mode get_file_open_mode(const std::string_view& value);
 
