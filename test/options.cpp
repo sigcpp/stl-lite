@@ -50,7 +50,7 @@ Options get_options(char* arguments[], const std::size_t size)
       else if (name == option_name_header_text)
          options.header_text = value;
       else if (name == option_name_prm)
-         prm = value; //delay converting prm to enum until after file openmode is known
+         prm = value; //delay converting prm to enum until after file open mode is known
       else if (name == option_name_summary)
          options.summary = (value == option_value_yes);
       else if (name == option_name_threshold)
@@ -58,12 +58,12 @@ Options get_options(char* arguments[], const std::size_t size)
       else if (name == option_name_file || name == option_name_file_overwrite ||
          name == option_name_file_append)
       {
-         options.fileOpenMode = name;
+         options.fileOpenMode = get_file_open_mode(name);
          options.output_filename = value;
       }
    }
 
-   options.prm = get_pass_report_mode(prm, !options.fileOpenMode.empty());
+   options.prm = get_pass_report_mode(prm, !(options.output_filename.empty()));
 
    //extract "command name" from the first "argument"
    //command_name is just exe filename without path or extension
@@ -92,7 +92,7 @@ void apply_options(Options options, std::ofstream& fileOut)
       replace_all(options.output_filename, exeMacro, options.command_name);
 
    //if output to file option not enabled, use standard output
-   if (options.output_filename.empty())
+   if (options.fileOpenMode == fileOpenMode::noFile && options.output_filename.empty())
       setOutput(std::cout);
    else
    {
@@ -103,16 +103,14 @@ void apply_options(Options options, std::ofstream& fileOut)
       if (fileOutPath.extension() == "")
          fileOutPath.replace_extension(".out");
       //if -f option enabled, make sure the file doesn't already exist
-      std::string_view option_name_file("-f");
-      if (options.fileOpenMode == option_name_file && std::filesystem::exists(fileOutPath))
+      if (options.fileOpenMode == fileOpenMode::f && std::filesystem::exists(fileOutPath))
       {
          std::cerr << "Output file already exists";
          return;
       }
       //if -fa option is enabled, set open mode to append
       using std::ios;
-      std::string_view option_name_file_append("-fa");
-      fileOut.open(fileOutPath, options.fileOpenMode == option_name_file_append ? ios::app : ios::out);
+      fileOut.open(fileOutPath, options.fileOpenMode == fileOpenMode::fa ? ios::app : ios::out);
       //check for errors opening file
       if (!fileOut.is_open())
       {
@@ -144,6 +142,25 @@ passReportMode get_pass_report_mode(const std::string_view& value, bool fileOutp
 
         //TO DO: review exception mgmt in the entire file; using temp value for now
         throw "invalid value for pass report mode";
+    }
+}
+
+fileOpenMode get_file_open_mode(const std::string_view& name) {
+    constexpr std::string_view option_name_file("-f"), option_name_file_overwrite("-fo"),
+        option_name_file_append("-fa");
+
+    if (name == option_name_file)
+        return fileOpenMode::f;
+    if (name == option_name_file_overwrite)
+        return fileOpenMode::fo;
+    if (name == option_name_file_append)
+        return fileOpenMode::fa;
+    else
+    {
+        assert(false);
+
+        //TO DO: review exception mgmt in the entire file; using temp value for now
+        throw "invalid value for file open mode";
     }
 }
 

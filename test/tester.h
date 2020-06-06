@@ -18,6 +18,7 @@
 #include <string>
 
 enum class passReportMode { none, indicate, detail };
+enum class fileOpenMode { noFile, f, fa, fo };
 
 void setHeaderText(std::string text);
 void setPassReportMode(passReportMode mode);

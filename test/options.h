@@ -25,7 +25,7 @@ struct Options {
    std::string header_text{ "Running $exe" };
    passReportMode prm;
    unsigned short fail_threshold = 0;
-   std::string_view fileOpenMode;
+   fileOpenMode fileOpenMode{ fileOpenMode::noFile };
    std::string output_filename;
    std::string command_name;
 };
@@ -36,6 +36,8 @@ Options get_options(char* arguments[], const std::size_t size);
 void apply_options(Options options, std::ofstream& fileOut);
 
 passReportMode get_pass_report_mode(const std::string_view& value, bool fileOutput);
+
+fileOpenMode get_file_open_mode(const std::string_view& value);
 
 unsigned short get_fail_threshold(const std::string_view& sv);
 
