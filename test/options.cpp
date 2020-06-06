@@ -58,7 +58,7 @@ Options get_options(char* arguments[], const std::size_t size)
       else if (name == option_name_file || name == option_name_file_overwrite ||
          name == option_name_file_append)
       {
-         options.fileOpenMode = get_file_open_mode(name);
+         options.fom = get_file_open_mode(name);
          options.output_filename = value;
       }
    }
@@ -92,7 +92,7 @@ void apply_options(Options options, std::ofstream& fileOut)
       replace_all(options.output_filename, exeMacro, options.command_name);
 
    //if output to file option not enabled, use standard output
-   if (options.fileOpenMode == fileOpenMode::noFile && options.output_filename.empty())
+   if (options.fom == file_open_mode::no_file && options.output_filename.empty())
       setOutput(std::cout);
    else
    {
@@ -103,14 +103,14 @@ void apply_options(Options options, std::ofstream& fileOut)
       if (fileOutPath.extension() == "")
          fileOutPath.replace_extension(".out");
       //if -f option enabled, make sure the file doesn't already exist
-      if (options.fileOpenMode == fileOpenMode::f && std::filesystem::exists(fileOutPath))
+      if (options.fom == file_open_mode::create && std::filesystem::exists(fileOutPath))
       {
          std::cerr << "Output file already exists";
          return;
       }
       //if -fa option is enabled, set open mode to append
       using std::ios;
-      fileOut.open(fileOutPath, options.fileOpenMode == fileOpenMode::fa ? ios::app : ios::out);
+      fileOut.open(fileOutPath, options.fom == file_open_mode::append ? ios::app : ios::out);
       //check for errors opening file
       if (!fileOut.is_open())
       {
@@ -145,16 +145,16 @@ passReportMode get_pass_report_mode(const std::string_view& value, bool fileOutp
     }
 }
 
-fileOpenMode get_file_open_mode(const std::string_view& name) {
+file_open_mode get_file_open_mode(const std::string_view& name) {
     constexpr std::string_view option_name_file("-f"), option_name_file_overwrite("-fo"),
         option_name_file_append("-fa");
 
     if (name == option_name_file)
-        return fileOpenMode::f;
+        return file_open_mode::create;
     if (name == option_name_file_overwrite)
-        return fileOpenMode::fo;
+        return file_open_mode::overwrite;
     if (name == option_name_file_append)
-        return fileOpenMode::fa;
+        return file_open_mode::append;
     else
     {
         assert(false);

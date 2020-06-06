@@ -19,13 +19,15 @@
 
 #include "tester.h"
 
+enum class file_open_mode { no_file, create, overwrite, append };
+
 struct Options {
    bool header{ true };
    bool summary{ true };
    std::string header_text{ "Running $exe" };
    passReportMode prm;
    unsigned short fail_threshold = 0;
-   fileOpenMode fileOpenMode{ fileOpenMode::noFile };
+   file_open_mode fom{ file_open_mode::no_file };
    std::string output_filename;
    std::string command_name;
 };
@@ -37,7 +39,7 @@ void apply_options(Options options, std::ofstream& fileOut);
 
 passReportMode get_pass_report_mode(const std::string_view& value, bool fileOutput);
 
-fileOpenMode get_file_open_mode(const std::string_view& value);
+file_open_mode get_file_open_mode(const std::string_view& value);
 
 unsigned short get_fail_threshold(const std::string_view& sv);
 
