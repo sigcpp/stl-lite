@@ -14,8 +14,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <cstddef>
-#include <cassert>
 
 #include "tester.h"
 #include "options.h"
