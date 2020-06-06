@@ -68,48 +68,50 @@ Options get_options(char* arguments[], const std::size_t size)
    std::filesystem::path exePath = arguments[0];
    options.command_name = exePath.replace_extension("").filename().string();
 
+   //replace $exe macro with command name in header text and output file name
+   const std::string exeMacro{ "$exe" };
+   if (options.header && !options.header_text.empty())
+       replace_all(options.header_text, exeMacro, options.command_name);
+   else
+       options.header_text = "";
+
+   if (!options.output_filename.empty())
+       replace_all(options.output_filename, exeMacro, options.command_name);
+
    return options;
 }
 
 
-//TODO: Remove the call to runTests() and summarizeTests() in this fn and explicitly call them in main()
-void apply_options(Options options, std::ofstream& fileOut)
+void apply_options(const Options& options, std::ofstream& fileOut)
 {
-   //replace $exe macro in header text only if a header text was defined
-   //and the print header option is enabled
-   const std::string exeMacro{ "$exe" };
-   if (options.header && !options.header_text.empty())
-      replace_all(options.header_text, exeMacro, options.command_name);
-   else
-      options.header_text = "";
-
    setHeaderText(options.header_text);
-
-   //if a filename was supplied, replace $exe macro in filename
-   if (!options.output_filename.empty())
-      replace_all(options.output_filename, exeMacro, options.command_name);
+   setPassReportMode(options.prm);
+   setFailThreshold(options.fail_threshold);
 
    //if output to file option not enabled, use standard output
+   //else open output file in appropriate mode
    if (options.fom == file_open_mode::no_file && options.output_filename.empty())
       setOutput(std::cout);
    else
    {
       setOutput(fileOut);
 
+      //".out" is the default file extension
       std::filesystem::path fileOutPath = options.output_filename;
-      //if not extension supplied, append the default ".out" extension
       if (fileOutPath.extension() == "")
          fileOutPath.replace_extension(".out");
-      //if -f option enabled, make sure the file doesn't already exist
+      
+      //-f option means file cannot already exist
       if (options.fom == file_open_mode::create && std::filesystem::exists(fileOutPath))
       {
          std::cerr << "Output file already exists";
          return;
       }
-      //if -fa option is enabled, set open mode to append
+
+      //set file open mode if it already exists
       using std::ios;
       fileOut.open(fileOutPath, options.fom == file_open_mode::append ? ios::app : ios::out);
-      //check for errors opening file
+
       if (!fileOut.is_open())
       {
          std::cerr << "Error opening output file";
