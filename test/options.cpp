@@ -35,8 +35,6 @@ Options get_options(char* arguments[], const std::size_t size)
        option_name_summary{ "-s" }, option_name_prm{ "-p" }, option_name_threshold{ "-t" },
        option_name_file_start{ "-f" };
 
-   //values in name-value pair for boolean cmd-line options
-   constexpr string_view option_value_yes{ "yes" };
    std::string_view prm;
 
    //begin parsing arguments from index 1 because args[0] is command name
@@ -45,13 +43,13 @@ Options get_options(char* arguments[], const std::size_t size)
       string_view name(arguments[i]), value(arguments[i + 1]);
 
       if (name == option_name_header)
-         options.header = (value == option_value_yes);
+         options.header = get_yes_no(value);
       else if (name == option_name_header_text)
          options.header_text = value;
       else if (name == option_name_prm)
          prm = value; //delay converting prm to enum until after file open mode is known
       else if (name == option_name_summary)
-         options.summary = (value == option_value_yes);
+         options.summary = get_yes_no(value);
       else if (name == option_name_threshold)
           options.fail_threshold = get_fail_threshold(value);
       else if (name._Starts_with(option_name_file_start))
@@ -161,6 +159,22 @@ file_open_mode get_file_open_mode(const std::string_view& name) {
 
         //TO DO: review exception mgmt in the entire file; using temp value for now
         throw "invalid value for file open mode";
+    }
+}
+
+bool get_yes_no(const std::string_view& value) {
+    constexpr std::string_view value_yes{ "yes" }, value_no{ "no" };
+
+    if (value == value_yes)
+        return true;
+    if (value == value_no)
+        return false;
+    else
+    {
+        assert(false);
+
+        //TO DO: review exception mgmt in the entire file; using temp value for now
+        throw "invalid value";
     }
 }
 

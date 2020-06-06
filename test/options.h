@@ -39,9 +39,11 @@ void apply_options(const Options& options, std::ofstream& fileOut);
 
 pass_report_mode get_pass_report_mode(const std::string_view& value, file_open_mode fom);
 
-file_open_mode get_file_open_mode(const std::string_view& value);
+file_open_mode get_file_open_mode(const std::string_view& name);
 
-unsigned short get_fail_threshold(const std::string_view& sv);
+unsigned short get_fail_threshold(const std::string_view& value);
+
+bool get_yes_no(const std::string_view& value);
 
 void replace_all(std::string& str, const std::string& substr, const std::string& new_substr);
 
