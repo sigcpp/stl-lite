@@ -44,7 +44,7 @@ file_open_mode get_file_open_mode(const std::string_view& name);
 
 unsigned short get_fail_threshold(const std::string_view& value);
 
-bool get_yes_no(const std::string_view& value);
+bool strtobool(const std::string_view& value);
 
 void replace_all(std::string& str, const std::string& substr, const std::string& new_substr);
 

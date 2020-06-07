@@ -42,13 +42,13 @@ Options get_options(char* arguments[], const std::size_t size)
 		string_view name(arguments[i]), value(arguments[i + 1]);
 
 		if (name == option_name_header)
-			options.header = get_yes_no(value);
+			options.header = strtobool(value);
 		else if (name == option_name_header_text)
 			options.header_text = value;
 		else if (name == option_name_prm)
 			prm = value; //delay converting prm to enum until after file open mode is known
 		else if (name == option_name_summary)
-			options.summary = get_yes_no(value);
+			options.summary = strtobool(value);
 		else if (name == option_name_threshold)
 			options.fail_threshold = get_fail_threshold(value);
 		else if (name._Starts_with(option_name_file_start)) {
@@ -159,7 +159,7 @@ file_open_mode get_file_open_mode(const std::string_view& name)
 }
 
 
-bool get_yes_no(const std::string_view& value)
+bool strtobool(const std::string_view& value)
 {
 	constexpr std::string_view value_yes{ "yes" }, value_no{ "no" };
 
