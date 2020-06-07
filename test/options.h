@@ -22,8 +22,7 @@
 
 enum class file_open_mode { no_file, create, overwrite, append };
 
-struct Options
-{
+struct Options {
 	bool header{ true };
 	bool summary{ true };
 	std::string header_text{ "Running $exe" };
