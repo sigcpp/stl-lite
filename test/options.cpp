@@ -35,7 +35,7 @@ Options get_options(char* arguments[], const std::size_t size)
 		option_name_summary{ "-s" }, option_name_prm{ "-p" }, option_name_threshold{ "-t" },
 		option_name_file_start{ "-f" };
 
-	std::string_view prm;
+	std::string_view prm_value;
 
 	//begin parsing arguments from index 1 because args[0] is command name
 	for (size_t i = 1; i < size; i += 2) {
@@ -46,7 +46,7 @@ Options get_options(char* arguments[], const std::size_t size)
 		else if (name == option_name_header_text)
 			options.header_text = value;
 		else if (name == option_name_prm)
-			prm = value; //delay converting prm to enum until after file open mode is known
+			prm_value = value; //delay converting prm to enum until after file open mode is known
 		else if (name == option_name_summary)
 			options.summary = strtobool(value);
 		else if (name == option_name_threshold)
@@ -57,16 +57,21 @@ Options get_options(char* arguments[], const std::size_t size)
 		}
 	}
 
-	options.prm = get_pass_report_mode(prm, options.fom);
+	options.prm = get_pass_report_mode(prm_value, options.fom);
 
 	//extract "command name" from the first "argument"
 	//command_name is just exe filename without path or extension
-	std::filesystem::path exePath = arguments[0];
-	options.command_name = exePath.replace_extension("").filename().string();
+	//use a fixed name if no args are passed for some reason (legitimate for this function)
+	if (size > 0) {
+		std::filesystem::path exePath = arguments[0];
+		options.command_name = exePath.replace_extension("").filename().string();
+	}
+	else
+		options.command_name = "tester";
 
 	//replace $exe macro with command name in header text and output file name
 	const std::string exeMacro{ "$exe" };
-	if (options.header && !options.header_text.empty())
+	if (options.header)
 		replace_all(options.header_text, exeMacro, options.command_name);
 	else
 		options.header_text = "";
