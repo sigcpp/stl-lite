@@ -24,6 +24,9 @@
 
 Options get_options(char* arguments[], const std::size_t size)
 {
+	//args cannot be empty: args[0] expected to be "command name" (path to executable file)
+	assert(size != 0);
+
 	using std::string;
 	using std::string_view;
 	using std::size_t;
@@ -36,6 +39,7 @@ Options get_options(char* arguments[], const std::size_t size)
 		option_name_file_start{ "-f" };
 
 	std::string_view prm_value;
+	std::string output_filepath_value;
 
 	//begin parsing arguments from index 1 because args[0] corresponds to command name
 	for (size_t i = 1; i < size; i += 2) {
@@ -53,26 +57,31 @@ Options get_options(char* arguments[], const std::size_t size)
 			options.fail_threshold = get_fail_threshold(value);
 		else if (name._Starts_with(option_name_file_start)) {
 			options.fom = get_file_open_mode(name);
-			options.output_filename = value;
+			output_filepath_value = value;
 		}
 	}
 
 	options.prm = get_pass_report_mode(prm_value, options.fom);
 
-	//extract "command name" from the first "argument"
-	//command_name is just exe filename without path or extension
+	//extract "command name" from first arg: command name is just exe filename without path or extension
 	std::filesystem::path exePath = arguments[0];
 	options.command_name = exePath.replace_extension("").filename().string();
 
-	//replace $exe macro with command name in header text and output file name
+	//replace $exe macro with command name in header text
 	const std::string exeMacro{ "$exe" };
 	if (options.header && !options.header_text.empty())
 		replace_all(options.header_text, exeMacro, options.command_name);
 	else
 		options.header_text = "";
 
-	if (!options.output_filename.empty())
-		replace_all(options.output_filename, exeMacro, options.command_name);
+	//replace $exe macro in output file path; also set file extension to ".out" if extension missing
+	if (options.fom != file_open_mode::no_file) {
+		replace_all(output_filepath_value, exeMacro, options.command_name);
+
+		options.output_filepath = output_filepath_value;
+		if (options.output_filepath.extension().empty())
+			options.output_filepath.replace_extension(".out");
+	}
 
 	return options;
 }
@@ -91,20 +100,15 @@ void apply_options(const Options& options, std::ofstream& fileOut)
 	else {
 		setOutput(fileOut);
 
-		//".out" is the default file extension
-		std::filesystem::path fileOutPath = options.output_filename;
-		if (fileOutPath.extension() == "")
-			fileOutPath.replace_extension(".out");
-
 		//enforce create-only file open mode
-		if (options.fom == file_open_mode::create && std::filesystem::exists(fileOutPath)) {
+		if (options.fom == file_open_mode::create && std::filesystem::exists(options.output_filepath)) {
 			std::cerr << "Output file already exists";
 			return;
 		}
 
-		//set file open mode if it already exists
+		//open file in append mode or overwrite mode: create-only mode has already been checked
 		using std::ios;
-		fileOut.open(fileOutPath, options.fom == file_open_mode::append ? ios::app : ios::out);
+		fileOut.open(options.output_filepath, options.fom == file_open_mode::append ? ios::app : ios::out);
 
 		if (!fileOut.is_open()) {
 			std::cerr << "Error opening output file";
@@ -159,6 +163,7 @@ file_open_mode get_file_open_mode(const std::string_view& name)
 }
 
 
+//convert text version of Boolean value
 bool strtobool(const std::string_view& value)
 {
 	constexpr std::string_view value_yes{ "yes" }, value_no{ "no" };

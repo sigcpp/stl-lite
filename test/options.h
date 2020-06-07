@@ -15,6 +15,7 @@
 #define STL_LITE_OPTIONS_H
 
 #include <iostream>
+#include <filesystem>
 #include <string>
 
 #include "tester.h"
@@ -29,7 +30,7 @@ struct Options
 	pass_report_mode prm{ pass_report_mode::indicate };
 	unsigned short fail_threshold = 0;
 	file_open_mode fom{ file_open_mode::no_file };
-	std::string output_filename;
+	std::filesystem::path output_filepath;
 	std::string command_name;
 };
 
