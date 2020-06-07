@@ -23,22 +23,20 @@ void runTests();
 
 int main(int argc, char* argv[])
 {
-    Options options = get_options(argv, argc);
+	Options options = get_options(argv, argc);
 
-    std::ofstream fileOut;
-    apply_options(options, fileOut);
+	std::ofstream fileOut;
+	apply_options(options, fileOut);
 
-    try
-    {
-        runTests();
-    }
-    catch (const std::string& msg)
-    {
-        logLine(msg.data());
-    }
+	try {
+		runTests();
+	}
+	catch (const std::string& msg) {
+		logLine(msg.data());
+	}
 
-    if (options.summary)
-        summarizeTests();
+	if (options.summary)
+		summarizeTests();
 
-    return getTestsFailed();
+	return getTestsFailed();
 }

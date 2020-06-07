@@ -3,8 +3,8 @@
 * Sean Murthy
 * (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
-* Attribution and copyright notice must be retained. 
-* - Attribution may be augmented to include additional authors 
+* Attribution and copyright notice must be retained.
+* - Attribution may be augmented to include additional authors
 * - Copyright notice cannot be altered
 * Attribution and copyright info may be relocated but they must be conspicuous.
 *
@@ -21,15 +21,16 @@
 
 enum class file_open_mode { no_file, create, overwrite, append };
 
-struct Options {
-   bool header{ true };
-   bool summary{ true };
-   std::string header_text{ "Running $exe" };
-   pass_report_mode prm{ pass_report_mode::indicate };
-   unsigned short fail_threshold = 0;
-   file_open_mode fom{ file_open_mode::no_file };
-   std::string output_filename;
-   std::string command_name;
+struct Options
+{
+	bool header{ true };
+	bool summary{ true };
+	std::string header_text{ "Running $exe" };
+	pass_report_mode prm{ pass_report_mode::indicate };
+	unsigned short fail_threshold = 0;
+	file_open_mode fom{ file_open_mode::no_file };
+	std::string output_filename;
+	std::string command_name;
 };
 
 
