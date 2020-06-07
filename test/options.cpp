@@ -35,9 +35,9 @@ Options get_options(char* arguments[], const std::size_t size)
 		option_name_summary{ "-s" }, option_name_prm{ "-p" }, option_name_threshold{ "-t" },
 		option_name_file_start{ "-f" };
 
-	std::string_view prm;
+	std::string_view prm_value;
 
-	//begin parsing arguments from index 1 because args[0] is command name
+	//begin parsing arguments from index 1 because args[0] corresponds to command name
 	for (size_t i = 1; i < size; i += 2) {
 		string_view name(arguments[i]), value(arguments[i + 1]);
 
@@ -46,7 +46,7 @@ Options get_options(char* arguments[], const std::size_t size)
 		else if (name == option_name_header_text)
 			options.header_text = value;
 		else if (name == option_name_prm)
-			prm = value; //delay converting prm to enum until after file open mode is known
+			prm_value = value; //delay converting prm to enum until after file open mode is known
 		else if (name == option_name_summary)
 			options.summary = strtobool(value);
 		else if (name == option_name_threshold)
@@ -57,7 +57,7 @@ Options get_options(char* arguments[], const std::size_t size)
 		}
 	}
 
-	options.prm = get_pass_report_mode(prm, options.fom);
+	options.prm = get_pass_report_mode(prm_value, options.fom);
 
 	//extract "command name" from the first "argument"
 	//command_name is just exe filename without path or extension
@@ -86,7 +86,7 @@ void apply_options(const Options& options, std::ofstream& fileOut)
 
 	//if output to file option not enabled, use standard output
 	//else open output file in appropriate mode
-	if (options.fom == file_open_mode::no_file && options.output_filename.empty())
+	if (options.fom == file_open_mode::no_file)
 		setOutput(std::cout);
 	else {
 		setOutput(fileOut);
@@ -96,7 +96,7 @@ void apply_options(const Options& options, std::ofstream& fileOut)
 		if (fileOutPath.extension() == "")
 			fileOutPath.replace_extension(".out");
 
-		//-f option means file cannot already exist
+		//enforce create-only file open mode
 		if (options.fom == file_open_mode::create && std::filesystem::exists(fileOutPath)) {
 			std::cerr << "Output file already exists";
 			return;
