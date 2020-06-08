@@ -27,14 +27,10 @@ Options get_options(char* arguments[], const std::size_t size)
 	//args cannot be empty: args[0] expected to be "command name" (path to executable file)
 	assert(size != 0);
 
-	using std::string;
-	using std::string_view;
-	using std::size_t;
-
 	Options options;
 
 	//names in name-value pair for cmd-line options
-	constexpr string_view option_name_header{ "-h" }, option_name_header_text{ "-ht" },
+	constexpr std::string_view option_name_header{ "-h" }, option_name_header_text{ "-ht" },
 		option_name_summary{ "-s" }, option_name_prm{ "-p" }, option_name_threshold{ "-t" },
 		option_name_file_start{ "-f" };
 
@@ -42,8 +38,8 @@ Options get_options(char* arguments[], const std::size_t size)
 	std::string output_filepath_value;
 
 	//begin parsing arguments from index 1 because args[0] corresponds to command name
-	for (size_t i = 1; i < size; i += 2) {
-		string_view name(arguments[i]), value(arguments[i + 1]);
+	for (std::size_t i = 1; i < size; i += 2) {
+		std::string_view name(arguments[i]), value(arguments[i + 1]);
 
 		if (name == option_name_header)
 			options.header = strtobool(value);
