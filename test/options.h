@@ -14,7 +14,6 @@
 #ifndef STL_LITE_OPTIONS_H
 #define STL_LITE_OPTIONS_H
 
-#include <iostream>
 #include <filesystem>
 #include <string>
 

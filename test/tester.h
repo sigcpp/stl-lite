@@ -15,7 +15,6 @@
 #define STL_LITE_TESTER_H
 
 #include <iostream>
-#include <string>
 
 enum class pass_report_mode { none, indicate, detail };
 
