@@ -97,7 +97,7 @@ void apply_options(const Options& options, std::ofstream& fileOut)
 		setOutput(fileOut);
 
 		//enforce create-only file open mode
-		if (options.fom == file_open_mode::create && std::filesystem::exists(options.output_filepath)) {
+		if (options.fom == file_open_mode::new_file && std::filesystem::exists(options.output_filepath)) {
 			std::cerr << "Output file already exists";
 			return;
 		}
@@ -145,7 +145,7 @@ file_open_mode get_file_open_mode(const std::string_view& name)
 		option_name_file_append("-fa");
 
 	if (name == option_name_file)
-		return file_open_mode::create;
+		return file_open_mode::new_file;
 	if (name == option_name_file_overwrite)
 		return file_open_mode::overwrite;
 	if (name == option_name_file_append)

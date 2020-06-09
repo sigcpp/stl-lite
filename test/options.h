@@ -1,5 +1,5 @@
 /*
-* tester.h
+* options.h
 * Sean Murthy
 * (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
@@ -19,7 +19,7 @@
 
 #include "tester.h"
 
-enum class file_open_mode { no_file, create, overwrite, append };
+enum class file_open_mode { no_file, new_file, overwrite, append };
 
 struct Options {
 	bool header{ true };
