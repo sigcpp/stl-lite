@@ -40,21 +40,17 @@ int main(int argc, char* argv[])
 		show_error_and_usage(cle.what());
 		return -1;
 	}
-	catch (const std::exception& e) {
-		show_error(e.what());
+	catch (const output_file_error& fe) {
+		show_error_and_usage(fe.what());
 		return -2;
 	}
-	catch (const std::string& s) {
-		show_error(std::string("unexpected error: " + s).data());
+	catch (const std::exception& e) {
+		show_error((std::string("Unexpected error: ") + e.what()).data());
 		return -3;
-	}
-	catch (const char* z) {
-		show_error((std::string("unexpected error: ") + z).data());
-		return -4;
 	}
 	catch (...) {
 		show_error("Unexpected and untyped error");
-		return -5;
+		return -4;
 	}
 
 
