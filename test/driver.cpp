@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 		show_error_and_usage(cle.what());
 		return -1;
 	}
-	catch (const output_file_error& fe) {
+	catch (const file_error& fe) {
 		show_error_and_usage(fe.what());
 		return -2;
 	}

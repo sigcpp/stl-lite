@@ -130,7 +130,7 @@ void apply_options(const Options& options, std::ofstream& fileOut)
 		//enforce create-only file open mode
 		if (options.fom == file_open_mode::new_file && std::filesystem::exists(options.output_filepath)) {
 			assert(false);
-			throw output_file_error("Output file already exists", options.output_filepath);
+			throw file_error("Output file already exists", options.output_filepath);
 		}
 
 		//open file in append mode or overwrite mode: create-only mode has already been checked
@@ -139,7 +139,7 @@ void apply_options(const Options& options, std::ofstream& fileOut)
 
 		if (!fileOut.is_open()) {
 			assert(false);
-			throw output_file_error("Error opening output file", options.output_filepath);
+			throw file_error("Error opening output file", options.output_filepath);
 		}
 	}
 }

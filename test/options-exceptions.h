@@ -108,12 +108,12 @@ private:
 
 
 //error related to output file
-class output_file_error : public std::runtime_error {
+class file_error : public std::runtime_error {
 
 public:
-	output_file_error(const std::string& base) : std::runtime_error(message(base)) {}
+	file_error(const std::string& base) : std::runtime_error(message(base)) {}
 
-	output_file_error(const std::string& base, const std::filesystem::path& filepath) :
+	file_error(const std::string& base, const std::filesystem::path& filepath) :
 		std::runtime_error(message(base, filepath.string())),
 		filepath_(filepath)
 	{}
