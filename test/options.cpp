@@ -24,7 +24,7 @@
 
 Options get_options(char* arguments[], const std::size_t size)
 {
-	//args cannot be empty: args[0] expected to be "command name" (path to executable file)
+	//args should not be empty: args[0] should be path to executable file
 	assert(size != 0);
 
 	Options options;
@@ -64,7 +64,7 @@ Options get_options(char* arguments[], const std::size_t size)
 	options.command_name = exePath.replace_extension("").filename().string();
 
 	//replace $exe macro with command name in header text
-	const std::string exeMacro{ "$exe" };
+	const std::string exeMacro{ "$cmd" };
 	if (options.header && !options.header_text.empty())
 		replace_all(options.header_text, exeMacro, options.command_name);
 	else
