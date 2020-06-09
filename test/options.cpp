@@ -31,19 +31,19 @@ Options get_options(char* arguments[], const std::size_t size)
 	assert(size % 2 == 1);
 
 	if (size == 0)
-		throw invalid_cmd_line("empty command line");
+		throw invalid_cmd_line{ "empty command line" };
 
 	if (size % 2 == 0)
-		throw invalid_cmd_line("incorrect number of options");
+		throw invalid_cmd_line{ "incorrect number of options" };
 
 	Options options;
 
 	//extract "command name" from first arg: command name is just command filename without path or extension
 	//command file path cannot be empty
-	std::filesystem::path command_path = arguments[0];
+	std::filesystem::path command_path{ arguments[0] };
 	assert(!command_path.empty());
 	if (command_path.empty())
-		throw invalid_cmd_line("missing command filepath");
+		throw invalid_cmd_line{ "missing command filepath" };
 
 	options.command_name = command_path.replace_extension("").filename().string();
 
@@ -57,7 +57,7 @@ Options get_options(char* arguments[], const std::size_t size)
 
 	//begin parsing arguments from index 1 because args[0] corresponds to command name
 	for (std::size_t i = 1; i < size; i += 2) {
-		std::string_view name(arguments[i]), value(arguments[i + 1]);
+		std::string_view name{ arguments[i] }, value{ arguments[i + 1] };
 		
 		//option name or value cannot be empty; options names must begin with a - 
 		assert(!name.empty());
@@ -65,11 +65,11 @@ Options get_options(char* arguments[], const std::size_t size)
 		assert(name[0] == '-');
 
 		if (name.empty())
-			throw invalid_option_name("empty option name");
+			throw invalid_option_name{ "empty option name" };
 		else if (value.empty())
-			throw invalid_option_value("empty option value");
+			throw invalid_option_value{ "empty option value" };
 		else if (name[0] != '-')
-			throw invalid_option_name(std::string(name));
+			throw invalid_option_name{ std::string{ name } };
 
 		if (name == option_name_header)
 			options.header = strtobool(value);
@@ -87,7 +87,7 @@ Options get_options(char* arguments[], const std::size_t size)
 		}
 		else { //unknown option
 			assert(false);
-			throw invalid_option_name(name);
+			throw invalid_option_name{ name };
 		}
 	}
 
@@ -129,7 +129,7 @@ void apply_options(const Options& options, std::ofstream& fileOut)
 		//enforce create-only file open mode
 		if (options.fom == file_open_mode::new_file && std::filesystem::exists(options.output_filepath)) {
 			assert(false);
-			throw file_error("Output file already exists", options.output_filepath);
+			throw file_error{ "Output file already exists", options.output_filepath };
 		}
 
 		//open file in append mode or overwrite mode: create-only mode has already been checked
@@ -138,7 +138,7 @@ void apply_options(const Options& options, std::ofstream& fileOut)
 
 		if (!fileOut.is_open()) {
 			assert(false);
-			throw file_error("Error opening output file", options.output_filepath);
+			throw file_error{ "Error opening output file", options.output_filepath };
 		}
 	}
 }
@@ -162,7 +162,7 @@ pass_report_mode get_pass_report_mode(const std::string_view& value, file_open_m
 		return fom == file_open_mode::no_file ? pass_report_mode::indicate : pass_report_mode::none;
 	else {
 		assert(false);
-		throw invalid_option_value(value);
+		throw invalid_option_value{ value };
 	}
 }
 
@@ -180,7 +180,7 @@ file_open_mode get_file_open_mode(const std::string_view& name)
 		return file_open_mode::append;
 	else {
 		assert(false);
-		throw invalid_option_name(name);
+		throw invalid_option_name{ name };
 	}
 }
 
@@ -196,7 +196,7 @@ bool strtobool(const std::string_view& value)
 		return false;
 	else {
 		assert(false);
-		throw invalid_option_value(value);
+		throw invalid_option_value{ value };
 	}
 }
 

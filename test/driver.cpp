@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
 		return -2;
 	}
 	catch (const std::exception& e) {
-		show_error((std::string("Unexpected error: ") + e.what()).data());
+		show_error((std::string{ "Unexpected error: " } +e.what()).data());
 		return -3;
 	}
 	catch (...) {
