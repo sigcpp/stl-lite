@@ -59,6 +59,8 @@ int main(int argc, char* argv[])
 	}
 	catch (const std::string& msg) {
 		logLine(msg.data());
+		if (options.fom == file_open_mode::no_file)
+			show_error(msg.data());
 	}
 
 	if (options.summary)
