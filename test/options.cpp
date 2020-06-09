@@ -141,10 +141,10 @@ pass_report_mode get_pass_report_mode(const std::string_view& value, file_open_m
 
 file_open_mode get_file_open_mode(const std::string_view& name)
 {
-	constexpr std::string_view option_name_file("-f"), option_name_file_overwrite("-fo"),
+	constexpr std::string_view option_name_file_new("-fn"), option_name_file_overwrite("-fo"),
 		option_name_file_append("-fa");
 
-	if (name == option_name_file)
+	if (name == option_name_file_new)
 		return file_open_mode::new_file;
 	if (name == option_name_file_overwrite)
 		return file_open_mode::overwrite;
