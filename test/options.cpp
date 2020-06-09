@@ -8,7 +8,7 @@
 * - Copyright notice cannot be altered
 * Attribution and copyright info may be relocated but they must be conspicuous.
 *
-* Tester options
+* Cmd-line options
 */
 
 #include <iostream>
@@ -69,7 +69,7 @@ Options get_options(char* arguments[], const std::size_t size)
 		else if (value.empty())
 			throw invalid_option_value{ "empty option value" };
 		else if (name[0] != '-')
-			throw invalid_option_name{ std::string{ name } };
+			throw invalid_option_name{ name };
 
 		if (name == option_name_header)
 			options.header = strtobool(value);
