@@ -34,9 +34,18 @@ Options get_options(char* arguments[], const std::size_t size)
 		throw invalid_cmd_line("empty command line");
 
 	if (size % 2 == 0)
-		throw invalid_cmd_line("invalid number of options");
+		throw invalid_cmd_line("incorrect number of options");
 
 	Options options;
+
+	//extract "command name" from first arg: command name is just command filename without path or extension
+	//command file path cannot be empty
+	std::filesystem::path command_path = arguments[0];
+	assert(!command_path.empty());
+	if (command_path.empty())
+		throw invalid_cmd_line("missing command filepath");
+
+	options.command_name = command_path.replace_extension("").filename().string();
 
 	//names in name-value pair for cmd-line options
 	constexpr std::string_view option_name_header{ "-h" }, option_name_header_text{ "-ht" },
@@ -50,7 +59,7 @@ Options get_options(char* arguments[], const std::size_t size)
 	for (std::size_t i = 1; i < size; i += 2) {
 		std::string_view name(arguments[i]), value(arguments[i + 1]);
 		
-		//option name or value cannot be empty; options names begin with a - 
+		//option name or value cannot be empty; options names must begin with a - 
 		assert(!name.empty());
 		assert(!value.empty());
 		assert(name[0] == '-');
@@ -83,16 +92,6 @@ Options get_options(char* arguments[], const std::size_t size)
 	}
 
 	options.prm = get_pass_report_mode(prm_value, options.fom);
-
-	//extract "command name" from first arg: command name is just command filename without path or extension
-	//command file path cannot be empty
-	std::filesystem::path command_path = arguments[0];
-
-	assert(!command_path.empty());
-	if (command_path.empty())
-		throw invalid_cmd_line("missing command filepath");
-
-	options.command_name = command_path.replace_extension("").filename().string();
 
 	//replace $cmd macro with command name in header text
 	const std::string cmd_macro{ "$cmd" };
