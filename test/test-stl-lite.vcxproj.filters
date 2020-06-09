@@ -35,5 +35,8 @@
     <ClInclude Include="tester.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="options-exceptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

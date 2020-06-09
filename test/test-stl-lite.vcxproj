@@ -165,6 +165,7 @@
     <ClCompile Include="tester.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="options-exceptions.h" />
     <ClInclude Include="options.h" />
     <ClInclude Include="tester.h" />
   </ItemGroup>
