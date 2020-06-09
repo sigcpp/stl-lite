@@ -107,7 +107,7 @@ private:
 };
 
 
-//error related to output file
+//file-related error
 class file_error : public std::runtime_error {
 
 public:
@@ -126,6 +126,5 @@ public:
 private:
 	std::filesystem::path filepath_;
 };
-
 
 #endif

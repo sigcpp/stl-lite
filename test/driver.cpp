@@ -82,6 +82,7 @@ void show_error(const char* message)
 }
 
 
+//TODO: show cmd-line format, include a couple of example cmd-lines, show link to docs
 void show_usage()
 {
 	std::cout << "array-test.exe -h yes/no -ht <header text>" << '\n';
