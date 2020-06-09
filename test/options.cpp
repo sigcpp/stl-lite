@@ -21,11 +21,20 @@
 #include <cassert>
 
 #include "options.h"
+#include "options-exceptions.h"
 
 Options get_options(char* arguments[], const std::size_t size)
 {
-	//args should not be empty: args[0] should be path to executable file
+	//args should not be empty: args[0] should be path to executable file ("command name")
+	//number of args should be odd: command name followed by name-value pairs for options
 	assert(size != 0);
+	assert(size % 2 == 1);
+
+	if (size == 0)
+		throw invalid_cmd_line("empty command line");
+
+	if (size % 2 == 0)
+		throw invalid_cmd_line("invalid number of options");
 
 	Options options;
 
@@ -40,6 +49,18 @@ Options get_options(char* arguments[], const std::size_t size)
 	//begin parsing arguments from index 1 because args[0] corresponds to command name
 	for (std::size_t i = 1; i < size; i += 2) {
 		std::string_view name(arguments[i]), value(arguments[i + 1]);
+		
+		//option name or value cannot be empty; options names begin with a - 
+		assert(!name.empty());
+		assert(!value.empty());
+		assert(name[0] == '-');
+
+		if (name.empty())
+			throw invalid_option_name("empty option name");
+		else if (value.empty())
+			throw invalid_option_value("empty option value");
+		else if (name[0] != '-')
+			throw invalid_option_name(std::string(name));
 
 		if (name == option_name_header)
 			options.header = strtobool(value);
@@ -55,24 +76,34 @@ Options get_options(char* arguments[], const std::size_t size)
 			options.fom = get_file_open_mode(name);
 			output_filepath_value = value;
 		}
+		else { //unknown option
+			assert(false);
+			throw invalid_option_name(name);
+		}
 	}
 
 	options.prm = get_pass_report_mode(prm_value, options.fom);
 
-	//extract "command name" from first arg: command name is just exe filename without path or extension
-	std::filesystem::path exePath = arguments[0];
-	options.command_name = exePath.replace_extension("").filename().string();
+	//extract "command name" from first arg: command name is just command filename without path or extension
+	//command file path cannot be empty
+	std::filesystem::path command_path = arguments[0];
 
-	//replace $exe macro with command name in header text
-	const std::string exeMacro{ "$cmd" };
+	assert(!command_path.empty());
+	if (command_path.empty())
+		throw invalid_cmd_line("missing command filepath");
+
+	options.command_name = command_path.replace_extension("").filename().string();
+
+	//replace $cmd macro with command name in header text
+	const std::string cmd_macro{ "$cmd" };
 	if (options.header && !options.header_text.empty())
-		replace_all(options.header_text, exeMacro, options.command_name);
+		replace_all(options.header_text, cmd_macro, options.command_name);
 	else
 		options.header_text = "";
 
-	//replace $exe macro in output file path; also set file extension to ".out" if extension missing
+	//replace $cmd macro in output file path; also set file extension to ".out" if extension missing
 	if (options.fom != file_open_mode::no_file) {
-		replace_all(output_filepath_value, exeMacro, options.command_name);
+		replace_all(output_filepath_value, cmd_macro, options.command_name);
 
 		options.output_filepath = output_filepath_value;
 		if (options.output_filepath.extension().empty())
@@ -98,8 +129,8 @@ void apply_options(const Options& options, std::ofstream& fileOut)
 
 		//enforce create-only file open mode
 		if (options.fom == file_open_mode::new_file && std::filesystem::exists(options.output_filepath)) {
-			std::cerr << "Output file already exists";
-			return;
+			assert(false);
+			throw output_file_error("Output file already exists", options.output_filepath);
 		}
 
 		//open file in append mode or overwrite mode: create-only mode has already been checked
@@ -107,8 +138,8 @@ void apply_options(const Options& options, std::ofstream& fileOut)
 		fileOut.open(options.output_filepath, options.fom == file_open_mode::append ? ios::app : ios::out);
 
 		if (!fileOut.is_open()) {
-			std::cerr << "Error opening output file";
-			return;
+			assert(false);
+			throw output_file_error("Error opening output file", options.output_filepath);
 		}
 	}
 }
@@ -132,9 +163,7 @@ pass_report_mode get_pass_report_mode(const std::string_view& value, file_open_m
 		return fom == file_open_mode::no_file ? pass_report_mode::indicate : pass_report_mode::none;
 	else {
 		assert(false);
-
-		//TO DO: review exception mgmt in the entire file; using temp value for now
-		throw "invalid value for pass report mode";
+		throw invalid_option_value(value);
 	}
 }
 
@@ -152,9 +181,7 @@ file_open_mode get_file_open_mode(const std::string_view& name)
 		return file_open_mode::append;
 	else {
 		assert(false);
-
-		//TO DO: review exception mgmt in the entire file; using temp value for now
-		throw "invalid value for file open mode";
+		throw invalid_option_name(name);
 	}
 }
 
@@ -170,9 +197,7 @@ bool strtobool(const std::string_view& value)
 		return false;
 	else {
 		assert(false);
-
-		//TO DO: review exception mgmt in the entire file; using temp value for now
-		throw "invalid value";
+		throw invalid_option_value(value);
 	}
 }
 
