@@ -34,7 +34,7 @@ class cmd_line_error : public std::runtime_error {
 protected:
 	cmd_line_error(const std::string_view& base) : std::runtime_error{ message(base) } {}
 
-	cmd_line_error(const std::string_view& base, const std::string& details) : 
+	cmd_line_error(const std::string_view& base, const std::string& details) :
 		std::runtime_error{ message(base, details) },
 		details_{ details } {}
 
@@ -52,7 +52,7 @@ private:
 class invalid_cmd_line : public cmd_line_error {
 
 public:
-	invalid_cmd_line() : cmd_line_error{base} {}
+	invalid_cmd_line() : cmd_line_error{ base } {}
 	invalid_cmd_line(const char* details) : invalid_cmd_line{ std::string{details} } {}
 	invalid_cmd_line(const std::string_view& details) : invalid_cmd_line{ std::string{details} } {}
 	invalid_cmd_line(const std::string& details) : cmd_line_error{ base, details } {}
@@ -68,11 +68,10 @@ private:
 
 
 //error with option name on the cmd-line
-class invalid_option_name : public cmd_line_error
-{
+class invalid_option_name : public cmd_line_error {
 
 public:
-	invalid_option_name() : cmd_line_error{base} {}
+	invalid_option_name() : cmd_line_error{ base } {}
 	invalid_option_name(const char* name) : invalid_option_name{ std::string{name} } {}
 	invalid_option_name(const std::string_view& name) : invalid_option_name{ std::string{name} } {}
 	invalid_option_name(const std::string& name) : cmd_line_error{ base, name } {}
@@ -88,11 +87,10 @@ private:
 
 
 //error with option value on the cmd-line
-class invalid_option_value : public cmd_line_error
-{
+class invalid_option_value : public cmd_line_error {
 
 public:
-	invalid_option_value() : cmd_line_error{base} {}
+	invalid_option_value() : cmd_line_error{ base } {}
 	invalid_option_value(const char* value) : invalid_option_value{ std::string{value} } {}
 	invalid_option_value(const std::string_view& value) : invalid_option_value{ std::string{value} } {}
 	invalid_option_value(const std::string& value) : cmd_line_error{ base, value } {}
@@ -103,7 +101,7 @@ public:
 	}
 
 private:
-	static constexpr std::string_view base { "invalid option value" };
+	static constexpr std::string_view base{ "invalid option value" };
 };
 
 
