@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 		return -2;
 	}
 	catch (const std::exception& e) {
-		show_error((std::string{ "Unexpected error: " } + e.what()).data());
+		show_error((std::string{ "Unexpected error: " } +e.what()).data());
 		return -3;
 	}
 	catch (...) {
@@ -91,18 +91,17 @@ static void show_error(const char* message)
 static void show_usage(const char* program_path)
 {
 	std::string program_filename = std::filesystem::path{ program_path }.filename().string();
-	
+
 	std::cout << "Usage: " << program_filename << " {option_name option_value}\n\n";
 
 	std::cout <<
 		"  * Options are specified as name-value pairs, with at least one space between name and value.\n"
 		"  * Every option name begins with a - (hyphen), and every option name should have a value.\n"
-		"  * Any number of options may be specified. If an option repeats, the latest occurrence is used.\n"
-		"\n";
+		"  * Any number of options may be specified. If an option repeats, the latest occurrence is used.\n";
 
 	std::cout <<
 		"\nThe following options are available. "
-		"Angle brackets are placeholders for option values.\n\n";
+		"Angle brackets are placeholders for option values:\n\n";
 
 	std::cout <<
 		"  -h  <yes, no>\n"
