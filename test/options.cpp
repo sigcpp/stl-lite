@@ -19,6 +19,7 @@
 #include <string_view>
 #include <cstddef>
 #include <cassert>
+#include <climits>
 
 #include "options.h"
 #include "options-exceptions.h"
@@ -58,7 +59,7 @@ Options get_options(char* arguments[], const std::size_t size)
 	//begin parsing arguments from index 1 because args[0] corresponds to command name
 	for (std::size_t i = 1; i < size; i += 2) {
 		std::string_view name{ arguments[i] }, value{ arguments[i + 1] };
-		
+
 		//option name or value cannot be empty; options names must begin with a - 
 		assert(!name.empty());
 		assert(!value.empty());
@@ -201,11 +202,34 @@ bool strtobool(const std::string_view& value)
 }
 
 
+//assumes parameter is not empty (caller will have already checked that)
 unsigned short get_fail_threshold(const std::string_view& sv)
 {
-	long value;
-	std::from_chars(sv.data(), sv.data() + sv.size(), value);
-	return static_cast<unsigned short>(value);
+	assert(sv[0] != '-');
+	if (sv[0] == '-')
+		throw invalid_option_value{ sv };
+
+	constexpr std::string_view value_max{ "max" };
+	if (sv == value_max)
+		return USHRT_MAX;
+
+	unsigned short value;
+	auto begin = sv.data(), end = begin + sv.size();
+	auto result = std::from_chars(begin, end, value);
+
+	//check for "out of range"
+	bool success = result.ec == std::errc();
+	assert(success);
+	if (!success)
+		throw invalid_option_value{ sv };
+
+	//check if all characters are converted
+	success = result.ptr == end;
+	assert(success);
+	if (!success)
+		throw invalid_option_value{ sv };
+
+	return value;
 }
 
 
