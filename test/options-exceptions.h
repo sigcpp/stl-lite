@@ -53,8 +53,11 @@ class invalid_cmd_line : public cmd_line_error {
 
 public:
 	invalid_cmd_line() : cmd_line_error{ base } {}
+
 	invalid_cmd_line(const char* details) : invalid_cmd_line{ std::string{details} } {}
+
 	invalid_cmd_line(const std::string_view& details) : invalid_cmd_line{ std::string{details} } {}
+
 	invalid_cmd_line(const std::string& details) : cmd_line_error{ base, details } {}
 
 	const std::string& details() const noexcept
@@ -72,8 +75,11 @@ class invalid_option_name : public cmd_line_error {
 
 public:
 	invalid_option_name() : cmd_line_error{ base } {}
+
 	invalid_option_name(const char* name) : invalid_option_name{ std::string{name} } {}
+
 	invalid_option_name(const std::string_view& name) : invalid_option_name{ std::string{name} } {}
+
 	invalid_option_name(const std::string& name) : cmd_line_error{ base, name } {}
 
 	const std::string& option_name() const noexcept
@@ -91,8 +97,11 @@ class invalid_option_value : public cmd_line_error {
 
 public:
 	invalid_option_value() : cmd_line_error{ base } {}
+
 	invalid_option_value(const char* value) : invalid_option_value{ std::string{value} } {}
+
 	invalid_option_value(const std::string_view& value) : invalid_option_value{ std::string{value} } {}
+
 	invalid_option_value(const std::string& value) : cmd_line_error{ base, value } {}
 
 	const std::string& option_value() const noexcept
