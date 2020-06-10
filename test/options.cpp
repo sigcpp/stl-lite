@@ -80,7 +80,7 @@ Options get_options(char* arguments[], const std::size_t size)
 		else if (name == option_name_summary)
 			options.summary = strtobool(value);
 		else if (name == option_name_threshold) {
-			if (std::all_of(value.begin(), value.end(), std::isdigit))
+			if (value.length() < 6 && std::all_of(value.begin(), value.end(), std::isdigit))
 				options.fail_threshold = get_fail_threshold(value);
 			else {
 				assert(false);
