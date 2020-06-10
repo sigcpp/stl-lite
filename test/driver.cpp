@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 		return -3;
 	}
 	catch (...) {
-		show_error("Unexpected and untyped error");
+		show_error("Unexpected error");
 		return -4;
 	}
 
@@ -90,14 +90,15 @@ static void show_error(const char* message)
 
 static void show_usage(const char* program_path)
 {
-	std::cout << "Usage: ";
-	std::cout << std::filesystem::path{ program_path }.filename().string();
-	std::cout << " {option_name option_value}\n\n";
+	std::string program_filename = std::filesystem::path{ program_path }.filename().string();
+	
+	std::cout << "Usage: " << program_filename << " {option_name option_value}\n\n";
 
 	std::cout <<
 		"  * Options are specified as name-value pairs, with at least one space between name and value.\n"
 		"  * Every option name begins with a - (hyphen), and every option name should have a value.\n"
-		"  * Any number of options may be specified. If an option repeats, the latest occurrence is used.\n";
+		"  * Any number of options may be specified. If an option repeats, the latest occurrence is used.\n"
+		"\n";
 
 	std::cout <<
 		"\nThe following options are available. "
@@ -107,11 +108,17 @@ static void show_usage(const char* program_path)
 		"  -h  <yes, no>\n"
 		"  -ht <header text>\n"
 		"  -s  <yes, no>\n"
-		"  -p  <none, indicate, detail>\n"
+		"  -p  <detail, indicate, none, auto>\n"
 		"  -t  <fail threshold>\n"
 		"  -fn <output file path>\n"
 		"  -fo <output file path>\n"
-		"  -fa <output file path>\n";
+		"  -fa <output file path>\n"
+		"\n";
+
+	std::cout <<
+		"Example usages:\n"
+		<< "  " << program_filename << " -p indicate -fn results.txt\n"
+		<< "  " << program_filename << " -h no -p none -s no\n";
 
 	std::cout <<
 		"\nFull documentation at:\n"
