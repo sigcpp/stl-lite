@@ -122,8 +122,7 @@ public:
 
 	file_error(const std::string& base, const std::filesystem::path& filepath) :
 		std::runtime_error{ message(base, filepath.string()) },
-		filepath_{ filepath }
-	{}
+		filepath_{ filepath } {}
 
 	const std::filesystem::path& filepath() const noexcept
 	{
