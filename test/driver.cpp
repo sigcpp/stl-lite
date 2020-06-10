@@ -15,6 +15,7 @@
 #include <fstream>
 #include <string>
 #include <exception>
+#include <filesystem>
 
 #include "tester.h"
 #include "options.h"
@@ -23,9 +24,9 @@
 //must be defined in a unit-specific source file such as "array-test.cpp"
 void runTests();
 
-void show_error(const char* message);
-void show_usage();
-void show_error_and_usage(const char* message);
+static void show_error(const char* message);
+static void show_usage(const char* program_path);
+static void show_error_and_usage(const char* message, const char* program_path);
 
 int main(int argc, char* argv[])
 {
@@ -37,15 +38,15 @@ int main(int argc, char* argv[])
 		apply_options(options, fileOut);
 	}
 	catch (const cmd_line_error& cle) {
-		show_error_and_usage(cle.what());
+		show_error_and_usage(cle.what(), argv[0]);
 		return -1;
 	}
 	catch (const file_error& fe) {
-		show_error_and_usage(fe.what());
+		show_error_and_usage(fe.what(), argv[0]);
 		return -2;
 	}
 	catch (const std::exception& e) {
-		show_error((std::string{ "Unexpected error: " } +e.what()).data());
+		show_error((std::string{ "Unexpected error: " } + e.what()).data());
 		return -3;
 	}
 	catch (...) {
@@ -70,26 +71,50 @@ int main(int argc, char* argv[])
 }
 
 
-void show_error_and_usage(const char* message)
+//the following functions assume they are called only from main so that the parameters are always correct
+//assertion and error handling are included by design
+
+static void show_error_and_usage(const char* message, const char* program_path)
 {
 	show_error(message);
 	std::cout << '\n';
-	show_usage();
+	show_usage(program_path);
 }
 
 
-void show_error(const char* message)
+static void show_error(const char* message)
 {
 	std::cout << message << '\n';
 }
 
 
-void show_usage()
+static void show_usage(const char* program_path)
 {
-	std::cout << "usage: [command <option>]" << '\n'
-		<< "       [-h <yes, no>] [-ht <header text>] [-p <none, indicate, detail>]" << '\n'
-		<< "       [-s <yes, no>] [-t <number of failed tests to tolerate>] [-fn <output file name>]" << '\n'
-		<< "       [-fo <file name>] [-fa <file name>] ......" << '\n'
-		<< "For more details, see "
-		<< "https://github.com/sigcpp/stl-lite/wiki/Command-line-interface-for-the-test-driver#options\n";
+	std::cout << "Usage: ";
+	std::cout << std::filesystem::path{ program_path }.filename().string();
+	std::cout << " {option_name option_value}\n\n";
+
+	std::cout <<
+		"  * Options are specified as name-value pairs, with at least one space between name and value.\n"
+		"  * Every option name begins with a - (hyphen), and every option name should have a value.\n"
+		"  * Any number of options may be specified. If an option repeats, the latest occurrence is used.\n";
+
+	std::cout <<
+		"\nThe following options are available. "
+		"Angle brackets are placeholders for option values.\n\n";
+
+	std::cout <<
+		"  -h  <yes, no>\n"
+		"  -ht <header text>\n"
+		"  -s  <yes, no>\n"
+		"  -p  <none, indicate, detail>\n"
+		"  -t  <fail threshold>\n"
+		"  -fn <output file path>\n"
+		"  -fo <output file path>\n"
+		"  -fa <output file path>\n";
+
+	std::cout <<
+		"\nFull documentation at:\n"
+		"https://github.com/sigcpp/stl-lite/wiki/Command-line-interface-for-the-test-driver"
+		"\n\n";
 }
