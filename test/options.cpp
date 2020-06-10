@@ -58,7 +58,7 @@ Options get_options(char* arguments[], const std::size_t size)
 	//begin parsing arguments from index 1 because args[0] corresponds to command name
 	for (std::size_t i = 1; i < size; i += 2) {
 		std::string_view name{ arguments[i] }, value{ arguments[i + 1] };
-		
+
 		//option name or value cannot be empty; options names must begin with a - 
 		assert(!name.empty());
 		assert(!value.empty());
@@ -79,8 +79,14 @@ Options get_options(char* arguments[], const std::size_t size)
 			prm_value = value; //delay converting prm to enum until after file open mode is known
 		else if (name == option_name_summary)
 			options.summary = strtobool(value);
-		else if (name == option_name_threshold)
-			options.fail_threshold = get_fail_threshold(value);
+		else if (name == option_name_threshold) {
+			if (std::all_of(value.begin(), value.end(), std::isdigit))
+				options.fail_threshold = get_fail_threshold(value);
+			else {
+				assert(false);
+				throw invalid_option_value{ value };
+			}
+		}
 		else if (name._Starts_with(option_name_file_start)) {
 			options.fom = get_file_open_mode(name);
 			output_filepath_value = value;
@@ -205,6 +211,10 @@ unsigned short get_fail_threshold(const std::string_view& sv)
 {
 	long value;
 	std::from_chars(sv.data(), sv.data() + sv.size(), value);
+	if (value > USHRT_MAX) {
+		assert(false);
+		throw invalid_option_value{ sv };
+	}
 	return static_cast<unsigned short>(value);
 }
 
