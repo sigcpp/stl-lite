@@ -84,8 +84,12 @@ void show_error(const char* message)
 }
 
 
-//TODO: show cmd-line format, include a couple of example cmd-lines, show link to docs
 void show_usage()
 {
-	std::cout << "array-test.exe -h yes/no -ht <header text>" << '\n';
+	std::cout << "usage: [command <option>]" << '\n'
+		<< "       [-h <yes, no>] [-ht <header text>] [-p <none, indicate, detail>]" << '\n'
+		<< "       [-s <yes, no>] [-t <number of failed tests to tolerate>] [-f <output file name>]" << '\n'
+		<< "       [-fo <file name>] [-fa <file name>] ......" << '\n'
+		<< "For more details, see "
+		<< "https://github.com/sigcpp/stl-lite/wiki/Command-line-interface-for-the-test-driver#options\n";
 }
