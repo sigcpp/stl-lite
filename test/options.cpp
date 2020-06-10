@@ -202,6 +202,8 @@ bool strtobool(const std::string_view& value)
 }
 
 
+//convert text to whole number: reject negative values, out of range values, and text with invalid chars
+//assumes base 10
 //assumes parameter is not empty (caller will have already checked that)
 unsigned short get_fail_threshold(const std::string_view& sv)
 {
