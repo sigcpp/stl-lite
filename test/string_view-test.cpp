@@ -1,6 +1,6 @@
 /*
 * string_view-test.cpp
-* Sean Murthy, Shengrui Chen
+* Sean Murthy, Ray Chen
 * (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
 * Attribution and copyright notice must be retained.
@@ -180,7 +180,7 @@ void runTests()
 	verify(iteratorTest, "forward iterator order and content");
 	verify(it == endIt, "forward iterator termination");
 
-	iteratorTest =true;
+	iteratorTest = true;
 	i = 0;
 	it = sv_iter.cbegin();
 	endIt = sv_iter.cend();
@@ -256,17 +256,14 @@ void runTests()
 	rlen = f_sv.copy(str_copy, n, pos);
 	verify(rlen == (n < f_sv.size() - pos) ? n : f_sv.size() - pos
 		, "f_sv.copy(str_copy, n, pos)");
-	try
-	{
+	try {
 		f_sv.copy(str_copy, n, f_sv.size() + 1);
 		verify(false, "f_sv.copy(str_copy, n, pos), should not be executed.");
 	}
-	catch (const std::out_of_range&)
-	{
+	catch (const std::out_of_range&) {
 		verify(true, "if pos > size(), then throw out_of_range exception");
 	}
-	catch (...)
-	{
+	catch (...) {
 		verify(false, "Throw an unexpected exception.");
 	}
 
@@ -279,19 +276,16 @@ void runTests()
 	verify((sub_sv.data() == sv.data() + pos
 		&& sub_sv.size() == (n < sv.size() - pos) ? n : sv.size() - pos)
 		, "sv.copy(pos, n)");
-	try
-	{
+	try {
 		pos = sv.size() + 1;
 		sub_sv = sv.substr(pos, n);
 		verify(false, "sv.substr(pos, n), should not be executed.");
 	}
-	catch (const std::out_of_range&)
-	{
+	catch (const std::out_of_range&) {
 		verify(true
 			, "if pos > size(), then throw out_of_range exception");
 	}
-	catch (...)
-	{
+	catch (...) {
 		verify(false, "sv.substr(pos, n), throw an unexpected exception.");
 	}
 
