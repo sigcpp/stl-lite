@@ -1,5 +1,5 @@
 /*
-* tester.h
+* options.h
 * Sean Murthy
 * (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
@@ -8,7 +8,7 @@
 * - Copyright notice cannot be altered
 * Attribution and copyright info may be relocated but they must be conspicuous.
 *
-* Declare testing infrastructure
+* Declare tester options
 */
 
 #ifndef STL_LITE_OPTIONS_H
@@ -19,12 +19,12 @@
 
 #include "tester.h"
 
-enum class file_open_mode { no_file, create, overwrite, append };
+enum class file_open_mode { no_file, new_file, overwrite, append };
 
 struct Options {
 	bool header{ true };
 	bool summary{ true };
-	std::string header_text{ "Running $exe" };
+	std::string header_text{ "Running $cmd" };
 	pass_report_mode prm{ pass_report_mode::indicate };
 	unsigned short fail_threshold = 0;
 	file_open_mode fom{ file_open_mode::no_file };
