@@ -3,11 +3,15 @@
 * Sean Murthy 
 * (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
-* Attribution and copyright notice shown on lines 3 and 4 must be retained.
-* That information may be relocated but be conspicuous in all derived work.
-* 
+* Attribution and copyright notice must be retained.
+* - Attribution may be augmented to include additional authors
+* - Copyright notice cannot be altered
+* Attribution and copyright info may be relocated but they must be conspicuous.
+*
 * Define a class template for arrays
-* - see C++17 [array.overview] https://timsong-cpp.github.io/cppwp/n4659/array
+* - see C++17 [array.overview], [array.syn]
+* - https://timsong-cpp.github.io/cppwp/n4659/array
+* - https://timsong-cpp.github.io/cppwp/n4659/array.syn
 */
 
 #ifndef SIGCPP_ARRAY_H
@@ -17,7 +21,10 @@
 #include <stdexcept>
 #include <utility>
 #include <algorithm>
+#include <iterator>
 #include <type_traits>
+
+#include "array_iterator.h"
 
 namespace sigcpp
 {
@@ -26,92 +33,81 @@ namespace sigcpp
 	{
 		//types
 		using value_type = T;
-		using pointer = T*;
-		using const_pointer = const T*;
-		using reference = T&;
-		using const_reference = const T&;
-		using size_type = size_t;
-		using difference_type = ptrdiff_t;
+		using pointer = value_type*;
+		using const_pointer = const value_type*;
+		using reference = value_type&;
+		using const_reference = const value_type&;
+		using size_type = std::size_t;
+		using difference_type = std::ptrdiff_t;
 
-		//unchecked iterators: not standards-compliant; implementing for demo
-		using iterator = T*; 
-		using const_iterator = const T*;
+		//unchecked iterators: simple but standards-compliant
+		using iterator = array_iterator<pointer>; 
+		using const_iterator = array_iterator<const_pointer>;
 		using reverse_iterator = std::reverse_iterator<iterator>;
 		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-		//underlying array
-		value_type elements[N];
+		//underlying array: create array with one element if size is zero
+		value_type values[N==0 ? 1 : N];
 
 		//utility
-		void fill(const T& u) { std::fill_n(elements, N, u); }
+		void fill(const T& u) { std::fill_n(values, N, u); }
 
 		void swap(array& a) noexcept(std::is_nothrow_swappable_v<T>)
 		{
-			std::swap_ranges(elements, elements + N, a.elements);
+			std::swap_ranges(values, values + N, a.values);
 		}
 
 		//iterators
-		constexpr iterator begin() noexcept 
-		{ 
-			if constexpr (N == 0)
-				return nullptr;
-			else
-				return elements; 
-		}
-		
-		constexpr const_iterator begin() const noexcept 
-		{ 
-			if constexpr (N == 0)
-				return nullptr;
-			else
-				return elements;
-		}
-
-		constexpr iterator end() noexcept
-		{
-			if constexpr (N == 0)
-				return nullptr;
-			else
-				return elements + N;
-		}
-
-		constexpr const_iterator end() const noexcept
-		{
-			if constexpr (N == 0)
-				return nullptr;
-			else
-				return elements + N;
-		}
+		constexpr iterator begin() noexcept { return _begin(); }
+		constexpr const_iterator begin() const noexcept { return cbegin(); }
+		constexpr iterator end() noexcept { return _end(); }
+		constexpr const_iterator end() const noexcept { return cend(); }
 
 		constexpr reverse_iterator rbegin() noexcept 
 		{ 
-			return reverse_iterator(end()); 
+			return reverse_iterator(_end());
 		}
 		
 		constexpr const_reverse_iterator rbegin() const noexcept 
 		{ 
-			return const_reverse_iterator(end()); 
+			return crbegin();
 		}
 		
 		constexpr reverse_iterator rend() noexcept
 		{
-			return reverse_iterator(begin());
+			return reverse_iterator(_begin());
 		}
 
 		constexpr const_reverse_iterator rend() const noexcept
 		{
-			return const_reverse_iterator(begin());
+			return crend();
 		}
 
-		constexpr const_iterator cbegin() const noexcept { return begin(); }
-		constexpr const_iterator cend() const noexcept { return end(); }
-		
+		constexpr const_iterator cbegin() const noexcept 
+		{ 
+			if constexpr (N == 0)
+				return const_iterator();
+			else
+				return const_iterator(values);
+		}
+
+		constexpr const_iterator cend() const noexcept
+		{
+			if constexpr (N == 0)
+				return const_iterator();
+			else
+				return const_iterator(values + N);
+		}
+
 		constexpr const_reverse_iterator crbegin() const noexcept 
 		{ 
-			return rbegin(); 
+			return const_reverse_iterator(cend());
 		}
 		
-		constexpr const_reverse_iterator crend() const noexcept { return rend(); }
+		constexpr const_reverse_iterator crend() const noexcept 
+		{ 
+			return const_reverse_iterator(cbegin());
+		}
 
 		//capacity
 		constexpr bool empty() const noexcept { return N == 0; }
@@ -119,58 +115,75 @@ namespace sigcpp
 		constexpr size_type max_size() const noexcept { return N; }
 
 		//unchecked element access
-		constexpr reference operator[](size_type pos) { return elements[pos]; }
+		constexpr reference operator[](size_type pos) { return values[pos]; }
 		
 		constexpr const_reference operator[](size_type pos) const 
 		{ 
-			return elements[pos]; 
+			return values[pos]; 
 		}
 
 		//checked element access
 		constexpr reference at(size_type pos)
 		{
-			if (pos < N)
-				return elements[pos];
-			else
-				throw new std::out_of_range("array index out of range");
+			return const_cast<reference>(_at(pos));
 		}
 
-		constexpr const_reference at(size_type pos) const
+		constexpr const_reference at(size_type pos) const { return _at(pos); }
+
+		constexpr reference front() { return values[0]; }
+		constexpr const_reference front() const { return values[0]; }
+
+		constexpr reference back() { return const_cast<reference>(_back()); }
+		constexpr const_reference back() const { return _back(); }
+
+		//underlying raw data
+		constexpr pointer data() noexcept
+		{
+			return const_cast<pointer>(_data());
+		}
+
+		constexpr const_pointer data() const noexcept { return _data(); }
+
+	private:
+		//utility functions to eliminate redundancy in public members
+		constexpr iterator _begin() noexcept
+		{
+			if constexpr (N == 0)
+				return iterator();
+			else
+				return iterator(values);
+		}
+
+		constexpr iterator _end() noexcept
+		{
+			if constexpr (N == 0)
+				return iterator();
+			else
+				return iterator(values + N);
+		}
+
+		constexpr const_reference _at(size_type pos) const
 		{
 			if (pos < N)
-				return elements[pos];
+				return values[pos];
 			else
 				throw new std::out_of_range("array index out of range");
 		}
 
-		constexpr reference front() { return elements[0]; }
-		constexpr const_reference front() const { return elements[0]; }
-
-		constexpr reference back() { return empty() ? front() : elements[N-1]; }
-		
-		constexpr const_reference back() const 
-		{ 
+		constexpr const_reference _back() const
+		{
 			if constexpr (N == 0)
 				return front();
 			else
-				return elements[N - 1];
+				return values[N - 1];
 		}
 
-		//underlying raw data
-		constexpr pointer data() noexcept 
+		constexpr const_pointer _data() const noexcept
 		{
 			if constexpr (N == 0)
 				return nullptr;
 			else
-				return elements;
-		}
-
-		constexpr const_pointer data() const noexcept 
-		{ 
-			if constexpr (N == 0)
-				return nullptr;
-			else
-				return elements;
+				return values;
 		}
 
 	}; //template array
