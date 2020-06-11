@@ -13,86 +13,125 @@
 
 #include <iostream>
 #include <sstream>
+#include <string>
 #include <climits>
 
 #include "tester.h"
 
-static passReportMode passMode { passReportMode::indicate };
-void setPassReportMode(passReportMode mode)
+static std::string headerText("Running tests");
+void setHeaderText(std::string text)
 {
-   passMode = mode;
+	headerText = text;
+}
+
+
+static pass_report_mode passMode{ pass_report_mode::indicate };
+void setPassReportMode(pass_report_mode mode)
+{
+	passMode = mode;
 }
 
 
 static unsigned short failThreshold{ 0 };
 void setFailThreshold(unsigned short value)
 {
-   failThreshold = value;
+	failThreshold = value;
 }
+
 
 void setMaxFailThreshold()
 {
-   failThreshold = USHRT_MAX;
+	failThreshold = USHRT_MAX;
 }
 
 
-//counter for number of tests run, failed
+static std::ostream* pOut{ &std::cout };
+void setOutput(std::ostream& o)
+{
+	pOut = &o;
+}
+
+
+//number of tests run and failed
 static unsigned testsDone;
+unsigned getTestsDone()
+{
+	return testsDone;
+}
+
+
 static unsigned testsFailed;
+unsigned getTestsFailed()
+{
+	return testsFailed;
+}
+
 
 bool lastOutputEndedInLineBreak{ false };
 
 //track number of tests and check test result
 void verify(bool success, const char* hint)
 {
-   ++testsDone;
-   std::ostringstream message;
+	++testsDone;
+	if (testsDone == 1 && !headerText.empty())
+		*pOut << headerText << ":\n";
 
-   //assume stream is at start of line on first call 
-   lastOutputEndedInLineBreak = testsDone == 1;
+	std::ostringstream message;
 
-   if (success)
-   {
-      if (passMode == passReportMode::indicate)
-         message << '.';
-      else if (passMode == passReportMode::detail)
-      {
-         message << "Test# " << testsDone << ": Pass (" << hint << ")\n";
-         lastOutputEndedInLineBreak = true;
-      }
-   }
-   else
-   {
-      ++testsFailed;
+	//assume stream is at start of line on first call 
+	lastOutputEndedInLineBreak = testsDone == 1;
 
-      if (!lastOutputEndedInLineBreak)
-         message << '\n';
-      message << "Test# " << testsDone << ": FAIL (" << hint << ")\n";
-      lastOutputEndedInLineBreak = true;
+	if (success) {
+		if (passMode == pass_report_mode::indicate)
+			message << '.';
+		else if (passMode == pass_report_mode::detail) {
+			message << "Test# " << testsDone << ": Pass (" << hint << ")\n";
+			lastOutputEndedInLineBreak = true;
+		}
+	}
+	else {
+		++testsFailed;
 
-      if (testsFailed > failThreshold)
-         throw message.str();
-   }
+		if (!lastOutputEndedInLineBreak)
+			message << '\n';
+		message << "Test# " << testsDone << ": FAIL (" << hint << ")\n";
+		lastOutputEndedInLineBreak = true;
 
-   std::cout << message.str();
+		if (testsFailed > failThreshold)
+			throw message.str();
+	}
+
+	*pOut << message.str();
 }
 
 
 //print a simple test report
 void summarizeTests()
 {
-   //TODO: there should always be one and exactly one empty line before summary
-   //-assume if an exception was thrown earlier on test failure, the client
-   //-printed the msg and caused a line break after printing the msg
-   if (!lastOutputEndedInLineBreak)
-      std::cout << '\n';
-   else if (testsFailed <= failThreshold)
-      std::cout << '\n';
+	//TODO: there should always be one and exactly one empty line before summary
+	//-assume if an exception was thrown earlier on test failure, the client
+	//-printed the msg and caused a line break after printing the msg
+	if (!lastOutputEndedInLineBreak)
+		*pOut << '\n';
+	else if (testsFailed <= failThreshold)
+		*pOut << '\n';
 
-   std::cout << "Tests completed: " << testsDone << '\n';
-   std::cout << "Tests passed: " << testsDone - testsFailed << '\n';
-   std::cout << "Tests failed: " << testsFailed << '\n';
+	*pOut << "Tests completed: " << testsDone << '\n';
+	*pOut << "Tests passed: " << testsDone - testsFailed << '\n';
+	*pOut << "Tests failed: " << testsFailed << '\n';
 
-   if (testsFailed > failThreshold)
-      std::cout << "Tests stopped after " << testsFailed << " failure(s)\n";
+	if (testsFailed > failThreshold)
+		*pOut << "Tests stopped after " << testsFailed << " failure(s)\n";
+}
+
+
+void log(const char* s)
+{
+	*pOut << s;
+}
+
+
+void logLine(const char* s)
+{
+	*pOut << s << '\n';
 }
