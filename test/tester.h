@@ -28,7 +28,6 @@ void set_output(std::ostream& o);
 void log(const char* s);
 void log_line(const char* s);
 
-unsigned get_tests_done();
 unsigned get_tests_failed_total();
 
 void start_suite(const std::string& name);
