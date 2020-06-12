@@ -46,6 +46,4 @@ unsigned short get_fail_threshold(const std::string_view& value);
 
 bool strtobool(const std::string_view& value);
 
-void replace_all(std::string& str, const std::string& substr, const std::string& new_substr);
-
 #endif

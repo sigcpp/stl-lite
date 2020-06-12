@@ -23,6 +23,7 @@
 
 #include "options.h"
 #include "options-exceptions.h"
+#include "utils.h"
 
 Options get_options(char* arguments[], const std::size_t size)
 {
@@ -232,14 +233,4 @@ unsigned short get_fail_threshold(const std::string_view& sv)
 		throw invalid_option_value{ sv };
 
 	return value;
-}
-
-
-//replace all instances of a substring with a new substring
-void replace_all(std::string& str, const std::string& substr, const std::string& new_substr)
-{
-	auto pos = str.find(substr);
-	auto substr_size = substr.size(), new_substr_size = new_substr.size();
-	for (; pos != std::string::npos; pos = str.find(substr, pos + new_substr_size))
-		str.replace(pos, substr_size, new_substr);
 }

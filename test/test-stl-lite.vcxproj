@@ -163,11 +163,13 @@
     <ClCompile Include="driver.cpp" />
     <ClCompile Include="options.cpp" />
     <ClCompile Include="tester.cpp" />
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="options-exceptions.h" />
     <ClInclude Include="options.h" />
     <ClInclude Include="tester.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
