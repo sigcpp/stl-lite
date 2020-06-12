@@ -16,14 +16,13 @@
 #include <string>
 #include <exception>
 #include <filesystem>
+#include <map>
 
 #include "tester.h"
 #include "options.h"
 #include "options-exceptions.h"
 
-//must be defined in a unit-specific source file such as "array-test.cpp"
-void runTests();
-
+void run_suites(const Options& options);
 static void show_error(const char* message);
 static void show_usage(const char* program_path);
 static void show_error_and_usage(const char* message, const char* program_path);
@@ -56,7 +55,7 @@ int main(int argc, char* argv[])
 
 
 	try {
-		runTests();
+		run_suites(options);
 	}
 	catch (const std::string& msg) {
 		log_line(msg.data());
@@ -67,7 +66,28 @@ int main(int argc, char* argv[])
 	if (options.summary)
 		summarize_tests();
 
-	return get_tests_failed();
+	return get_tests_failed_total();
+}
+
+
+//run test suites
+void runTests();
+void run_suites(const Options& options)
+{
+	using suite_runner_type = void(*)();
+	std::map<std::string, suite_runner_type> suites{
+		//add one entry for each test suite to run
+		//suite-name and suite-runner, both in braces
+		{"array-test", runTests}
+	};
+
+	auto size = suites.size();
+	for (auto suite : suites) {
+		start_suite(suite.first);
+		suite.second();
+		if (size > 1 && options.summary)
+			summarize_suite();
+	}
 }
 
 
