@@ -52,7 +52,7 @@ Options get_options(char* arguments[], const std::size_t size)
 	//names in name-value pair for cmd-line options
 	constexpr std::string_view option_name_header{ "-h" }, option_name_header_text{ "-ht" },
 		option_name_summary{ "-s" }, option_name_prm{ "-p" }, option_name_threshold{ "-t" },
-		option_name_file_start{ "-f" };
+		option_name_file_start{ "-f" }, option_name_run{ "-run" };
 
 	std::string_view prm_value;
 	std::string output_filepath_value;
@@ -77,12 +77,14 @@ Options get_options(char* arguments[], const std::size_t size)
 			options.header = strtobool(value);
 		else if (name == option_name_header_text)
 			options.header_text = value;
-		else if (name == option_name_prm)
-			prm_value = value; //delay converting prm to enum until after file open mode is known
 		else if (name == option_name_summary)
 			options.summary = strtobool(value);
+		else if (name == option_name_prm)
+			prm_value = value; //delay converting prm to enum until after file open mode is known
 		else if (name == option_name_threshold)
 			options.fail_threshold = get_fail_threshold(value);
+		else if (name == option_name_run)
+			options.suites_to_run = value;
 		else if (name._Starts_with(option_name_file_start)) {
 			options.fom = get_file_open_mode(name);
 			output_filepath_value = value;
