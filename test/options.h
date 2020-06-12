@@ -30,7 +30,7 @@ struct Options {
 	file_open_mode fom{ file_open_mode::no_file };
 	std::filesystem::path output_filepath;
 	std::string command_name;
-	std::string suites;
+	std::string suites_to_run;
 };
 
 
