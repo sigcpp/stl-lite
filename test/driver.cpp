@@ -81,12 +81,18 @@ void run_suites(const Options& options)
 		{"array-test", runTests}
 	};
 
+
+	// run all suites or only the suites indicated in options
+	bool run_all_suites = options.suites.empty();
 	auto size = suites.size();
-	for (auto suite : suites) {
-		start_suite(suite.first);
-		suite.second();
-		if (size > 1 && options.summary)
-			summarize_suite();
+	for (const auto& suite : suites) {
+		auto& name = suite.first;
+		if (run_all_suites || options.suites.find(name) != std::string::npos) {
+			start_suite(name);
+			suite.second();
+			if (size > 1 && options.summary)
+				summarize_suite();
+		}
 	}
 }
 
