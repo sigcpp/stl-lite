@@ -17,7 +17,9 @@
 #include <climits>
 #include <cassert>
 
+#include "utils.h"
 #include "tester.h"
+
 
 static std::string headerText("Running tests");
 void set_header_text(std::string text)
@@ -91,9 +93,12 @@ void start_suite(const std::string& name)
 	tests_done_suite = 0;
 	tests_failed_suite = 0;
 
+	//print header text after expanding macro $suite
 	if (!headerText.empty()) {
-		//TODO replace $suite with suite name before printing
-		*pOut << headerText << ":\n";
+		const std::string suite_macro{ "$suite" };
+		std::string suite_header{ headerText };
+		replace_all(suite_header, "$suite", name);
+		*pOut << suite_header << ":\n";
 	}
 }
 
