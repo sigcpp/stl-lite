@@ -17,10 +17,14 @@
 #include <exception>
 #include <filesystem>
 #include <map>
+#include <algorithm>
+#include <cassert>
 
+#include "utils.h"
 #include "tester.h"
 #include "options.h"
 #include "options-exceptions.h"
+
 
 void run_suites(const Options& options);
 static void show_error(const char* message);
@@ -57,10 +61,17 @@ int main(int argc, char* argv[])
 	try {
 		run_suites(options);
 	}
-	catch (const std::string& msg) {
-		log_line(msg.data());
-		if (options.fom == file_open_mode::no_file)
-			show_error(msg.data());
+	catch (const cmd_line_error& cle) {
+		show_error_and_usage(cle.what(), argv[0]);
+		return -5;
+	}
+	catch (const std::exception& e) {
+		show_error((std::string{ "Unexpected error: " } +e.what()).data());
+		return -6;
+	}
+	catch (...) {
+		show_error("Unexpected error");
+		return -7;
 	}
 
 	if (options.summary)
@@ -81,15 +92,30 @@ void run_suites(const Options& options)
 		{"array-test", runTests}
 	};
 
+	//build a collection of suites to run if necessary
+	//options.suites_to_run is empty or a semi-colon delimited list of suite names
+	const auto suites_to_run = split(options.suites_to_run, ';');
+	auto run_all_suites = suites_to_run.empty();
+
+	//check that the suites specified are actually defined
+	//this check is not required to run the suites, but is included to inform the user of the issue
+	//silently ignoring leaves the user unaware of the reason a specified suite doesn't run
+	if (!run_all_suites) {
+		auto end_suites = suites.cend();
+		for (auto& suite_name : suites_to_run) {
+			if (suites.find(suite_name) == end_suites) {
+				assert(false);
+				throw invalid_option_value{ std::string{"suite "} + suite_name + " not defined" };
+			}
+		}
+	}
 
 	//run all suites or only the suites indicated in options
-	//TODO: change selection logic for suites indicated 
-	bool run_all_suites = options.suites.empty();
 	auto size = suites.size();
+	auto begin = suites_to_run.cbegin(), end = suites_to_run.cend();
 	for (const auto& suite : suites) {
-		auto& name = suite.first;
-		if (run_all_suites || options.suites.find(name) != std::string::npos) {
-			start_suite(name);
+		if (run_all_suites || std::find(begin, end, suite.first) != end) {
+			start_suite(suite.first);
 			suite.second();
 			if (size > 1 && options.summary)
 				summarize_suite();
@@ -131,14 +157,15 @@ static void show_usage(const char* program_path)
 		"Angle brackets are placeholders for option values:\n\n";
 
 	std::cout <<
-		"  -h  <yes, no>\n"
-		"  -ht <header text>\n"
-		"  -s  <yes, no>\n"
-		"  -p  <detail, indicate, none, auto>\n"
-		"  -t  <fail threshold>\n"
-		"  -fn <output file path>\n"
-		"  -fo <output file path>\n"
-		"  -fa <output file path>\n"
+		"  -h   <yes, no>\n"
+		"  -ht  <header text>\n"
+		"  -s   <yes, no>\n"
+		"  -p   <detail, indicate, none, auto>\n"
+		"  -t   <fail threshold>\n"
+		"  -run <semi-colon separated list of suite names>\n"
+		"  -fn  <output file path>\n"
+		"  -fo  <output file path>\n"
+		"  -fa  <output file path>\n"
 		"\n";
 
 	std::cout <<
