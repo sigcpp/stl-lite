@@ -82,7 +82,8 @@ void run_suites(const Options& options)
 	};
 
 
-	// run all suites or only the suites indicates
+	//run all suites or only the suites indicated in options
+	//TODO: change selection logic for suites indicated 
 	bool run_all_suites = options.suites.empty();
 	auto size = suites.size();
 	for (const auto& suite : suites) {
