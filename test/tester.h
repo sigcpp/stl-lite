@@ -25,13 +25,16 @@ void set_fail_threshold(unsigned short value);
 void set_max_fail_threshold();
 void set_output(std::ostream& o);
 
-unsigned get_tests_done();
-unsigned get_tests_failed();
-
-void summarize_tests();
-
 void log(const char* s);
 void log_line(const char* s);
+
+unsigned get_tests_done();
+unsigned get_tests_failed_total();
+
+void start_suite(const std::string& name);
+
+void summarize_suite();
+void summarize_tests();
 
 void verify(bool success, const char* msg);
 
