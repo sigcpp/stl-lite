@@ -18,17 +18,17 @@
 
 enum class pass_report_mode { none, indicate, detail };
 
-void setHeaderText(std::string text);
-void setPassReportMode(pass_report_mode mode);
-void setFailThreshold(unsigned short value);
-void setMaxFailThreshold();
-void setOutput(std::ostream& o);
+void set_header_text(std::string text);
+void set_pass_report_mode(pass_report_mode mode);
+void set_fail_threshold(unsigned short value);
+void set_max_fail_threshold();
+void set_output(std::ostream& o);
 
-unsigned getTestsDone();
-unsigned getTestsFailed();
+unsigned get_tests_done();
+unsigned get_tests_failed();
 
 void verify(bool success, const char* msg);
-void summarizeTests();
+void summarize_tests();
 
 void log(const char* s);
 void logLine(const char* s);

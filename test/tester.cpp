@@ -19,85 +19,85 @@
 #include "tester.h"
 
 static std::string headerText("Running tests");
-void setHeaderText(std::string text)
+void set_header_text(std::string text)
 {
 	headerText = text;
 }
 
 
-static pass_report_mode passMode{ pass_report_mode::indicate };
-void setPassReportMode(pass_report_mode mode)
+static pass_report_mode prm{ pass_report_mode::indicate };
+void set_pass_report_mode(pass_report_mode mode)
 {
-	passMode = mode;
+	prm = mode;
 }
 
 
-static unsigned short failThreshold{ 0 };
-void setFailThreshold(unsigned short value)
+static unsigned short fail_threshold{ 0 };
+void set_fail_threshold(unsigned short value)
 {
-	failThreshold = value;
+	fail_threshold = value;
 }
 
 
-void setMaxFailThreshold()
+void set_max_fail_threshold()
 {
-	failThreshold = USHRT_MAX;
+	fail_threshold = USHRT_MAX;
 }
 
 
 static std::ostream* pOut{ &std::cout };
-void setOutput(std::ostream& o)
+void set_output(std::ostream& o)
 {
 	pOut = &o;
 }
 
 
 //number of tests run and failed
-static unsigned testsDone;
-unsigned getTestsDone()
+static unsigned tests_done;
+unsigned get_tests_done()
 {
-	return testsDone;
+	return tests_done;
 }
 
 
-static unsigned testsFailed;
-unsigned getTestsFailed()
+static unsigned tests_failed;
+unsigned get_tests_failed()
 {
-	return testsFailed;
+	return tests_failed;
 }
 
 
-bool lastOutputEndedInLineBreak{ false };
+bool last_output_ended_in_linebreak{ false };
 
 //track number of tests and check test result
 void verify(bool success, const char* hint)
 {
-	++testsDone;
-	if (testsDone == 1 && !headerText.empty())
+	++tests_done;
+	if (tests_done == 1 && !headerText.empty())
 		*pOut << headerText << ":\n";
 
 	std::ostringstream message;
 
 	//assume stream is at start of line on first call 
-	lastOutputEndedInLineBreak = testsDone == 1;
+	last_output_ended_in_linebreak = tests_done == 1;
 
 	if (success) {
-		if (passMode == pass_report_mode::indicate)
+		if (prm == pass_report_mode::indicate)
 			message << '.';
-		else if (passMode == pass_report_mode::detail) {
-			message << "Test# " << testsDone << ": Pass (" << hint << ")\n";
-			lastOutputEndedInLineBreak = true;
+		else if (prm == pass_report_mode::detail) {
+			message << "Test# " << tests_done << ": Pass (" << hint << ")\n";
+			last_output_ended_in_linebreak = true;
 		}
 	}
 	else {
-		++testsFailed;
+		++tests_failed;
 
-		if (!lastOutputEndedInLineBreak)
+		if (!last_output_ended_in_linebreak)
 			message << '\n';
-		message << "Test# " << testsDone << ": FAIL (" << hint << ")\n";
-		lastOutputEndedInLineBreak = true;
+		message << "Test# " << tests_done << ": FAIL (" << hint << ")\n";
+		last_output_ended_in_linebreak = true;
 
-		if (testsFailed > failThreshold)
+		if (tests_failed > fail_threshold)
 			throw message.str();
 	}
 
@@ -106,22 +106,22 @@ void verify(bool success, const char* hint)
 
 
 //print a simple test report
-void summarizeTests()
+void summarize_tests()
 {
 	//TODO: there should always be one and exactly one empty line before summary
 	//-assume if an exception was thrown earlier on test failure, the client
 	//-printed the msg and caused a line break after printing the msg
-	if (!lastOutputEndedInLineBreak)
+	if (!last_output_ended_in_linebreak)
 		*pOut << '\n';
-	else if (testsFailed <= failThreshold)
+	else if (tests_failed <= fail_threshold)
 		*pOut << '\n';
 
-	*pOut << "Tests completed: " << testsDone << '\n';
-	*pOut << "Tests passed: " << testsDone - testsFailed << '\n';
-	*pOut << "Tests failed: " << testsFailed << '\n';
+	*pOut << "Tests completed: " << tests_done << '\n';
+	*pOut << "Tests passed: " << tests_done - tests_failed << '\n';
+	*pOut << "Tests failed: " << tests_failed << '\n';
 
-	if (testsFailed > failThreshold)
-		*pOut << "Tests stopped after " << testsFailed << " failure(s)\n";
+	if (tests_failed > fail_threshold)
+		*pOut << "Tests stopped after " << tests_failed << " failure(s)\n";
 }
 
 

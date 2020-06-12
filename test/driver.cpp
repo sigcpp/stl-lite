@@ -65,9 +65,9 @@ int main(int argc, char* argv[])
 	}
 
 	if (options.summary)
-		summarizeTests();
+		summarize_tests();
 
-	return getTestsFailed();
+	return get_tests_failed();
 }
 
 

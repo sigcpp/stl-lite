@@ -116,16 +116,16 @@ Options get_options(char* arguments[], const std::size_t size)
 
 void apply_options(const Options& options, std::ofstream& fileOut)
 {
-	setHeaderText(options.header_text);
-	setPassReportMode(options.prm);
-	setFailThreshold(options.fail_threshold);
+	set_header_text(options.header_text);
+	set_pass_report_mode(options.prm);
+	set_fail_threshold(options.fail_threshold);
 
 	//if output to file option not enabled, use standard output
 	//else open output file in appropriate mode
 	if (options.fom == file_open_mode::no_file)
-		setOutput(std::cout);
+		set_output(std::cout);
 	else {
-		setOutput(fileOut);
+		set_output(fileOut);
 
 		//enforce create-only file open mode
 		if (options.fom == file_open_mode::new_file && std::filesystem::exists(options.output_filepath)) {
