@@ -67,12 +67,14 @@ inline void is_zero(T value, const char* msg)
 	verify(value == 0, msg);
 }
 
+
 template <typename T = int>
 inline void is_nonzero(T value, const char* msg)
 {
 	static_assert(is_nonbool_arithmetic<T>(), "requires non-bool arithmetic type");
 	verify(value != 0, msg);
 }
+
 
 template <typename T = int>
 inline void is_negative(T value, const char* msg)
