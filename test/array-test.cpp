@@ -18,7 +18,7 @@
 
 #include "tester.h"
 
-void runTests()
+void array_test()
 {
 	using sigcpp::array;
 
