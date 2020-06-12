@@ -82,7 +82,7 @@ void run_suites(const Options& options)
 	};
 
 
-	// run all suites or only the suites indicated in options
+	// run all suites or only the suites indicates
 	bool run_all_suites = options.suites.empty();
 	auto size = suites.size();
 	for (const auto& suite : suites) {
