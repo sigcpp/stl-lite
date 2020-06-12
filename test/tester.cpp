@@ -131,7 +131,7 @@ void log(const char* s)
 }
 
 
-void logLine(const char* s)
+void log_line(const char* s)
 {
 	*pOut << s << '\n';
 }

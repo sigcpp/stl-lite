@@ -31,6 +31,6 @@ void verify(bool success, const char* msg);
 void summarize_tests();
 
 void log(const char* s);
-void logLine(const char* s);
+void log_line(const char* s);
 
 #endif

@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 		runTests();
 	}
 	catch (const std::string& msg) {
-		logLine(msg.data());
+		log_line(msg.data());
 		if (options.fom == file_open_mode::no_file)
 			show_error(msg.data());
 	}
