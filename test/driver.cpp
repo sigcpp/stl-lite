@@ -81,8 +81,11 @@ int main(int argc, char* argv[])
 }
 
 
-//run test suites
+//declare suite runners: one for each test suite
+//also add an entry in the "suites" map for each suite defined
 void array_test();
+
+
 void run_suites(const Options& options)
 {
 	using suite_runner_type = void(*)();
