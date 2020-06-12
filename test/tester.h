@@ -15,6 +15,7 @@
 #define STL_LITE_TESTER_H
 
 #include <iostream>
+#include <type_traits>
 
 enum class pass_report_mode { none, indicate, detail };
 
@@ -27,10 +28,71 @@ void set_output(std::ostream& o);
 unsigned get_tests_done();
 unsigned get_tests_failed();
 
-void verify(bool success, const char* msg);
 void summarize_tests();
 
 void log(const char* s);
 void log_line(const char* s);
+
+void verify(bool success, const char* msg);
+
+// the following functions and templates are helper functions short-hand to verify
+// call the helpers instead of calling verify directly
+
+inline void is_true(bool value, const char* msg)
+{
+	verify(value, msg);
+}
+
+
+inline void is_false(bool value, const char* msg)
+{
+	verify(!value, msg);
+}
+
+
+//TODO replace this template with a macro to reduce template instantiations
+template <typename T>
+constexpr bool is_nonbool_arithmetic()
+{
+	return std::is_integral_v<T> && !std::is_same_v<T, bool>;
+}
+
+
+template <typename T = int>
+inline void is_zero(T value, const char* msg)
+{
+	static_assert(is_nonbool_arithmetic<T>(), "requires non-bool arithmetic type");
+	verify(value == 0, msg);
+}
+
+template <typename T = int>
+inline void is_nonzero(T value, const char* msg)
+{
+	static_assert(is_nonbool_arithmetic<T>(), "requires non-bool arithmetic type");
+	verify(value != 0, msg);
+}
+
+template <typename T = int>
+inline void is_negative(T value, const char* msg)
+{
+	static_assert(is_nonbool_arithmetic<T>(), "requires non-bool arithmetic type");
+	verify(value < 0, msg);
+}
+
+
+template <typename T = int>
+inline void is_nonnegative(T value, const char* msg)
+{
+	static_assert(is_nonbool_arithmetic<T>(), "requires non-bool arithmetic type");
+	verify(value >= 0, msg);
+}
+
+
+template <typename T = int>
+inline void is_positive(T value, const char* msg)
+{
+	static_assert(is_nonbool_arithmetic<T>(), "requires non-bool arithmetic type");
+	verify(value > 0, msg);
+}
 
 #endif
