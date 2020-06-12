@@ -30,41 +30,41 @@ void runTests()
 
 
 	//capacity
-	verify(!s.empty(), "s.empty()");
-	verify(s.size() == 3, "s.size()");
-	verify(s.max_size() == s.size(), "s.max_size()");
+	is_true(!s.empty(), "s.empty()");
+	is_true(s.size() == 3, "s.size()");
+	is_true(s.max_size() == s.size(), "s.max_size()");
 
-	verify(!p.empty(), "p.empty()");
-	verify(p.size() == 5, "p.size()");
-	verify(p.max_size() == p.size(), "p.max_size()");
+	is_true(!p.empty(), "p.empty()");
+	is_true(p.size() == 5, "p.size()");
+	is_true(p.max_size() == p.size(), "p.max_size()");
 
 
 	//element access
-	verify(s[0] == 8, "s[0]");
-	verify(s[1] == -2, "s[1]");
-	verify(s[2] == 7, "s[2]");
-	verify(s[1] != 8, "s[1] != 8");
+	is_true(s[0] == 8, "s[0]");
+	is_true(s[1] == -2, "s[1]");
+	is_true(s[2] == 7, "s[2]");
+	is_true(s[1] != 8, "s[1] != 8");
 
-	verify(p[0] == 8, "p[0]");
-	verify(p[2] == 7, "p[2]");
-	verify(p[4] == 0, "p[4]");
+	is_true(p[0] == 8, "p[0]");
+	is_true(p[2] == 7, "p[2]");
+	is_true(p[4] == 0, "p[4]");
 
-	verify(s.at(0) == 8, "s.at(0)");
-	verify(s.at(1) == -2, "s.at(1)");
-	verify(s.at(2) == 7, "s.at(2)");
+	is_true(s.at(0) == 8, "s.at(0)");
+	is_true(s.at(1) == -2, "s.at(1)");
+	is_true(s.at(2) == 7, "s.at(2)");
 
-	verify(p.at(0) == 8, "p.at(0)");
-	verify(p.at(2) == 7, "p.at(2)");
-	verify(p.at(4) == 0, "p.at(4)");
+	is_true(p.at(0) == 8, "p.at(0)");
+	is_true(p.at(2) == 7, "p.at(2)");
+	is_true(p.at(4) == 0, "p.at(4)");
 
-	verify(s.front() == 8, "s.front()");
-	verify(s.front() != -2, "s.front() != -2");
-	verify(s.back() == 7, "s.back()");
-	verify(s.back() != -2, "s.back() != -2");
+	is_true(s.front() == 8, "s.front()");
+	is_true(s.front() != -2, "s.front() != -2");
+	is_true(s.back() == 7, "s.back()");
+	is_true(s.back() != -2, "s.back() != -2");
 
-	verify(p.front() == 8, "p.front()");
-	verify(p.front() != -2, "p.front() != -2");
-	verify(p.back() == 0, "p.back()");
+	is_true(p.front() == 8, "p.front()");
+	is_true(p.front() != -2, "p.front() != -2");
+	is_true(p.back() == 0, "p.back()");
 
 
 	//forward iterators
@@ -75,7 +75,7 @@ void runTests()
 	std::size_t i = 0;
 	for (auto it = u.begin(); it != u.end() && iteratorTest; ++it, ++i)
 		iteratorTest = *it == uExpected[i];
-	verify(iteratorTest, "forward iterator");
+	is_true(iteratorTest, "forward iterator");
 
 	//reverse iterators
 	unsigned urExpected[] = { 6, 1, 3, 9, 5 };
@@ -84,17 +84,17 @@ void runTests()
 	i = 0;
 	for (auto it = u.rbegin(); it != u.rend() && iteratorTest; ++it, ++i)
 		iteratorTest = *it == urExpected[i];
-	verify(iteratorTest, "reverse iterator");
+	is_true(iteratorTest, "reverse iterator");
 
 	//zero-size array
 	array<char, 0> c;
-	verify(c.empty(), "c.empty()");
+	is_true(c.empty(), "c.empty()");
 
 	//iterator on empty array: the loop body should not execute
 	iteratorTest = true;
 	for (const auto e : c)
 		iteratorTest = false;
-	verify(iteratorTest, "fwd iterator on empty array");
+	is_true(iteratorTest, "fwd iterator on empty array");
 
 
 	//fill
@@ -106,7 +106,7 @@ void runTests()
 	bool fillTest = !std::any_of(a.begin(), a.end(),
 		[](char c) { return c != 'x'; }
 	);
-	verify(fillTest, "a.fill()");
+	is_true(fillTest, "a.fill()");
 
 
 	//swap
@@ -120,5 +120,5 @@ void runTests()
 	bool swapTest = true;
 	for (std::size_t idx = 0; idx < m.size() && swapTest; ++idx)
 		swapTest = m[idx] == mExpected[idx] && n[idx] == nExpected[idx];
-	verify(swapTest, "m.swap(n)");
+	is_true(swapTest, "m.swap(n)");
 }
