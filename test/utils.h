@@ -15,6 +15,7 @@
 #define STL_LITE_UTILS_H
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 void replace_all(std::string& str, const std::string& substr, const std::string& new_substr);

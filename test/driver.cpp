@@ -147,7 +147,7 @@ static void show_error(const char* message)
 
 static void show_usage(const char* program_path)
 {
-	std::string program_filename = std::filesystem::path{ program_path }.filename().string();
+	auto program_filename = std::filesystem::path{ program_path }.filename().string();
 
 	std::cout << "Usage: " << program_filename << " {option_name option_value}\n\n";
 

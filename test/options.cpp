@@ -222,8 +222,8 @@ unsigned short get_fail_threshold(const std::string_view& sv)
 	auto begin = sv.data(), end = begin + sv.size();
 	auto result = std::from_chars(begin, end, value);
 
-	//check for "out of range"
-	bool success = result.ec == std::errc();
+	//check for conversion errors
+	auto success = result.ec == std::errc();
 	assert(success);
 	if (!success)
 		throw invalid_option_value{ sv };
