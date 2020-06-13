@@ -16,7 +16,7 @@
 
 #include "../include/array.h"
 
-#include "tester.h"
+#include "verifiers.h"
 
 void array_test()
 {

@@ -170,6 +170,7 @@
     <ClInclude Include="options.h" />
     <ClInclude Include="tester.h" />
     <ClInclude Include="utils.h" />
+    <ClInclude Include="verifiers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
