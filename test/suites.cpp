@@ -19,7 +19,18 @@
 #include "suites.h"
 
 //keyed collection of all test suites defined 
-static std::unordered_map<std::string, suite_runner_type> test_suites;
+static suites_map_type test_suites;
+
+//add an entry to the suites collection, throwing an appropriate exception if insertion fails
+static void checked_insert(suites_map_type& suites, const std::string& name, suite_runner_type runner)
+{
+	if (!suites.insert({ name, runner }).second) {
+		if (suites.find(name) == suites.end())
+			throw test_suite_add_error("unknown error adding test suite", name);
+		else
+			throw test_suite_add_error("duplicate test-suite name", name);
+	}
+}
 
 //macros to facilitate 1-step definition and addition of suite runners to suites collection
 //TEST_SUITE is the only macro necessary, but the other macros are defined and used so that
@@ -40,12 +51,12 @@ void build_suites_collection() \
 
 
 //macro to declare a suite runner function and to add it to the suites collection
-//Example: TEST_SUITE(array_test) is to add the following two lines of code:
+//Example: TEST_SUITE(array_test) adds the following two lines of code:
 // void array_test();
-// test_suites["array_test"] = array_test;
+// checked_insert(test_suites, "array_test", array_test;
 #define TEST_SUITE(SUITE_NAME) \
 	void SUITE_NAME(); \
-	test_suites[#SUITE_NAME] = SUITE_NAME;
+	checked_insert(test_suites, #SUITE_NAME, SUITE_NAME);
 
 //flag to denote if suites collection is already built
 static bool collection_not_built{ true };
