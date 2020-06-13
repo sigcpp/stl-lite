@@ -30,7 +30,7 @@ void array_test()
 
 
 	//capacity
-	is_true(!s.empty(), "s.empty()");
+	is_false(s.empty(), "s.empty()");
 	is_true(s.size() == 3, "s.size()");
 	is_true(s.max_size() == s.size(), "s.max_size()");
 
