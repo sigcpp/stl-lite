@@ -103,7 +103,7 @@ void run_suites(const Options& options)
 
 	//check that the suites specified are actually defined
 	//this check is not required to run the suites, but is included to inform the user of the issue
-	//silently ignoring leaves the user unaware of the reason a specified suite doesn't run
+	//silently ignoring an unfound suite leaves the user unaware of the reason the suite doesn't run
 	if (!run_all_suites) {
 		auto end_suites = suites.cend();
 		for (auto& suite_name : suites_to_run) {
