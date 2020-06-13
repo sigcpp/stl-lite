@@ -15,13 +15,11 @@
 #include <sstream>
 #include <string>
 #include <climits>
-#include <cassert>
 
 #include "utils.h"
 #include "tester.h"
 
-
-static std::string headerText("Running tests");
+static std::string headerText("Running $suite:");
 void set_header_text(std::string text)
 {
 	headerText = text;
@@ -82,7 +80,6 @@ static std::string suite_name;
 static unsigned suites_run;
 void start_suite(const std::string& name)
 {
-	assert(!name.empty());
 	suite_name = name;
 	++suites_run;
 
@@ -152,7 +149,6 @@ void verify(bool success, const char* hint)
 	last_output_ended_in_linebreak = tests_done_suite == 1;
 
 	std::ostringstream message;
-
 
 	if (success) {
 		if (prm == pass_report_mode::indicate)
