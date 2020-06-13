@@ -16,8 +16,22 @@
 
 #include <string>
 #include <unordered_map>
+#include <stdexcept>
 
 using suite_runner_type = void(*)();
-const std::unordered_map<std::string, suite_runner_type>& get_test_suites();
+using suites_map_type = std::unordered_map<std::string, suite_runner_type>;
+
+const suites_map_type& get_test_suites();
+
+
+//error when adding a test suite to collection of suites
+class test_suite_add_error : public std::runtime_error {
+
+public:
+	test_suite_add_error(const std::string& base, const std::string& name)
+		: std::runtime_error{ base + ": " + name } {}
+
+};
+
 
 #endif
