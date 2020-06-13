@@ -9,7 +9,7 @@
 * Attribution and copyright info may be relocated but they must be conspicuous.
 *
 * Define a collection of test suites and functions to manage the collection
-* Edit this with a lot of care: many carefully designed macros to make suite definition easy and safe
+* Edit this file with a lot of care: many carefully designed macros to make suite definition easy and safe
 * Go to the section at the end of this file to add a test suite
 */
 
@@ -23,12 +23,12 @@ static std::unordered_map<std::string, suite_runner_type> test_suites;
 
 //macros to facilitate 1-step definition and addition of suite runners to suites collection
 //TEST_SUITE is the only macro necessary, but the other macros are defined and used so that
-//the section where test suites are added looks cohesive
+//the section where test suites are added looks declarative and cohesive
 
 #define DECLARE_BUILD_SUITES_COLLECTION void build_suites_collection();
 
 #define BUILD_SUITES_COLLECTION \
-	if (collection_built) \
+	if (collection_not_built) \
 		build_suites_collection();
 
 #define START_SUITES_COLLECTION \
@@ -48,16 +48,16 @@ void build_suites_collection() \
 	test_suites[#SUITE_NAME] = SUITE_NAME;
 
 //flag to denote if suites collection is already built
-static bool collection_built{ true };
+static bool collection_not_built{ true };
 
 //provide read-only access to collection of all test suites defined
 //build collection "just in time" if it has not already been built
 const std::unordered_map<std::string, suite_runner_type>& get_test_suites()
 {
 	DECLARE_BUILD_SUITES_COLLECTION; // void build_suites_collection();
-	BUILD_SUITES_COLLECTION;		 // if (collection_built) build_suites_collection();
+	BUILD_SUITES_COLLECTION;		 // if (collection_not_built) build_suites_collection();
 
-	collection_built = false;
+	collection_not_built = false;
 	return test_suites;
 }
 
