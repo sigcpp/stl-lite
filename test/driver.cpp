@@ -16,7 +16,7 @@
 #include <string>
 #include <exception>
 #include <filesystem>
-#include <map>
+#include <unordered_map>
 #include <algorithm>
 #include <cassert>
 
@@ -89,10 +89,11 @@ void array_test();
 void run_suites(const Options& options)
 {
 	using suite_runner_type = void(*)();
-	std::map<std::string, suite_runner_type> suites{
+	std::unordered_map<std::string, suite_runner_type> suites{
 		//add one entry for each test suite to run
 		//suite-name and suite-runner, both in braces
-		{"array-test", array_test}
+		//not necessary, but recommend using the suite_runner function's name as the suite name
+		{"array_test", array_test}
 	};
 
 	//build a collection of suites to run if necessary
