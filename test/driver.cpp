@@ -82,36 +82,37 @@ int main(int argc, char* argv[])
 }
 
 
-//run test suites in sequence: runs all suites defined or only those specified on cmd-line
+//run test suites in sequence: runs all suites defined or only those whose names are specified in options
 void run_suites(const Options& options)
 {
 	//retrieve all test suites defined
 	auto suites = get_test_suites();
 
-	//build a collection of suite names to run if necessary
+	//build a collection of suite names specified in the options structucre
 	//options.suites_to_run is empty or a semi-colon delimited list of suite names
-	const auto suite_names_to_run = split(options.suites_to_run, ';');
-	auto run_all_suites = suite_names_to_run.empty();
+	const auto names_to_run = split(options.suites_to_run, ';');
+	auto run_all_suites = names_to_run.empty();
 
-	//check that the suite names specified correspond to suites defined
-	//this check is not required to run the suites, but is included to inform the user of any issues
+	//check that the suite names specified in options correspond to suites defined
+	//this check is not required to run the suites, but is included to inform the user of any issues;
 	//silently ignoring an unfound suite leaves the user unaware of the reason the suite doesn't run
 	if (!run_all_suites) {
 		auto end_suites = suites.cend();
-		for (auto& suite_name : suite_names_to_run) {
+		for (auto& suite_name : names_to_run) {
 			if (suites.find(suite_name) == end_suites) {
 				assert(false);
-				throw invalid_option_value{ std::string{"suite "} +suite_name + " not defined" };
+				throw invalid_option_value{ std::string{"test suite "} +suite_name + " not defined" };
 			}
 		}
 	}
 
 	//run all suites or only the suites indicated in options
 	auto size = suites.size();
-	auto begin = suite_names_to_run.cbegin(), end = suite_names_to_run.cend();
+	auto begin_names_to_run = names_to_run.cbegin(), end_names_to_run = names_to_run.cend();
 	for (const auto& suite : suites) {
-		if (run_all_suites || std::find(begin, end, suite.first) != end) {
-			start_suite(suite.first);
+		const auto& key = suite.first;
+		if (run_all_suites || std::find(begin_names_to_run, end_names_to_run, key) != end_names_to_run) {
+			start_suite(key);
 			suite.second();
 			if (size > 1 && options.summary)
 				summarize_suite();
