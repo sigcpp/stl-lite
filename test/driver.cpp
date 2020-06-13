@@ -108,7 +108,7 @@ void run_suites(const Options& options)
 		for (auto& suite_name : suites_to_run) {
 			if (suites.find(suite_name) == end_suites) {
 				assert(false);
-				throw invalid_option_value{ std::string{"suite "} + suite_name + " not defined" };
+				throw invalid_option_value{ std::string{"suite "} +suite_name + " not defined" };
 			}
 		}
 	}
