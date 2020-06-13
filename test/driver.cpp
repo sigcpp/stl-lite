@@ -66,13 +66,17 @@ int main(int argc, char* argv[])
 		show_error_and_usage(cle.what(), argv[0]);
 		return -5;
 	}
+	catch (const test_suite_add_error& tae) {
+		show_error(tae.what());
+		return -6;
+	}
 	catch (const std::exception& e) {
 		show_error((std::string{ "Unexpected error: " } +e.what()).data());
-		return -6;
+		return -7;
 	}
 	catch (...) {
 		show_error("Unexpected error");
-		return -7;
+		return -8;
 	}
 
 	if (options.summary)
