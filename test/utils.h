@@ -27,15 +27,18 @@ std::vector<T> split(const T& s, char delimiter)
 		"requires std::string type or std::string_view type");
 
 	std::vector<T> result;
+	if (s.empty())
+		return result;
+
 	typename T::size_type pos, last_pos{ 0 };
 	while ((pos = s.find(delimiter, last_pos)) != T::npos) {
 		if (s[last_pos] != delimiter)
-			result.emplace_back(s.substr(last_pos, pos - last_pos));
+			result.push_back(s.substr(last_pos, pos - last_pos));
 		last_pos = pos + 1;
 	}
 
 	if (last_pos < s.size())
-		result.emplace_back(s.substr(last_pos, pos - last_pos));
+		result.push_back(s.substr(last_pos, pos - last_pos));
 
 	return result;
 }
