@@ -34,7 +34,7 @@ void array_test()
 	is_true(s.size() == 3, "s.size()");
 	is_true(s.max_size() == s.size(), "s.max_size()");
 
-	is_true(!p.empty(), "p.empty()");
+	is_false(p.empty(), "p.empty()");
 	is_true(p.size() == 5, "p.size()");
 	is_true(p.max_size() == p.size(), "p.max_size()");
 
