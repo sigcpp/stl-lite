@@ -21,6 +21,7 @@
 #include <cassert>
 
 #include "utils.h"
+#include "suites.h"
 #include "tester.h"
 #include "options.h"
 #include "options-exceptions.h"
@@ -81,32 +82,23 @@ int main(int argc, char* argv[])
 }
 
 
-//declare suite runners: one for each test suite
-//also add an entry in the "suites" map for each suite defined
-void array_test();
-
-
+//run test suites in sequence: runs all suites defined or only those specified on cmd-line
 void run_suites(const Options& options)
 {
-	using suite_runner_type = void(*)();
-	std::unordered_map<std::string, suite_runner_type> suites{
-		//add one entry for each test suite to run
-		//suite-name and suite-runner, both in braces
-		//not necessary, but recommend using the suite_runner function's name as the suite name
-		{"array_test", array_test}
-	};
+	//retrieve all test suites defined
+	auto suites = get_test_suites();
 
-	//build a collection of suites to run if necessary
+	//build a collection of suite names to run if necessary
 	//options.suites_to_run is empty or a semi-colon delimited list of suite names
-	const auto suites_to_run = split(options.suites_to_run, ';');
-	auto run_all_suites = suites_to_run.empty();
+	const auto suite_names_to_run = split(options.suites_to_run, ';');
+	auto run_all_suites = suite_names_to_run.empty();
 
-	//check that the suites specified are actually defined
-	//this check is not required to run the suites, but is included to inform the user of the issue
+	//check that the suite names specified correspond to suites defined
+	//this check is not required to run the suites, but is included to inform the user of any issues
 	//silently ignoring an unfound suite leaves the user unaware of the reason the suite doesn't run
 	if (!run_all_suites) {
 		auto end_suites = suites.cend();
-		for (auto& suite_name : suites_to_run) {
+		for (auto& suite_name : suite_names_to_run) {
 			if (suites.find(suite_name) == end_suites) {
 				assert(false);
 				throw invalid_option_value{ std::string{"suite "} +suite_name + " not defined" };
@@ -116,7 +108,7 @@ void run_suites(const Options& options)
 
 	//run all suites or only the suites indicated in options
 	auto size = suites.size();
-	auto begin = suites_to_run.cbegin(), end = suites_to_run.cend();
+	auto begin = suite_names_to_run.cbegin(), end = suite_names_to_run.cend();
 	for (const auto& suite : suites) {
 		if (run_all_suites || std::find(begin, end, suite.first) != end) {
 			start_suite(suite.first);

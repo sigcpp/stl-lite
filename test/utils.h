@@ -8,7 +8,7 @@
 * - Copyright notice cannot be altered
 * Attribution and copyright info may be relocated but they must be conspicuous.
 *
-* Declare generanl-purpose utility functions and such
+* Declare general-purpose utility functions and such
 */
 
 #ifndef STL_LITE_UTILS_H
