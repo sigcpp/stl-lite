@@ -26,12 +26,23 @@
 #include "options.h"
 #include "options-exceptions.h"
 
+//error codes returned back from main are negative
+enum class error_code {
+	cmd_line_initial = -1, file_initial = -2, unexpected_typed_initial = -3, unexpected_untyped_initial = -4,
+	cmd_line_run = -6, file_run = -7, suite_add_run = -8, unexpected_typed_run = -9, 
+	unexpected_untyped_run = -10
+};
+
 
 void run_suites(const Options& options);
-static void show_error(const char* message);
+static int show_error(const char* message, error_code ec);
 static void show_usage(const char* program_path);
-static void show_error_and_usage(const char* message, const char* program_path);
+static int show_error_and_usage(const char* message, const char* program_path, error_code ec);
 
+
+//return  < 0: error
+//return == 0: no error, no tests failed
+//return  > 0: no error, tests failed; number of failed tests returned
 int main(int argc, char* argv[])
 {
 	Options options;
@@ -42,20 +53,17 @@ int main(int argc, char* argv[])
 		apply_options(options, fileOut);
 	}
 	catch (const cmd_line_error& cle) {
-		show_error_and_usage(cle.what(), argv[0]);
-		return -1;
+		return show_error_and_usage(cle.what(), argv[0], error_code::cmd_line_initial);
 	}
 	catch (const file_error& fe) {
-		show_error_and_usage(fe.what(), argv[0]);
-		return -2;
+		return show_error_and_usage(fe.what(), argv[0], error_code::file_initial);
 	}
 	catch (const std::exception& e) {
-		show_error((std::string{ "Unexpected error: " } +e.what()).data());
-		return -3;
+		auto message = format_message("Unexpected error", e.what());
+		return show_error(message.data(), error_code::unexpected_typed_initial);
 	}
 	catch (...) {
-		show_error("Unexpected error");
-		return -4;
+		show_error("Unexpected error", error_code::unexpected_untyped_initial);
 	}
 
 
@@ -63,20 +71,17 @@ int main(int argc, char* argv[])
 		run_suites(options);
 	}
 	catch (const cmd_line_error& cle) {
-		show_error_and_usage(cle.what(), argv[0]);
-		return -5;
+		show_error_and_usage(cle.what(), argv[0], error_code::cmd_line_run);
 	}
 	catch (const test_suite_add_error& tae) {
-		show_error(tae.what());
-		return -6;
+		show_error(tae.what(), error_code::suite_add_run);
 	}
 	catch (const std::exception& e) {
-		show_error((std::string{ "Unexpected error: " } +e.what()).data());
-		return -7;
+		auto message = format_message("Unexpected error", e.what());
+		show_error(message.data(), error_code::unexpected_typed_run);
 	}
 	catch (...) {
-		show_error("Unexpected error");
-		return -8;
+		show_error("Unexpected error", error_code::unexpected_untyped_run);
 	}
 
 	if (options.summary)
@@ -128,17 +133,21 @@ void run_suites(const Options& options)
 //the following functions assume they are called only from main so that the parameters are always correct
 //assertion and error handling are included by design
 
-static void show_error_and_usage(const char* message, const char* program_path)
+static int show_error_and_usage(const char* message, const char* program_path, error_code ec)
 {
-	show_error(message);
+	show_error(message, ec);
 	std::cout << '\n';
 	show_usage(program_path);
+
+	return static_cast<int>(ec);
 }
 
 
-static void show_error(const char* message)
+static int show_error(const char* message, error_code ec)
 {
-	std::cout << message << '\n';
+	int code{ static_cast<int>(ec) };
+	std::cout << "Error " << code << "; " <<  message << '\n';
+	return code;
 }
 
 
