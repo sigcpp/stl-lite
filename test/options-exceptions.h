@@ -19,23 +19,16 @@
 #include <string>
 #include <filesystem>
 
-static std::string message(const std::string_view& base, const std::string& extra = "")
-{
-	std::string msg{ base };
-	if (!extra.empty())
-		msg += ": " + extra;
-
-	return msg;
-}
+#include "utils.h"
 
 //base class for cmd-line errors: no public ctors to force use of a specialized error
 class cmd_line_error : public std::runtime_error {
 
 protected:
-	cmd_line_error(const std::string_view& base) : std::runtime_error{ message(base) } {}
+	cmd_line_error(const std::string_view& base) : std::runtime_error{ format_message(base) } {}
 
 	cmd_line_error(const std::string_view& base, const std::string& details) :
-		std::runtime_error{ message(base, details) },
+		std::runtime_error{ format_message(base, details) },
 		details_{ details } {}
 
 	const std::string& details() const noexcept
@@ -118,10 +111,10 @@ private:
 class file_error : public std::runtime_error {
 
 public:
-	file_error(const std::string& base) : std::runtime_error{ message(base) } {}
+	file_error(const std::string& base) : std::runtime_error{ format_message(base) } {}
 
 	file_error(const std::string& base, const std::filesystem::path& filepath) :
-		std::runtime_error{ message(base, filepath.string()) },
+		std::runtime_error{ format_message(base, filepath.string()) },
 		filepath_{ filepath } {}
 
 	const std::filesystem::path& filepath() const noexcept

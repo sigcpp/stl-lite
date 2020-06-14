@@ -24,3 +24,14 @@ void replace_all(std::string& str, const std::string& substr, const std::string&
 	for (; pos != std::string::npos; pos = str.find(substr, pos + new_substr_size))
 		str.replace(pos, substr_size, new_substr);
 }
+
+
+//combine a 2-part message to one message
+std::string format_message(const std::string_view& base, const std::string& extra)
+{
+	std::string msg{ base };
+	if (!extra.empty())
+		msg += ": " + extra;
+
+	return msg;
+}

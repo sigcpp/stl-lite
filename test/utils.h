@@ -20,6 +20,8 @@
 
 void replace_all(std::string& str, const std::string& substr, const std::string& new_substr);
 
+std::string format_message(const std::string_view& base, const std::string& extra = "");
+
 //split a delimited string or string_view into vector
 template<typename T>
 std::vector<T> split(const T& s, char delimiter)
