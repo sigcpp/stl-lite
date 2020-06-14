@@ -29,7 +29,7 @@
 //error codes returned back from main are negative
 enum class error_code {
 	cmd_line_initial = -1, file_initial = -2, unexpected_typed_initial = -3, unexpected_untyped_initial = -4,
-	cmd_line_run = -6, file_run = -7, suite_add_run = -8, unexpected_typed_run = -9, 
+	cmd_line_run = -6, file_run = -7, suite_add_run = -8, unexpected_typed_run = -9,
 	unexpected_untyped_run = -10
 };
 
@@ -103,7 +103,7 @@ void run_suites(const Options& options)
 	auto run_all_suites = names_to_run.empty();
 
 	//check that the suite names specified in options correspond to suites defined
-	//this check is not required to run the suites, but is included to inform the user of any issues;
+	//this check is not required to run the suites, but is included to inform the user of any issues
 	//silently ignoring an unfound suite leaves the user unaware of the reason the suite doesn't run
 	if (!run_all_suites) {
 		auto end_suites = suites.cend();
@@ -146,7 +146,7 @@ static int show_error_and_usage(const char* message, const char* program_path, e
 static int show_error(const char* message, error_code ec)
 {
 	int code{ static_cast<int>(ec) };
-	std::cout << "Error " << code << "; " <<  message << '\n';
+	std::cout << "Error " << code << "; " << message << '\n';
 	return code;
 }
 
