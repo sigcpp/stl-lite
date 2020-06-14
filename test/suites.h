@@ -18,6 +18,8 @@
 #include <unordered_map>
 #include <stdexcept>
 
+#include "utils.h"
+
 using suite_runner_type = void(*)();
 using suites_map_type = std::unordered_map<std::string, suite_runner_type>;
 
@@ -28,9 +30,16 @@ const suites_map_type& get_test_suites();
 class test_suite_add_error : public std::runtime_error {
 
 public:
-	test_suite_add_error(const std::string& base, const std::string& name)
-		: std::runtime_error{ base + ": " + name } {}
+	test_suite_add_error(const std::string& base, const std::string& suite_name)
+		: std::runtime_error{ format_message(base, suite_name) }, suite_name_{ suite_name } {}
 
+	const std::string& suite_name() const noexcept
+	{
+		return suite_name_;
+	}
+
+private:
+	std::string suite_name_;
 };
 
 
