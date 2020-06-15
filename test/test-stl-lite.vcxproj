@@ -162,6 +162,7 @@
     <ClCompile Include="array-test.cpp" />
     <ClCompile Include="driver.cpp" />
     <ClCompile Include="options.cpp" />
+    <ClCompile Include="string_view-test.cpp" />
     <ClCompile Include="suites.cpp" />
     <ClCompile Include="tester.cpp" />
     <ClCompile Include="utils.cpp" />
