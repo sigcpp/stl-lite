@@ -23,6 +23,7 @@
 
 #include "options.h"
 #include "options-exceptions.h"
+#include "utils.h"
 
 Options get_options(char* arguments[], const std::size_t size)
 {
@@ -51,7 +52,7 @@ Options get_options(char* arguments[], const std::size_t size)
 	//names in name-value pair for cmd-line options
 	constexpr std::string_view option_name_header{ "-h" }, option_name_header_text{ "-ht" },
 		option_name_summary{ "-s" }, option_name_prm{ "-p" }, option_name_threshold{ "-t" },
-		option_name_file_start{ "-f" };
+		option_name_file_start{ "-f" }, option_name_run{ "-run" };
 
 	std::string_view prm_value;
 	std::string output_filepath_value;
@@ -76,12 +77,14 @@ Options get_options(char* arguments[], const std::size_t size)
 			options.header = strtobool(value);
 		else if (name == option_name_header_text)
 			options.header_text = value;
-		else if (name == option_name_prm)
-			prm_value = value; //delay converting prm to enum until after file open mode is known
 		else if (name == option_name_summary)
 			options.summary = strtobool(value);
+		else if (name == option_name_prm)
+			prm_value = value; //delay converting prm to enum until after file open mode is known
 		else if (name == option_name_threshold)
 			options.fail_threshold = get_fail_threshold(value);
+		else if (name == option_name_run)
+			options.suites_to_run = value;
 		else if (name._Starts_with(option_name_file_start)) {
 			options.fom = get_file_open_mode(name);
 			output_filepath_value = value;
@@ -116,16 +119,16 @@ Options get_options(char* arguments[], const std::size_t size)
 
 void apply_options(const Options& options, std::ofstream& fileOut)
 {
-	setHeaderText(options.header_text);
-	setPassReportMode(options.prm);
-	setFailThreshold(options.fail_threshold);
+	set_header_text(options.header_text);
+	set_pass_report_mode(options.prm);
+	set_fail_threshold(options.fail_threshold);
 
 	//if output to file option not enabled, use standard output
 	//else open output file in appropriate mode
 	if (options.fom == file_open_mode::no_file)
-		setOutput(std::cout);
+		set_output(std::cout);
 	else {
-		setOutput(fileOut);
+		set_output(fileOut);
 
 		//enforce create-only file open mode
 		if (options.fom == file_open_mode::new_file && std::filesystem::exists(options.output_filepath)) {
@@ -219,8 +222,8 @@ unsigned short get_fail_threshold(const std::string_view& sv)
 	auto begin = sv.data(), end = begin + sv.size();
 	auto result = std::from_chars(begin, end, value);
 
-	//check for "out of range"
-	bool success = result.ec == std::errc();
+	//check for conversion errors
+	auto success = result.ec == std::errc();
 	assert(success);
 	if (!success)
 		throw invalid_option_value{ sv };
@@ -232,14 +235,4 @@ unsigned short get_fail_threshold(const std::string_view& sv)
 		throw invalid_option_value{ sv };
 
 	return value;
-}
-
-
-//replace all instances of a substring with a new substring
-void replace_all(std::string& str, const std::string& substr, const std::string& new_substr)
-{
-	auto pos = str.find(substr);
-	auto substr_size = substr.size(), new_substr_size = new_substr.size();
-	for (; pos != std::string::npos; pos = str.find(substr, pos + new_substr_size))
-		str.replace(pos, substr_size, new_substr);
 }
