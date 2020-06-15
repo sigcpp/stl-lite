@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="array-test.cpp" />
+    <ClCompile Include="driver-test.cpp" />
     <ClCompile Include="driver.cpp" />
     <ClCompile Include="options.cpp" />
     <ClCompile Include="suites.cpp" />
