@@ -354,3 +354,6 @@ MigrationBackup/
 
 # Ignore scratch folder: smurthys
 _scratch/
+
+# Ignore Visual Studio code settings
+.vscode/settings.json
