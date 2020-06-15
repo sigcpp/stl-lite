@@ -18,7 +18,14 @@
 #include <iostream>
 #include <string_view>
 
+void test_get_options();
+
 void driver_test()
+{
+	test_get_options();
+}
+
+void test_get_options()
 {
 	//names in name-value pair
 	char path[]{ "C:/Libraries/stl-lite/array_test.exe" }, h[]{ "-h" }, ht[]{ "-ht" }, p[]{ "-p" },
