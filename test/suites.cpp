@@ -88,6 +88,7 @@ START_SUITES_COLLECTION //same as void build_suites_collection() {
 	//the semi-colon at the end of macro invocation is not required but its use make things look "authentic"
 
 	TEST_SUITE(array_test);
+	TEST_SUITE(driver_test);
 
 // do not add/edit anything after this line
 END_SUITES_COLLECTION	// same as }
