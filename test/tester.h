@@ -35,6 +35,4 @@ void start_suite(const std::string& name);
 void summarize_suite();
 void summarize_tests();
 
-void verify(bool success, const char* msg);
-
 #endif
