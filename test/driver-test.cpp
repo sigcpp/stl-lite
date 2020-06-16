@@ -30,7 +30,7 @@ void driver_test()
 }
 
 //this fn is not in use right now, still deciding whether I want to use a function to create expected options
-//or just explicitly set the expected options
+//or just explicitly set the expected options as is done now in generate_expected_options()
 Options create_expected_options(std::filesystem::path output_filepath, std::string command_name,
 	std::string suites_to_run, bool header = true, bool summary = true,
 	std::string header_text = "Running $suite", pass_report_mode prm = pass_report_mode::indicate,
