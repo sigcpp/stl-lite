@@ -8,10 +8,9 @@
 * - Copyright notice cannot be altered
 * Attribution and copyright info may be relocated but they must be conspicuous.
 *
-* Test the string_view of the C++ standard library and 
-* provide a test benchmark for subsequent implementation of string_view.
+* Unit tests for string_view
 * - see C++17 [string.view]
-*	https://timsong-cpp.github.io/cppwp/n4659/string.view
+* - https://timsong-cpp.github.io/cppwp/n4659/string.view
 */
 
 #include <stdexcept>
