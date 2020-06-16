@@ -236,14 +236,12 @@ void string_view_test()
 
 
 	//6. Modifiers
-	const char* sv_data{ sv.data() };
-	size_t sv_size{ sv.size() };
-	size_t n{ 1 };
+	const char* data_expected sv.data()+1;
+	size_t size_expected { sv.size() - 1 };
 
 	sv.remove_prefix(n);
-	sv_size -= n;
-	is_true(sv.data() == sv_data + 1, "sv.remove_prefix().data()");
-	is_true(sv.size() == sv_size, "sv.remove_prefix().size()");
+	is_true(sv.data() == data_expected, "sv.remove_prefix().data()");
+	is_true(sv.size() == size_expected, "sv.remove_prefix().size()");
 	
 	sv_data = sv.data();
 
