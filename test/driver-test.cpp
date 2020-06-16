@@ -19,8 +19,6 @@
 #include <iostream>
 #include <string_view>
 #include <vector>
-#include <unordered_map>
-#include <tuple>
 
 void test_get_options();
 
@@ -99,7 +97,6 @@ std::vector<std::pair<std::string, Options>> generate_expected_options()
 
 void test_get_options()
 {
-	//array with only path to test the behavior of default options
 	char* args[100];
 
 	std::vector<std::pair<std::string, Options>> args_and_options = generate_expected_options();
