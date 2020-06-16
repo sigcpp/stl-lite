@@ -48,7 +48,7 @@ void string_view_test()
 	is_true(r_sv.length() == r_sv.size(), "r_sv.length() = r_sv.size()");
 	is_true(r_sv.empty() == f_sv.empty(), "r_sv.empty() = f_sv.empty()");
 
-	//Assigns a view(replaces the view with that of view).
+	//assignment
 	string_view a_sv = r_sv;
 	is_true(a_sv.size() == r_sv.size(), "a_sv.size() = r_sv.size()");
 	is_true(a_sv.length() == a_sv.size(), "a_sv.length() = a_sv.size()");
