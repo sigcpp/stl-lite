@@ -28,9 +28,11 @@
 
 //error codes returned back from main are negative
 enum class error_code {
-	cmd_line_initial = -1, file_initial = -2, unexpected_typed_initial = -3, unexpected_untyped_initial = -4,
-	cmd_line_run = -6, file_run = -7, suite_add_run = -8, unexpected_typed_run = -9,
-	unexpected_untyped_run = -10
+	no_error = 0,
+	cmd_line_initial = -1, file_initial = -2, 
+	unexpected_typed_initial = -51, unexpected_untyped_initial = -52,
+	cmd_line_run = -100, file_run = -101, suite_add_run = -102, fail_threshold_run = -103,
+	unexpected_typed_run = -151, unexpected_untyped_run = -152
 };
 
 
