@@ -37,11 +37,18 @@ void string_view_test()
 	is_true(sv.length() == sv.size(), "sv.length() == sv.size()");
 	is_false(sv.empty(), "!sv.empty()");
 
-	//Constructs a view of the first 5 characters of the character array
+	//Constructs a view of the first 5 characters of the C-string
 	string_view f_sv(c_hw, 5);
 	is_true(f_sv.size() == 5, "f_sv.size()");
 	is_true(f_sv.length() == f_sv.size(), "f_sv.length() == f_sv.size()");
 	is_false(f_sv.empty(), "!f_sv.empty()");
+
+	//Constructs a view of the first 5 characters of the character array
+	const char a_hw[]{ 'h','e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!' };
+	string_view sv_a(a_hw, 5);
+	is_true(sv_a.size() == 5, "sv_a.size()");
+	is_true(sv_a.length() == sv_a.size(), "sv_a.length() == sv_a.size()");
+	is_false(sv_a.empty(), "!sv_a.empty()");
 
 	//copy constructor
 	string_view c_sv(f_sv);
