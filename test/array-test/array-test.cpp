@@ -14,9 +14,9 @@
 
 #include <algorithm>
 
-#include "../include/array.h"
+#include "../../include/array.h"
 
-#include "verifiers.h"
+#include "../verifiers.h"
 
 void array_test()
 {
