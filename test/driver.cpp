@@ -57,9 +57,9 @@ static void show_usage(const char* program_path);
 static int show_error_and_usage(const char* message, const char* program_path, driver_error_code ec);
 
 
-//return  < 0: error
+//return  < 0: error; including fail threshold met
 //return == 0: no error, no tests failed
-//return  > 0: no error, tests failed; number of failed tests returned
+//return  > 0: no error, some tests failed but fail threshold not met; number of failed tests returned
 int main(int argc, char* argv[])
 {
 	Options options;
