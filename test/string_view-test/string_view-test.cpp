@@ -243,12 +243,11 @@ void string_view_test()
 	is_true(sv.data() == data_expected, "sv.remove_prefix().data()");
 	is_true(sv.size() == size_expected, "sv.remove_prefix().size()");
 	
-	sv_data = sv.data();
-
+	data_expected = sv.data();
+	size_expected--;
 	sv.remove_suffix(n);
-	sv_size -= n;
-	is_true(sv.data() == sv_data, "sv.remove_suffix().data()");
-	is_true(sv.size() == sv_size, "sv.remove_suffix().size()");
+	is_true(sv.data() == data_expected, "sv.remove_suffix().data()");
+	is_true(sv.size() == size_expected, "sv.remove_suffix().size()");
 
 	//swap(exchanges the values of *this and s.)
 	string_view o_sv("lunch!");
