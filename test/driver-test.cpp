@@ -29,6 +29,8 @@ void driver_test()
 	test_get_options();
 }
 
+//this fn is not in use right now, still deciding whether I want to use a function to create expected options
+//or just explicitly set the expected options
 Options create_expected_options(std::filesystem::path output_filepath, std::string command_name,
 	std::string suites_to_run, bool header = true, bool summary = true,
 	std::string header_text = "Running $suite", pass_report_mode prm = pass_report_mode::indicate,
