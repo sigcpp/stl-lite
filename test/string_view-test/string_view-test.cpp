@@ -1,6 +1,6 @@
 /*
 * string_view-test.cpp
-* Ray Chen, Sean Murthy 
+* Ray Chen, Sean Murthy
 * (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
 * Attribution and copyright notice must be retained.
@@ -165,7 +165,7 @@ void string_view_test()
 	//assignment and data test
 	string_view sv_4 = str_2;
 	is_true(sv_4.data() == str_2, "sv_4.data()");
-	
+
 	is_true(sv_4[0] == str_2[0], "sv_4[0]");
 	is_true(sv_4[3] == str_2[3], "sv_4[3]");
 	is_true(sv_4[6] == str_2[6], "sv_4[6]");
@@ -236,16 +236,16 @@ void string_view_test()
 
 
 	//6. Modifiers
-	const char* data_expected sv.data()+1;
-	size_t size_expected { sv.size() - 1 };
+	const char* data_expected{ sv.data() + 1 };
+	size_t size_expected{ sv.size() - 1 };
 
-	sv.remove_prefix(n);
+	sv.remove_prefix(1);
 	is_true(sv.data() == data_expected, "sv.remove_prefix().data()");
 	is_true(sv.size() == size_expected, "sv.remove_prefix().size()");
-	
+
 	data_expected = sv.data();
 	size_expected--;
-	sv.remove_suffix(n);
+	sv.remove_suffix(1);
 	is_true(sv.data() == data_expected, "sv.remove_suffix().data()");
 	is_true(sv.size() == size_expected, "sv.remove_suffix().size()");
 
@@ -265,7 +265,7 @@ void string_view_test()
 	//copy
 	char str_copy[]{ "chips" };
 	size_t rlen, pos{ 0 };
-	n = 4;
+	size_t n = 4;
 
 	rlen = f_sv.copy(str_copy, n, pos);
 	is_true(rlen == (n < f_sv.size() - pos) ? n : f_sv.size() - pos, "f_sv.copy(str_copy, n, pos)");
