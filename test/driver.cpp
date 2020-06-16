@@ -18,6 +18,7 @@
 #include <filesystem>
 #include <unordered_map>
 #include <algorithm>
+#include <sstream>
 #include <cassert>
 
 #include "utils.h"
@@ -25,18 +26,21 @@
 #include "tester.h"
 #include "options.h"
 #include "options-exceptions.h"
+#include "verifier-exceptions.h"
+
 
 //error codes returned back from main are negative
 enum class error_code {
 	no_error = 0,
 	cmd_line_initial = -1, file_initial = -2, 
 	unexpected_typed_initial = -51, unexpected_untyped_initial = -52,
-	cmd_line_run = -100, file_run = -101, suite_add_run = -102, fail_threshold_run = -103,
+	cmd_line_run = -100, file_run = -101, suite_add_run = -102, fail_threshold_met_run = -103,
 	unexpected_typed_run = -151, unexpected_untyped_run = -152
 };
 
 
 void run_suites(const Options& options);
+static std::string format_error_message(const char* message, error_code ec);
 static int show_error(const char* message, error_code ec);
 static void show_usage(const char* program_path);
 static int show_error_and_usage(const char* message, const char* program_path, error_code ec);
@@ -61,35 +65,62 @@ int main(int argc, char* argv[])
 		return show_error_and_usage(fe.what(), argv[0], error_code::file_initial);
 	}
 	catch (const std::exception& e) {
-		auto message = format_message("Unexpected error", e.what());
+		const auto message = format_message("Unexpected error", e.what());
 		return show_error(message.data(), error_code::unexpected_typed_initial);
 	}
 	catch (...) {
-		show_error("Unexpected error", error_code::unexpected_untyped_initial);
+		return show_error("Unexpected error", error_code::unexpected_untyped_initial);
 	}
 
+	//no errors in getting and applying options: OK to run test suites
 
+	error_code error{ error_code::no_error };
+	std::string message;
 	try {
 		run_suites(options);
 	}
+
+	//errors where it is certain no tests have yet been run
 	catch (const cmd_line_error& cle) {
-		show_error_and_usage(cle.what(), argv[0], error_code::cmd_line_run);
+		return show_error_and_usage(cle.what(), argv[0], error_code::cmd_line_run);
 	}
 	catch (const test_suite_add_error& tae) {
-		show_error(tae.what(), error_code::suite_add_run);
-	}
-	catch (const std::exception& e) {
-		auto message = format_message("Unexpected error", e.what());
-		show_error(message.data(), error_code::unexpected_typed_run);
-	}
-	catch (...) {
-		show_error("Unexpected error", error_code::unexpected_untyped_run);
+		return show_error(tae.what(), error_code::suite_add_run);
 	}
 
+	//errors where one or more tests have likely been run
+	catch (const fail_threshold_met_error& fte) {
+		error = error_code::fail_threshold_met_run;
+		message = fte.what();
+	}
+
+	//errors where we do not know if tests have been run
+	catch (const std::exception& e) {
+		error = error_code::unexpected_typed_run;
+		message = format_message("Unexpected error", e.what());
+	}
+	catch (...) {
+		error = error_code::unexpected_untyped_run;
+		message = "Unexpected error";
+	}
+
+	//log message to output destination, and also to screen if output is file
+	if (error != error_code::no_error) {
+		message = '\n' + format_error_message(message.data(), error) + '\n';
+		log_line(message.data());
+		if (options.fom != file_open_mode::no_file)
+			std::cout << message << '\n'; //not calling show_error because message is already formatted 
+	}
+
+	//print summary because one or more tests may have been run
 	if (options.summary)
 		summarize_tests();
 
-	return get_tests_failed_total();
+	//return totaly tests failed only if there was no error: the caller should know if there was an error
+	if (error == error_code::no_error)
+		return get_tests_failed_total();
+	else
+		return static_cast<int>(error);
 }
 
 
@@ -145,11 +176,18 @@ static int show_error_and_usage(const char* message, const char* program_path, e
 }
 
 
+static std::string format_error_message(const char* message, error_code ec)
+{
+	std::stringstream result;
+	result << "Error " << static_cast<int>(ec) << "; " << message;
+	return result.str();
+}
+
+
 static int show_error(const char* message, error_code ec)
 {
-	int code{ static_cast<int>(ec) };
-	std::cout << "Error " << code << "; " << message << '\n';
-	return code;
+	std::cout << format_error_message(message, ec) << '\n';
+	return static_cast<int>(ec);
 }
 
 
