@@ -107,7 +107,7 @@ void string_view_test()
 	//4. Element data and access
 	is_true(empty_sv.data() == nullptr, "empty_sv.data()");
 
-	//const char* str_1 = "hello, world!";
+	//c_hw is defined earlier as const C-string "hello, world!"
 	//default constructor and data test
 	string_view sv_1(c_hw);
 	is_true(sv_1.data() == c_hw, "sv_1.data()");
