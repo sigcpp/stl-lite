@@ -30,7 +30,7 @@ void string_view_test()
 	is_true(empty_sv.length() == empty_sv.size(), "empty_sv.length() = empty_sv.size()");
 	is_true(empty_sv.empty(), "empty_sv.empty()");
 
-	//constructs a string_view with const char
+	//constructs a string_view with const char[]
 	string_view sv("hello, world!");
 	is_true(sv.size() == 13, "sv.size()");
 	is_true(sv.length() == sv.size(), "sv.length() = sv.size()");
