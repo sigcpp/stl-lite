@@ -8,7 +8,7 @@
 * - Copyright notice cannot be altered
 * Attribution and copyright info may be relocated but they must be conspicuous.
 *
-* Intialize tester and start unit tests
+* Intialize tester from cmd-line and run unit tests
 */
 
 #include <iostream>
