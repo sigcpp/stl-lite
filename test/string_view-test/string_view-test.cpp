@@ -42,7 +42,7 @@ void string_view_test()
 	is_true(f_sv.length() == f_sv.size(), "f_sv.length() = f_sv.size()");
 	is_false(f_sv.empty(), "!f_sv.empty()");
 
-	//Copy constructor. Constructs a view of the same content as other.
+	//copy constructor
 	string_view r_sv(f_sv);
 	is_true(r_sv.size() == f_sv.size(), "r_sv.size() = f_sv.size()");
 	is_true(r_sv.length() == r_sv.size(), "r_sv.length() = r_sv.size()");
