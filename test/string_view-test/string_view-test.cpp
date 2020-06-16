@@ -1,6 +1,6 @@
 /*
 * string_view-test.cpp
-* Sean Murthy, Ray Chen
+* Ray Chen, Sean Murthy 
 * (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
 * Attribution and copyright notice must be retained.
