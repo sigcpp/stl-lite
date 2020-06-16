@@ -53,5 +53,8 @@
     <ClInclude Include="suites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="verifier-exceptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

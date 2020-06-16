@@ -172,6 +172,7 @@
     <ClInclude Include="suites.h" />
     <ClInclude Include="tester.h" />
     <ClInclude Include="utils.h" />
+    <ClInclude Include="verifier-exceptions.h" />
     <ClInclude Include="verifiers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
