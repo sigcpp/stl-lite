@@ -8,7 +8,8 @@
 * - Copyright notice cannot be altered
 * Attribution and copyright info may be relocated but they must be conspicuous.
 *
-* Test string_view template
+* Test the string_view of the C++ standard library and 
+* provide a test benchmark for subsequent implementation of string_view.
 * - see C++17 [string.view]
 *	https://timsong-cpp.github.io/cppwp/n4659/string.view
 */
@@ -27,101 +28,104 @@ void string_view_test()
 	// Default constructor. Constructs an empty string_view. 
 	string_view empty_sv;
 	is_zero(empty_sv.size(), "empty_sv.size()");
-	is_true(empty_sv.length() == empty_sv.size(), "empty_sv.length() = empty_sv.size()");
+	is_true(empty_sv.length() == empty_sv.size(), "empty_sv.length() == empty_sv.size()");
 	is_true(empty_sv.empty(), "empty_sv.empty()");
 
 	//constructs a string_view with const char[]
-	string_view sv("hello, world!");
+	const char c_hw[]{ "hello, world!" };
+	string_view sv(c_hw);
 	is_true(sv.size() == 13, "sv.size()");
-	is_true(sv.length() == sv.size(), "sv.length() = sv.size()");
+	is_true(sv.length() == sv.size(), "sv.length() == sv.size()");
 	is_false(sv.empty(), "!sv.empty()");
 
 	//Constructs a view of the first 5 characters of the character array
-	string_view f_sv("hello, world!", 5);
+	string_view f_sv(c_hw, 5);
 	is_true(f_sv.size() == 5, "f_sv.size()");
-	is_true(f_sv.length() == f_sv.size(), "f_sv.length() = f_sv.size()");
+	is_true(f_sv.length() == f_sv.size(), "f_sv.length() == f_sv.size()");
 	is_false(f_sv.empty(), "!f_sv.empty()");
 
 	//copy constructor
-	string_view r_sv(f_sv);
-	is_true(r_sv.size() == f_sv.size(), "r_sv.size() = f_sv.size()");
-	is_true(r_sv.length() == r_sv.size(), "r_sv.length() = r_sv.size()");
-	is_true(r_sv.empty() == f_sv.empty(), "r_sv.empty() = f_sv.empty()");
+	string_view c_sv(f_sv);
+	is_true(c_sv.size() == f_sv.size(), "c_sv.size() == f_sv.size()");
+	is_true(c_sv.length() == c_sv.size(), "c_sv.length() == c_sv.size()");
+	is_true(c_sv.empty() == f_sv.empty(), "c_sv.empty() == f_sv.empty()");
 
 	//assignment
-	string_view a_sv = r_sv;
-	is_true(a_sv.size() == r_sv.size(), "a_sv.size() = r_sv.size()");
-	is_true(a_sv.length() == a_sv.size(), "a_sv.length() = a_sv.size()");
-	is_true(a_sv.empty() == r_sv.empty(), "a_sv.empty() = r_sv.empty()");
+	string_view a_sv = c_sv;
+	is_true(a_sv.size() == c_sv.size(), "a_sv.size() == c_sv.size()");
+	is_true(a_sv.length() == a_sv.size(), "a_sv.length() == a_sv.size()");
+	is_true(a_sv.empty() == c_sv.empty(), "a_sv.empty() == c_sv.empty()");
 
 
 	//3. Non-member comparison functions
-	string_view s("A");
-	string_view t("a");
-	string_view p("A");
-	char cs1[]{ "A" };
-	char cs2[]{ "B" };
+	string_view ua("A");	//uppercase a
+	string_view la("a");	//lowercase a
+	string_view aua("A");	//another uppercase a
+	char csA[]{ "A" };		//C-string A
+	char csB[]{ "B" };		//C-string B
 
-	is_false(s == t, "s = t");
-	is_true(s == p, "s = p");
-	is_true(p == s, "p = s");
-	is_true(s == cs1, "s = cs1");
-	is_true(t != cs2, "t != cs2");
-	is_false(s != p, "s != p");
-	is_true(s != t, "s != t");
-	is_false(s != cs1, "!(s != cs1)");
-	is_true(s != cs2, "s != cs2");
+	is_false(ua == la, "ua == la");
+	is_true(ua == aua, "ua == aua");
+	is_true(aua == ua, "aua == ua");
+	is_true(ua == csA, "ua == csA");
+	is_true(la != csB, "la != csB");
+	is_false(ua != aua, "ua != aua");
+	is_true(ua != la, "ua != la");
+	is_false(ua != csA, "!(ua != csA)");
+	is_true(ua != csB, "ua != csB");
 
-	is_false(s > t, "s > t");
-	is_true(s < t, "s > t");
-	is_true(t > s, "t > s");
-	is_false(t < s, "!(t < s)");
-	is_false(s > p, "!(s > p)");
-	is_false(s < p, "!(s < p)");
-	is_false(s > cs1, "!(s > cs1)");
-	is_false(s < cs1, "!(s < cs1)");
-	is_false(s > cs2, "!(s > cs2)");
-	is_true(s < cs2, "s < cs2");
+	is_false(ua > la, "ua > la");
+	is_true(ua < la, "ua > la");
+	is_true(la > ua, "la > ua");
+	is_false(la < ua, "!(la < ua)");
+	is_false(ua > aua, "!(ua > aua)");
+	is_false(ua < aua, "!(ua < aua)");
+	is_false(ua > csA, "!(ua > csA)");
+	is_false(ua < csA, "!(ua < csA)");
+	is_false(ua > csB, "!(ua > csB)");
+	is_true(ua < csB, "ua < csB");
 
-	is_false(s >= t, "s >= t");
-	is_true(s <= t, "s >= t");
-	is_true(t >= s, "t >= s");
-	is_false(t <= s, "t >= s");
-	is_true(s >= p, "s >= t");
-	is_true(s <= p, "s >= t");
+	is_false(ua >= la, "ua >= la");
+	is_true(ua <= la, "ua >= la");
+	is_true(la >= ua, "la >= ua");
+	is_false(la <= ua, "la >= ua");
+	is_true(ua >= aua, "ua >= la");
+	is_true(ua <= aua, "ua >= la");
 
-	is_true(s >= cs1, "s >= t");
-	is_true(s <= cs1, "s >= t");
-	is_false(s >= cs2, "s >= t");
-	is_true(s <= cs2, "s >= t");
+	is_true(ua >= csA, "ua >= la");
+	is_true(ua <= csA, "ua >= la");
+	is_false(ua >= csB, "ua >= la");
+	is_true(ua <= csB, "ua >= la");
 
 
 	//4. Element data and access
 	is_true(empty_sv.data() == nullptr, "empty_sv.data()");
 
-	const char* str_1 = "hello, world!";
-	string_view sv_1(str_1);
-	is_true(sv_1.data() == str_1, "sv_1.data()");
-	//normal
-	is_true(sv_1[0] == str_1[0], "sv_1[0]");
-	is_true(sv_1[3] == str_1[3], "sv_1[3]");
-	is_true(sv_1[6] == str_1[6], "sv_1[6]");
-	is_true(sv_1[9] == str_1[9], "sv_1[9]");
-	is_true(sv_1[12] == str_1[12], "sv_1[12]");
+	//const char* str_1 = "hello, world!";
+	//default constructor and data test
+	string_view sv_1(c_hw);
+	is_true(sv_1.data() == c_hw, "sv_1.data()");
 
-	is_true(sv_1.at(0) == str_1[0], "sv_1.at(0)");
-	is_true(sv_1.at(3) == str_1[3], "sv_1.at(3)");
-	is_true(sv_1.at(6) == str_1[6], "sv_1.at(6)");
-	is_true(sv_1.at(9) == str_1[9], "sv_1.at(9)");
-	is_true(sv_1.at(12) == str_1[12], "sv_1.at(12)");
+	is_true(sv_1[0] == c_hw[0], "sv_1[0]");
+	is_true(sv_1[3] == c_hw[3], "sv_1[3]");
+	is_true(sv_1[6] == c_hw[6], "sv_1[6]");
+	is_true(sv_1[9] == c_hw[9], "sv_1[9]");
+	is_true(sv_1[12] == c_hw[12], "sv_1[12]");
 
-	is_true(sv_1.front() == str_1[0], "sv_1.front()");
-	is_true(sv_1.back() == str_1[sv_1.size() - 1], "sv_1.back()");
+	is_true(sv_1.at(0) == c_hw[0], "sv_1.at(0)");
+	is_true(sv_1.at(3) == c_hw[3], "sv_1.at(3)");
+	is_true(sv_1.at(6) == c_hw[6], "sv_1.at(6)");
+	is_true(sv_1.at(9) == c_hw[9], "sv_1.at(9)");
+	is_true(sv_1.at(12) == c_hw[12], "sv_1.at(12)");
 
+	is_true(sv_1.front() == c_hw[0], "sv_1.front()");
+	is_true(sv_1.back() == c_hw[sv_1.size() - 1], "sv_1.back()");
+
+	//Constructs a view of the first count characters of the character array and data test
 	const char* str_2 = "fixed length";
 	string_view sv_2(str_2, 5);
 	is_true(sv_2.data() == str_2, "sv_2.data()");
-	//fixed-length
+
 	is_true(sv_2[0] == str_2[0], "sv_2[0]");
 	is_true(sv_2[2] == str_2[2], "sv_2[2]");
 	is_true(sv_2[4] == str_2[4], "sv_2[4]");
@@ -133,9 +137,10 @@ void string_view_test()
 	is_true(sv_2.front() == str_2[0], "sv_2.front()");
 	is_true(sv_2.back() == str_2[sv_2.size() - 1], "sv_2.back()");
 
+	//Copy constructor and data test
 	string_view sv_3(str_2);
 	is_true(sv_3.data() == str_2, "sv_3.data()");
-	//reference
+
 	is_true(sv_3[0] == str_2[0], "sv_3[0]");
 	is_true(sv_3[3] == str_2[3], "sv_3[3]");
 	is_true(sv_3[6] == str_2[6], "sv_3[6]");
@@ -151,9 +156,10 @@ void string_view_test()
 	is_true(sv_3.front() == str_2[0], "sv_3.front()");
 	is_true(sv_3.back() == str_2[sv_3.size() - 1], "sv_3.back()");
 
+	//assignment and data test
 	string_view sv_4 = str_2;
 	is_true(sv_4.data() == str_2, "sv_4.data()");
-	//assignment
+	
 	is_true(sv_4[0] == str_2[0], "sv_4[0]");
 	is_true(sv_4[3] == str_2[3], "sv_4[3]");
 	is_true(sv_4[6] == str_2[6], "sv_4[6]");
