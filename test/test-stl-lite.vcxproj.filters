@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="array-test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="tester.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,7 +30,10 @@
     <ClCompile Include="suites.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="string_view-test.cpp">
+    <ClCompile Include="string_view-test\string_view-test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="array-test\array-test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
