@@ -18,6 +18,8 @@
 
 #include "utils.h"
 #include "tester.h"
+#include "verifier-exceptions.h"
+
 
 static std::string headerText("Running $suite:");
 void set_header_text(std::string text)
@@ -167,8 +169,10 @@ void verify(bool success, const char* hint)
 		message << "Test# " << tests_done_suite << ": FAIL (" << hint << ")\n";
 		last_output_ended_in_linebreak = true;
 
-		if (tests_failed_total > fail_threshold)
-			throw message.str();
+		if (tests_failed_total > fail_threshold) {
+			*pOut << message.str();
+			throw fail_threshold_met_error();
+		}
 	}
 
 	*pOut << message.str();
