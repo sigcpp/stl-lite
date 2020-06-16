@@ -33,6 +33,9 @@
     <ClCompile Include="suites.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="driver-test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="options.h">
