@@ -26,7 +26,7 @@ struct Options {
 	bool summary{ true };
 	std::string header_text{ "Running $suite" };
 	pass_report_mode prm{ pass_report_mode::indicate };
-	unsigned short fail_threshold{ 0 };
+	fail_threshold_type fail_threshold{ 0 };
 	file_open_mode fom{ file_open_mode::no_file };
 	std::filesystem::path output_filepath;
 	std::string command_name;
@@ -42,7 +42,7 @@ pass_report_mode get_pass_report_mode(const std::string_view& value, file_open_m
 
 file_open_mode get_file_open_mode(const std::string_view& name);
 
-unsigned short get_fail_threshold(const std::string_view& value);
+fail_threshold_type get_fail_threshold(const std::string_view& value);
 
 bool strtobool(const std::string_view& value);
 

@@ -18,6 +18,8 @@
 
 #include "utils.h"
 #include "tester.h"
+#include "verifier-exceptions.h"
+
 
 static std::string headerText("Running $suite:");
 void set_header_text(std::string text)
@@ -33,8 +35,8 @@ void set_pass_report_mode(pass_report_mode mode)
 }
 
 
-static unsigned short fail_threshold{ 0 };
-void set_fail_threshold(unsigned short value)
+static fail_threshold_type fail_threshold{ 0 };
+void set_fail_threshold(fail_threshold_type value)
 {
 	fail_threshold = value;
 }
@@ -42,7 +44,7 @@ void set_fail_threshold(unsigned short value)
 
 void set_max_fail_threshold()
 {
-	fail_threshold = USHRT_MAX;
+	fail_threshold = max_fail_threshold;
 }
 
 
@@ -167,8 +169,10 @@ void verify(bool success, const char* hint)
 		message << "Test# " << tests_done_suite << ": FAIL (" << hint << ")\n";
 		last_output_ended_in_linebreak = true;
 
-		if (tests_failed_total > fail_threshold)
-			throw message.str();
+		if (tests_failed_total > fail_threshold) {
+			*pOut << message.str();
+			throw fail_threshold_met_error();
+		}
 	}
 
 	*pOut << message.str();
