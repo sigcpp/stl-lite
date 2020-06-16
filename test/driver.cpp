@@ -40,7 +40,7 @@ enum class driver_error_code {
 	unexpected_typed_options = -51, unexpected_untyped_options = -52,
 
 	//anticipated in run_suites, but before any test is actually run
-	cmd_line_run_suites = -101, test_suite_add = -101,
+	cmd_line_run_suites = -101, test_suite_add = -102,
 
 	//anticipated in run_suites, likely at least one test may have been done
 	file_run_suites = -121, fail_threshold_met = -122,
