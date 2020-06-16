@@ -33,8 +33,8 @@ void set_pass_report_mode(pass_report_mode mode)
 }
 
 
-static unsigned short fail_threshold{ 0 };
-void set_fail_threshold(unsigned short value)
+static fail_threshold_type fail_threshold{ 0 };
+void set_fail_threshold(fail_threshold_type value)
 {
 	fail_threshold = value;
 }
@@ -42,7 +42,7 @@ void set_fail_threshold(unsigned short value)
 
 void set_max_fail_threshold()
 {
-	fail_threshold = USHRT_MAX;
+	fail_threshold = max_fail_threshold;
 }
 
 
