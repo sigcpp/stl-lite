@@ -207,8 +207,7 @@ void string_view_test()
 	bool iteratorTest{ true };
 	size_t size = sizeof(sExpected) - 1;
 	auto it = sv_iter.begin(), endIt = sv_iter.end();
-	size_t i;
-	for (i = 0; i < size && iteratorTest; ++i, ++it)
+	for (size_t i = 0; i < size && iteratorTest; ++i, ++it)
 		iteratorTest = (it != endIt && *it == sExpected[i]);
 
 	is_true(iteratorTest, "forward iterator order and content");
@@ -217,7 +216,7 @@ void string_view_test()
 	iteratorTest = true;
 	it = sv_iter.cbegin();
 	endIt = sv_iter.cend();
-	for (i = 0; i < size && iteratorTest; ++i, ++it)
+	for (size_t i = 0; i < size && iteratorTest; ++i, ++it)
 		iteratorTest = (it != endIt && *it == sExpected[i]);
 
 	is_true(iteratorTest, "forward const iterator order and content");
@@ -230,7 +229,7 @@ void string_view_test()
 	iteratorTest = true;
 	size = sizeof(svrExpected) - 1;
 	auto rit = sv_reverse.rbegin(), rendIt = sv_reverse.rend();
-	for (i = 0; i < size && iteratorTest; ++i, ++rit)
+	for (size_t i = 0; i < size && iteratorTest; ++i, ++rit)
 		iteratorTest = (rit != rendIt && *rit == svrExpected[i]);
 
 	is_true(iteratorTest, "reverse iterator order and content");
@@ -239,7 +238,7 @@ void string_view_test()
 	iteratorTest = true;
 	rit = sv_reverse.crbegin();
 	rendIt = sv_reverse.crend();
-	for (i = 0; i < size && iteratorTest; ++i, ++rit)
+	for (size_t i = 0; i < size && iteratorTest; ++i, ++rit)
 		iteratorTest = (rit != rendIt && *rit == svrExpected[i]);
 
 	is_true(iteratorTest, "reverse iterator order and content");
