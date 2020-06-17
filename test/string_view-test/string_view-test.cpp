@@ -203,27 +203,20 @@ void string_view_test()
 	char sExpected[]{ "support" };
 	string_view sv_iter(sExpected);
 
-	bool iteratorTest{ true };
 	size_t size = sizeof(sExpected) - 1;
-	//returns an iterator or an const_iterator pointing to the first character of the view.
-	//depending on the const-qualification of the object it is called on.
-	auto it = sv_iter.begin();
-	//returns an iterator or an const_iterator pointing to the character following the last 
-	//character of the view depending on the const-qualification of the object it is called on.
-	auto endIt = sv_iter.end();
-	//for the testing of iterators, 
-	//we must ensure that the iterator loops through an entire C-string (it != endIt), 
-	//and each char must be equal(*it == sExpected[i]).
+	bool iteratorTest{ true };
+
+	//forward iterator
+	auto it = sv_iter.begin(), endIt = sv_iter.end();
 	for (size_t i = 0; i < size && iteratorTest; ++i, ++it)
 		iteratorTest = (it != endIt && *it == sExpected[i]);
 
 	is_true(iteratorTest, "forward iterator order and content");
 	is_true(it == endIt, "forward iterator termination");
 
+	//const forward iterator
 	iteratorTest = true;
-	//Returns a const_iterator pointing to the first character of the view.
 	it = sv_iter.cbegin();
-	//Returns a const_iterator pointing to the character following the last character of the view.
 	endIt = sv_iter.cend();
 	for (size_t i = 0; i < size && iteratorTest; ++i, ++it)
 		iteratorTest = (it != endIt && *it == sExpected[i]);
@@ -231,27 +224,22 @@ void string_view_test()
 	is_true(iteratorTest, "forward const iterator order and content");
 	is_true(it == endIt, "forward const iterator termination");
 
-	//reverse iterators
+	//reverse iterator
 	string_view sv_reverse("987654321");
 	char svrExpected[]{ "123456789" };
 
-	iteratorTest = true;
 	size = sizeof(svrExpected) - 1;
-	//returns a reverse iterator or const_iterator pointing to the first character of the reversed view.
-	auto rit = sv_reverse.rbegin();
-	//returns a reverse iterator or const_iterator to the character following 
-	//the last character of the reversed view.
-	auto rendIt = sv_reverse.rend();
+	iteratorTest = true;
+	auto rit = sv_reverse.rbegin(), rendIt = sv_reverse.rend();
 	for (size_t i = 0; i < size && iteratorTest; ++i, ++rit)
 		iteratorTest = (rit != rendIt && *rit == svrExpected[i]);
 
 	is_true(iteratorTest, "reverse iterator order and content");
 	is_true(rit == rendIt, "reverse iterator termination");
 
+	//const reverse iterator
 	iteratorTest = true;
-	//returns a reverse const_iterator to the first character of the reversed view.
 	rit = sv_reverse.crbegin();
-	//returns a reverse const_iterator to the character following the last character of the reversed view.
 	rendIt = sv_reverse.crend();
 	for (size_t i = 0; i < size && iteratorTest; ++i, ++rit)
 		iteratorTest = (rit != rendIt && *rit == svrExpected[i]);
