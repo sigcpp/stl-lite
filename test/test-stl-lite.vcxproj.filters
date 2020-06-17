@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\array-test">
+      <UniqueIdentifier>{c1125cac-876d-4517-9624-5594a143f5a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\string_view-test">
+      <UniqueIdentifier>{b1ebf655-2eb3-4b2b-acbc-f951942bcc9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tester.cpp">
@@ -30,11 +36,11 @@
     <ClCompile Include="suites.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="string_view-test\string_view-test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="array-test\array-test.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\array-test</Filter>
+    </ClCompile>
+    <ClCompile Include="string_view-test\string_view-test.cpp">
+      <Filter>Source Files\string_view-test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
