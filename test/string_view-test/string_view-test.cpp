@@ -161,41 +161,27 @@ void string_view_test()
 	is_true(sv_2.front() == str_2[0], "sv_2.front()");
 	is_true(sv_2.back() == str_2[sv_2.size() - 1], "sv_2.back()");
 
-	//copy constructor and data test
-	string_view sv_3(str_2);
 
-	is_true(sv_3[0] == str_2[0], "sv_3[0]");
-	is_true(sv_3[3] == str_2[3], "sv_3[3]");
-	is_true(sv_3[6] == str_2[6], "sv_3[6]");
-	is_true(sv_3[9] == str_2[9], "sv_3[9]");
-	is_true(sv_3[11] == str_2[11], "sv_3[11]");
+	//member access
+	char c_member_access_data[]{ "nice is good" };
+	string_view sv_3(c_member_access_data);
+	size_t size = sv_3.size();
 
-	is_true(sv_3.at(0) == str_2[0], "sv_3.at(0)");
-	is_true(sv_3.at(3) == str_2[3], "sv_3.at(3)");
-	is_true(sv_3.at(6) == str_2[6], "sv_3.at(6)");
-	is_true(sv_3.at(9) == str_2[9], "sv_3.at(9)");
-	is_true(sv_3.at(11) == str_2[11], "sv_3.at(11)");
+	//front and back
+	is_true(sv_3.front() == c_member_access_data[0], "sv_3.front()");
+	is_true(sv_3.back() == c_member_access_data[size-1], "sv_3.back()");
 
-	is_true(sv_3.front() == str_2[0], "sv_3.front()");
-	is_true(sv_3.back() == str_2[sv_3.size() - 1], "sv_3.back()");
+	//subscript operator
+	bool access_test{ true };
+	for (size_t i = 0; i < size && access_test; ++i)
+		access_test = (sv_3[i] == c_member_access_data[i]);
+	is_true(access_test, "sv_3 subscript");
 
-	//assignment and data test
-	string_view sv_4 = str_2;
-
-	is_true(sv_4[0] == str_2[0], "sv_4[0]");
-	is_true(sv_4[3] == str_2[3], "sv_4[3]");
-	is_true(sv_4[6] == str_2[6], "sv_4[6]");
-	is_true(sv_4[9] == str_2[9], "sv_4[9]");
-	is_true(sv_4[11] == str_2[11], "sv_4[11]");
-
-	is_true(sv_4.at(0) == str_2[0], "sv_4.at(0)");
-	is_true(sv_4.at(3) == str_2[3], "sv_4.at(3)");
-	is_true(sv_4.at(6) == str_2[6], "sv_4.at(6)");
-	is_true(sv_4.at(9) == str_2[9], "sv_4.at(9)");
-	is_true(sv_4.at(11) == str_2[11], "sv_4.at(11)");
-
-	is_true(sv_4.front() == str_2[0], "sv_4.front()");
-	is_true(sv_4.back() == str_2[sv_4.size() - 1], "sv_4.back()");
+	//at
+	access_test = true;
+	for (size_t i = 0; i < size && access_test; ++i)
+		access_test = (sv_3.at(i) == c_member_access_data[i]);
+	is_true(access_test, "sv_3.at");
 
 
 	//5. Iterator support
@@ -203,7 +189,7 @@ void string_view_test()
 	char sExpected[]{ "support" };
 	string_view sv_iter(sExpected);
 
-	size_t size = sizeof(sExpected) - 1;
+	size = sizeof(sExpected) - 1;
 	bool iteratorTest{ true };
 
 	//forward iterator
