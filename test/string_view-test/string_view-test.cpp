@@ -226,8 +226,8 @@ void string_view_test()
 	is_true(it == endIt, "forward const iterator termination");
 
 	//reverse iterators
-	char svrExpected[]{ "123456789" };
 	string_view sv_reverse("987654321");
+	char svrExpected[]{ "123456789" };
 
 	iteratorTest = true;
 	size = sizeof(svrExpected) - 1;
