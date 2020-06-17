@@ -94,14 +94,14 @@ void string_view_test()
 	is_false(sv_empty > zA, "sv_empty > zA");
 	is_true(sv_empty < zA, "sv_empty < zA");
 	is_false(sv_A1 > sv_a1, "sv_A1 > sv_a1");
-	is_true(sv_A1 < sv_a1, "sv_A1 > sv_a1");
+	is_true(sv_A1 < sv_a1, "sv_A1 < sv_a1");
 	is_true(sv_a1 > sv_A1, "sv_a1 > sv_A1");
-	is_false(sv_a1 < sv_A1, "!(sv_a1 < sv_A1)");
-	is_false(sv_A1 > sv_A2, "!(sv_A1 > sv_A2)");
-	is_false(sv_A1 < sv_A2, "!(sv_A1 < sv_A2)");
-	is_false(sv_A1 > zA, "!(sv_A1 > zA)");
-	is_false(sv_A1 < zA, "!(sv_A1 < zA)");
-	is_false(sv_A1 > zB, "!(sv_A1 > zB)");
+	is_false(sv_a1 < sv_A1, "sv_a1 < sv_A1");
+	is_false(sv_A1 > sv_A2, "sv_A1 > sv_A2");
+	is_false(sv_A1 < sv_A2, "sv_A1 < sv_A2");
+	is_false(sv_A1 > zA, "sv_A1 > zA");
+	is_false(sv_A1 < zA, "sv_A1 < zA");
+	is_false(sv_A1 > zB, "sv_A1 > zB");
 	is_true(sv_A1 < zB, "sv_A1 < zB");
 
 	is_false(sv_empty >= sv_A1, "sv_empty >= sv_A1");
