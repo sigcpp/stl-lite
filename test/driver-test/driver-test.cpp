@@ -11,14 +11,14 @@
 * Tester for test-stl-lite driver
 */
 
+#include <iostream>
+#include <vector>
+#include <string>
+
 #include "../verifiers.h"
 #include "../options.h"
 #include "../tester.h"
 #include "../utils.h"
-
-#include <iostream>
-#include <string_view>
-#include <vector>
 
 void driver_test();
 void test_get_options();
@@ -26,13 +26,18 @@ void reset_default_options(Options& o);
 void compare(const Options& received, const Options& expected, const std::string& test_case);
 std::vector<std::pair<std::string, Options>> generate_cmdline_option_pairs();
 
+//unit test for the test driver
 void driver_test()
 {
 	test_get_options();
 }
 
+
+//unit test for get_options
 void test_get_options()
 {
+	//this is meant to replicate the main() parameter char* argv[]
+	//size 100 was chosen to ensure enough room for many options in a single command-line.
 	char* args[100];
 
 	const std::vector<std::pair<std::string, Options>> args_and_options = generate_cmdline_option_pairs();
@@ -50,6 +55,8 @@ void test_get_options()
 	}
 }
 
+
+//resets given Options& parameter data members to the default values
 void reset_default_options(Options& o)
 {
 	o.header = true;
@@ -59,10 +66,13 @@ void reset_default_options(Options& o)
 	o.fail_threshold = 0;
 	o.fom = file_open_mode::no_file;
 	o.output_filepath = "";
-	o.command_name = "array_test";
+	o.command_name = "array_test"; //default command_name is empty but this is expected value for all tests
 	o.suites_to_run = "";
 }
 
+
+//compares received Options object data members to expected Options object data members
+//see fn declaration of is_true for the behavior of the comparison
 void compare(const Options& received, const Options& expected, const std::string& test_case)
 {
 	is_true(received.header == expected.header, (test_case + " header").data());
@@ -76,6 +86,9 @@ void compare(const Options& received, const Options& expected, const std::string
 	is_true(received.suites_to_run == expected.suites_to_run, (test_case + " suites to run").data());
 }
 
+
+//generates a vector of pairs that holds a dummy command line and the expected Options object that would
+//be created from get_options parsing the command line.
 std::vector<std::pair<std::string, Options>> generate_cmdline_option_pairs()
 {
 	std::vector<std::pair<std::string, Options>> args_and_options;
