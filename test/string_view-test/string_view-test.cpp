@@ -29,6 +29,7 @@ void string_view_test()
 	is_zero(empty_sv.size(), "empty_sv.size()");
 	is_true(empty_sv.length() == empty_sv.size(), "empty_sv.length() == empty_sv.size()");
 	is_true(empty_sv.empty(), "empty_sv.empty()");
+	is_true(empty_sv.data() == nullptr, "empty_sv.data() == nullptr");
 
 	//constructs a string_view with const char[]
 	const char c_hw[]{ "hello, world!" };
@@ -36,12 +37,14 @@ void string_view_test()
 	is_true(sv.size() == 13, "sv.size()");
 	is_true(sv.length() == sv.size(), "sv.length() == sv.size()");
 	is_false(sv.empty(), "!sv.empty()");
+	is_true(sv.data() == c_hw, "sv.data() == c_hw");
 
 	//constructs a view of the first 5 characters of the C-string
 	string_view f_sv(c_hw, 5);
 	is_true(f_sv.size() == 5, "f_sv.size()");
 	is_true(f_sv.length() == f_sv.size(), "f_sv.length() == f_sv.size()");
 	is_false(f_sv.empty(), "!f_sv.empty()");
+	is_true(f_sv.data() == c_hw, "f_sv.data() == c_hw");
 
 	//constructs a view of the first 5 characters of the character array
 	const char a_hw[]{ 'h','e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!' };
@@ -49,19 +52,22 @@ void string_view_test()
 	is_true(sv_a.size() == 5, "sv_a.size()");
 	is_true(sv_a.length() == sv_a.size(), "sv_a.length() == sv_a.size()");
 	is_false(sv_a.empty(), "!sv_a.empty()");
+	is_true(sv_a.data() == a_hw, "sv_a.data() == a_hw");
 
 	//copy constructor
 	string_view c_sv(f_sv);
 	is_true(c_sv.size() == f_sv.size(), "c_sv.size() == f_sv.size()");
 	is_true(c_sv.length() == c_sv.size(), "c_sv.length() == c_sv.size()");
 	is_true(c_sv.empty() == f_sv.empty(), "c_sv.empty() == f_sv.empty()");
+	is_true(c_sv.data() == c_hw, "c_sv.data() == c_hw");
 
 	//assignment
 	string_view a_sv = c_sv;
+
 	is_true(a_sv.size() == c_sv.size(), "a_sv.size() == c_sv.size()");
 	is_true(a_sv.length() == a_sv.size(), "a_sv.length() == a_sv.size()");
 	is_true(a_sv.empty() == c_sv.empty(), "a_sv.empty() == c_sv.empty()");
-
+	is_true(a_sv.data() == c_sv.data(), "a_sv.data() == c_sv.data()");
 
 	//3. Non-member comparison functions
 	string_view sv_empty;
@@ -121,14 +127,10 @@ void string_view_test()
 
 
 	//4. Element data and access
-	//default constructor and data test
-	is_true(empty_sv.data() == nullptr, "empty_sv.data()");
 
 	//c_hw is defined earlier as const C-string "hello, world!"
 	//constructor and data test
 	string_view sv_1(c_hw);
-	is_true(sv_1.data() == c_hw, "sv_1.data()");
-
 	is_true(sv_1[0] == c_hw[0], "sv_1[0]");
 	is_true(sv_1[3] == c_hw[3], "sv_1[3]");
 	is_true(sv_1[6] == c_hw[6], "sv_1[6]");
@@ -147,7 +149,6 @@ void string_view_test()
 	//constructs a view of the first count characters of the character array and data test
 	const char* str_2 = "fixed length";
 	string_view sv_2(str_2, 5);
-	is_true(sv_2.data() == str_2, "sv_2.data()");
 
 	is_true(sv_2[0] == str_2[0], "sv_2[0]");
 	is_true(sv_2[2] == str_2[2], "sv_2[2]");
@@ -162,7 +163,6 @@ void string_view_test()
 
 	//copy constructor and data test
 	string_view sv_3(str_2);
-	is_true(sv_3.data() == str_2, "sv_3.data()");
 
 	is_true(sv_3[0] == str_2[0], "sv_3[0]");
 	is_true(sv_3[3] == str_2[3], "sv_3[3]");
@@ -181,7 +181,6 @@ void string_view_test()
 
 	//assignment and data test
 	string_view sv_4 = str_2;
-	is_true(sv_4.data() == str_2, "sv_4.data()");
 
 	is_true(sv_4[0] == str_2[0], "sv_4[0]");
 	is_true(sv_4[3] == str_2[3], "sv_4[3]");
