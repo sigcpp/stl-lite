@@ -207,6 +207,9 @@ void string_view_test()
 	bool iteratorTest{ true };
 	size_t size = sizeof(sExpected) - 1;
 	auto it = sv_iter.begin(), endIt = sv_iter.end();
+	//For the testing of iterators, 
+	//we must ensure that the iterator loops through an entire C-string (it != endIt), 
+	//and each char must be equal(*it == sExpected[i]).
 	for (size_t i = 0; i < size && iteratorTest; ++i, ++it)
 		iteratorTest = (it != endIt && *it == sExpected[i]);
 
