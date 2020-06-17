@@ -20,19 +20,42 @@
 #include <string_view>
 #include <vector>
 
+void driver_test();
 void test_get_options();
+void reset_default_options(Options& o);
+void compare(const Options& received, const Options& expected, const std::string& test_case);
+std::vector<std::pair<std::string, Options>> generate_cmdline_option_pairs();
 
 void driver_test()
 {
 	test_get_options();
 }
 
-void reset_defaults(Options& o)
+void test_get_options()
+{
+	char* args[100];
+
+	const std::vector<std::pair<std::string, Options>> args_and_options = generate_cmdline_option_pairs();
+	std::size_t cmd_line_number{ 0 };
+	for (auto iter = args_and_options.begin(); iter != args_and_options.end(); ++iter)
+	{
+		std::vector<std::string> v = split(iter->first, ' ');
+		for (std::size_t i = 0; i < v.size(); ++i)
+			args[i] = v[i].data();
+
+		Options o = get_options(args, v.size());
+
+		compare(o, iter->second, "cmd_line_" + std::to_string(cmd_line_number));
+		++cmd_line_number;
+	}
+}
+
+void reset_default_options(Options& o)
 {
 	o.header = true;
 	o.summary = true;
 	o.header_text = "Running $suite";
-	pass_report_mode prm = pass_report_mode::indicate;
+	o.prm = pass_report_mode::indicate;
 	o.fail_threshold = 0;
 	o.fom = file_open_mode::no_file;
 	o.output_filepath = "";
@@ -53,166 +76,237 @@ void compare(const Options& received, const Options& expected, const std::string
 	is_true(received.suites_to_run == expected.suites_to_run, (test_case + " suites to run").data());
 }
 
-std::vector<std::pair<std::string, Options>> generate_expected_options()
+std::vector<std::pair<std::string, Options>> generate_cmdline_option_pairs()
 {
 	std::vector<std::pair<std::string, Options>> args_and_options;
 	Options o;
 
 	using std::string;
-	std::string cmd_line_0("C:/Libraries/stl-lite/array_test.exe");
+
+	//default arguments
+	const string cmd_line_0("C:/Libraries/stl-lite/array_test.exe");
 	o.command_name = "array_test";
 	args_and_options.push_back({ cmd_line_0, o });
-	reset_defaults(o);
+	reset_default_options(o);
 
-	std::string cmd_line_1("C:/Libraries/stl-lite/array_test.exe -h no");
+	//single name-value option supplied
+	const string cmd_line_1("C:/Libraries/stl-lite/array_test.exe -h no");
 	o.header = false;
 	o.header_text = "";
 	args_and_options.push_back({ cmd_line_1, o });
-	reset_defaults(o);
+	reset_default_options(o);
 
-	std::string cmd_line_2("C:/Libraries/stl-lite/array_test.exe -h yes");
+	const string cmd_line_2("C:/Libraries/stl-lite/array_test.exe -h yes");
 	o.header = true;
 	o.header_text = "Running $suite";
 	args_and_options.push_back({ cmd_line_2, o });
-	reset_defaults(o);
+	reset_default_options(o);
 
-	std::string cmd_line_3("C:/Libraries/stl-lite/array_test.exe -p none");
+	const string cmd_line_3("C:/Libraries/stl-lite/array_test.exe -p none");
 	o.prm = pass_report_mode::none;
 	args_and_options.push_back({ cmd_line_3, o });
-	reset_defaults(o);
+	reset_default_options(o);
 
-	std::string cmd_line_4("C:/Libraries/stl-lite/array_test.exe -p indicate");
+	const string cmd_line_4("C:/Libraries/stl-lite/array_test.exe -p indicate");
 	o.prm = pass_report_mode::indicate;
 	args_and_options.push_back({ cmd_line_4, o });
-	reset_defaults(o);
+	reset_default_options(o);
 
-	std::string cmd_line_5("C:/Libraries/stl-lite/array_test.exe -p detail");
+	const string cmd_line_5("C:/Libraries/stl-lite/array_test.exe -p detail");
 	o.prm = pass_report_mode::detail;
 	args_and_options.push_back({ cmd_line_5, o });
-	reset_defaults(o);
+	reset_default_options(o);
 
-	string cmd_line_6("C:/Libraries/stl-lite/array_test.exe -s no");
+	const string cmd_line_6("C:/Libraries/stl-lite/array_test.exe -s no");
 	o.summary = false;
 	args_and_options.push_back({ cmd_line_6, o });
-	reset_defaults(o);
+	reset_default_options(o);
 
-	string cmd_line_7("C:/Libraries/stl-lite/array_test.exe -s yes");
+	const string cmd_line_7("C:/Libraries/stl-lite/array_test.exe -s yes");
 	o.summary = true;
 	args_and_options.push_back({ cmd_line_7, o });
-	reset_defaults(o);
+	reset_default_options(o);
 
-	string cmd_line_8("C:/Libraries/stl-lite/array_test.exe -t 5");
+	const string cmd_line_8("C:/Libraries/stl-lite/array_test.exe -t 5");
 	o.fail_threshold = 5;
 	args_and_options.push_back({ cmd_line_8, o });
-	reset_defaults(o);
+	reset_default_options(o);
 
-	string cmd_line_9("C:/Libraries/stl-lite/array_test.exe -h no -ht \"should be ignored\"");
-	o.header = false;
-	o.header_text = "";
-	args_and_options.push_back({ cmd_line_9, o });
-	reset_defaults(o);
-
-	string cmd_line_10("C:/Libraries/stl-lite/array_test.exe -fn $cmd");
+	const string cmd_line_9("C:/Libraries/stl-lite/array_test.exe -fn $cmd");
 	o.fom = file_open_mode::new_file;
 	o.output_filepath = "array_test.out";
 	o.prm = pass_report_mode::none;
-	args_and_options.push_back({ cmd_line_10, o });
-	reset_defaults(o);
+	args_and_options.push_back({ cmd_line_9, o });
+	reset_default_options(o);
 
-	string cmd_line_11("C:/Libraries/stl-lite/array_test.exe -fo $cmd");
+	const string cmd_line_10("C:/Libraries/stl-lite/array_test.exe -fo $cmd");
 	o.fom = file_open_mode::overwrite;
 	o.output_filepath = "array_test.out";
 	o.prm = pass_report_mode::none;
-	args_and_options.push_back({ cmd_line_11, o });
-	reset_defaults(o);
+	args_and_options.push_back({ cmd_line_10, o });
+	reset_default_options(o);
 
-	string cmd_line_12("C:/Libraries/stl-lite/array_test.exe -fa $cmd");
+	const string cmd_line_11("C:/Libraries/stl-lite/array_test.exe -fa $cmd");
 	o.fom = file_open_mode::append;
 	o.output_filepath = "array_test.out";
 	o.prm = pass_report_mode::none;
+	args_and_options.push_back({ cmd_line_11, o });
+	reset_default_options(o);
+
+	const string cmd_line_12("C:/stl-lite/array_test.exe -run array_test");
+	o.suites_to_run = "array_test";
 	args_and_options.push_back({ cmd_line_12, o });
-	reset_defaults(o);
+	reset_default_options(o);
 
-	string cmd_line_13("C:/stl-lite/array_test.exe -run array_test;driver_test");
-	o.suites_to_run = "array_test;driver_test";
+	//no header but header text supplied
+	const string cmd_line_13("C:/Libraries/stl-lite/array_test.exe -h no -ht should_be_ignored");
+	o.header = false;
+	o.header_text = "";
 	args_and_options.push_back({ cmd_line_13, o });
-	reset_defaults(o);
+	reset_default_options(o);
 
-	string cmd_line_14("C:/stl-lite/array_test.exe -h yes -ht \"Running $cmd\"");
+	//header yes and header text supplied
+	const string cmd_line_14("C:/stl-lite/array_test.exe -h yes -ht Running_$cmd");
 	o.header = true;
-	o.header_text = "Running array_test";
+	o.header_text = "Running_array_test";
 	args_and_options.push_back({ cmd_line_14, o });
-	reset_defaults(o);
+	reset_default_options(o);
 
-	string cmd_line_15("C:/stl-lite/array_test.exe -p auto -fn $cmd");
+	//prm auto when fom != no_file
+	const string cmd_line_15("C:/stl-lite/array_test.exe -p auto -fn $cmd");
 	o.prm = pass_report_mode::none;
 	o.fom = file_open_mode::new_file;
 	o.output_filepath = "array_test.out";
 	args_and_options.push_back({ cmd_line_15, o });
-	reset_defaults(o);
+	reset_default_options(o);
 
-	string cmd_line_16("C:/stl-lite/array_test.exe -p auto");
+	const string cmd_line_16("C:/stl-lite/array_test.exe -p auto -fo $cmd");
+	o.prm = pass_report_mode::none;
+	o.fom = file_open_mode::overwrite;
+	o.output_filepath = "array_test.out";
 	args_and_options.push_back({ cmd_line_16, o });
+	reset_default_options(o);
 
-	string cmd_line_17("C:/stl-lite/array_test.exe -h no -s yes -p detail -t 3 -fn new_test");
+	const string cmd_line_17("C:/stl-lite/array_test.exe -p auto -fa $cmd");
+	o.prm = pass_report_mode::none;
+	o.fom = file_open_mode::append;
+	o.output_filepath = "array_test.out";
+	args_and_options.push_back({ cmd_line_17, o });
+	reset_default_options(o);
+
+	//prm auto when fom == no_file
+	const string cmd_line_18("C:/stl-lite/array_test.exe -p auto");
+	args_and_options.push_back({ cmd_line_18, o });
+
+	//random combinations of options
+	const string cmd_line_19("C:/stl-lite/array_test.exe -h no -s yes -p detail -t 3 -fn new_test");
 	o.header = false;
+	o.header_text = "";
 	o.summary = true;
 	o.prm = pass_report_mode::detail;
 	o.fail_threshold = 3;
 	o.fom = file_open_mode::new_file;
-	o.output_filepath = "new_test";
-	args_and_options.push_back({ cmd_line_17, o });
-	reset_defaults(o);
+	o.output_filepath = "new_test.out";
+	args_and_options.push_back({ cmd_line_19, o });
+	reset_default_options(o);
 
-	string cmd_line_18("C:/stl-lite/array_test.exe -h yes -ht \"Running $cmd\" -p none");
+	const string cmd_line_20("C:/stl-lite/array_test.exe -h yes -ht Running_$cmd_now -p none");
 	o.header = true;
-	o.header_text = "Running array_test";
+	o.header_text = "Running_array_test_now";
 	o.prm = pass_report_mode::none;
-	args_and_options.push_back({ cmd_line_18, o });
-	reset_defaults(o);
+	args_and_options.push_back({ cmd_line_20, o });
+	reset_default_options(o);
 
-	string cmd_line_19("C:/stl-lite/array_test.exe -h yes -fn $cmd -p detail -fo $cmd -p auto");
+	const string cmd_line_21("C:/stl-lite/array_test.exe -h yes -fn $cmd -p detail -fo $cmd -p auto");
 	o.header = true;
 	o.fom = file_open_mode::overwrite;
 	o.prm = pass_report_mode::none;
 	o.output_filepath = "array_test.out";
-	args_and_options.push_back({ cmd_line_19, o });
-	reset_defaults(o);
+	args_and_options.push_back({ cmd_line_21, o });
+	reset_default_options(o);
 
-	string cmd_line_20("C:/stl-lite/array_test.exe -run array_test;string_view_test;driver_test");
-	o.suites_to_run = "array_test;string_view_test;driver_test";
-	args_and_options.push_back({ cmd_line_20, o });
-	reset_defaults(o);
-
-	string cmd_line_21("C:/stl-lite/array_test.exe -h no -s no -p detail -t 2 -fa a_file -run a_test_suite");
+	const string cmd_line_22(
+		"C:/stl-lite/array_test.exe -h no -s no -p detail -t 2 -fa a_file -run a_test_suite");
 	o.header = false;
+	o.header_text = "";
 	o.summary = false;
 	o.prm = pass_report_mode::detail;
 	o.fail_threshold = 2;
 	o.fom = file_open_mode::append;
 	o.output_filepath = "a_file.out";
 	o.suites_to_run = "a_test_suite";
-	args_and_options.push_back({ cmd_line_21, o });
+	args_and_options.push_back({ cmd_line_22, o });
+	reset_default_options(o);
+
+	//multiple suites as values for -run
+	const string cmd_line_23("C:/stl-lite/array_test.exe -run array_test;string_view_test;driver_test");
+	o.suites_to_run = "array_test;string_view_test;driver_test";
+	args_and_options.push_back({ cmd_line_23, o });
+	reset_default_options(o);
+
+	//every option specified
+	const string cmd_line_24(
+		"C:/stl-lite/array_test.exe -h yes -ht Running_$cmd -s yes -p detail -t 2 -fa a_file -run tester");
+	o.header = true;
+	o.header_text = "Running_array_test";
+	o.summary = true;
+	o.prm = pass_report_mode::detail;
+	o.fail_threshold = 2;
+	o.fom = file_open_mode::append;
+	o.output_filepath = "a_file.out";
+	o.suites_to_run = "tester";
+	args_and_options.push_back({ cmd_line_24, o });
+	reset_default_options(o);
+
+	const string cmd_line_25(
+		"C:/stl-lite/array_test.exe -h yes -ht Running_$cmd -s no -p indicate -t 10 -fo a_file -run tester");
+	o.header = true;
+	o.header_text = "Running_array_test";
+	o.summary = false;
+	o.prm = pass_report_mode::indicate;
+	o.fail_threshold = 10;
+	o.fom = file_open_mode::overwrite;
+	o.output_filepath = "a_file.out";
+	o.suites_to_run = "tester";
+	args_and_options.push_back({ cmd_line_25, o });
+	reset_default_options(o);
+
+	const string cmd_line_26(
+		"C:/stl-lite/array_test.exe -h no -ht $cmd -s yes -p none -t 2 -fn a_file -run tester");
+	o.header = false;
+	o.header_text = "";
+	o.summary = true;
+	o.prm = pass_report_mode::none;
+	o.fail_threshold = 2;
+	o.fom = file_open_mode::new_file;
+	o.output_filepath = "a_file.out";
+	o.suites_to_run = "tester";
+	args_and_options.push_back({ cmd_line_26, o });
+	reset_default_options(o);
+
+	//edge case: fail threshold
+	const string cmd_line_27("C:/stl-lite/array_test.exe -t 65535"); //USHRT_MAX: compiler specific
+	o.fail_threshold = USHRT_MAX; //this may change due to changes made in milestone 5
+	args_and_options.push_back({ cmd_line_27, o });
+	reset_default_options(o);
+
+	//edge case: output filepath
+	//max filepath length in Windows, Linux and OS X is 255 characters
+	//the length of this filename is 75 characters
+	const string cmd_line_28(
+		"C:/array_test.exe -fo a_very_very_very_very_very_very_very_very_very_very_very_very_long_filename");
+	o.fom = file_open_mode::overwrite;
+	o.output_filepath = "a_very_very_very_very_very_very_very_very_very_very_very_very_long_filename.out";
+	o.prm = pass_report_mode::none;
+	args_and_options.push_back({ cmd_line_28, o });
+	reset_default_options(o);
+
+	//edge case: header text
+	const string cmd_line_29(
+		"C:/array_test.exe -h yes -ht a_very_very_very_very_very_very_very_very_very_very_long_header_text");
+	o.header = true;
+	o.header_text = "a_very_very_very_very_very_very_very_very_very_very_long_header_text";
+	args_and_options.push_back({ cmd_line_29, o });
 
 	return args_and_options;
-}
-
-void test_get_options()
-{
-	char* args[100];
-
-	std::vector<std::pair<std::string, Options>> args_and_options = generate_expected_options();
-	std::size_t cmd_line_number{ 0 };
-	for (auto iter = args_and_options.begin(); iter != args_and_options.end(); ++iter)
-	{
-		std::vector<std::string> v = split(iter->first, ' ');
-		for (std::size_t i = 0; i < v.size(); ++i)
-			args[i] = v[i].data();
-
-		Options o = get_options(args, v.size());
-
-		compare(o, iter->second, "cmd_line_" + std::to_string(cmd_line_number));
-		std::cout << o.header_text << '\n';
-		++cmd_line_number;
-	}
 }
