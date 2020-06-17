@@ -286,6 +286,7 @@ void string_view_test()
 	size_t rlen, pos{ 0 };
 	size_t n = 4;
 
+	//f_sv is defined earlier as string_view "hello"
 	rlen = f_sv.copy(str_copy, n, pos);
 	is_true(rlen == (n < f_sv.size() - pos) ? n : f_sv.size() - pos, "f_sv.copy(str_copy, n, pos)");
 	try {
