@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 	if (options.summary)
 		summarize_tests();
 
-	//return totaly tests failed only if there was no error: the caller should know if there was an error
+	//return total tests failed only if there was no error: the caller should know if there was an error
 	if (error_code == driver_error_code::no_error)
 		return get_tests_failed_total();
 	else
