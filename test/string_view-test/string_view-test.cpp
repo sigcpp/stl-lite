@@ -294,12 +294,14 @@ void string_view_test()
 	//7. String operations
 	//copy
 	char str_copy[]{ "chips" };
+	char copy_expected[]{ "hells" };
 	size_t rlen, pos{ 0 };
 	size_t n = 4;
 
 	//f_sv is defined earlier as string_view "hello"
 	rlen = f_sv.copy(str_copy, n, pos);
 	is_true(rlen == (n < f_sv.size() - pos) ? n : f_sv.size() - pos, "f_sv.copy(str_copy, n, pos)");
+	is_zero(strcmp(str_copy, copy_expected), "str_copy == copy_expected");
 	try {
 		f_sv.copy(str_copy, n, f_sv.size() + 1);
 		is_true(false, "f_sv.copy(str_copy, n, pos), should not be executed.");
@@ -315,10 +317,12 @@ void string_view_test()
 	sv = "something";
 	pos = 4;
 	n = 5;
-	string_view sub_sv(sv.substr(pos, n));
+	string_view sub_expected{ "thing" };
 
-	is_true((sub_sv.data() == sv.data() + pos
-		&& sub_sv.size() == (n < sv.size() - pos) ? n : sv.size() - pos), "sv.copy(pos, n)");
+	string_view sub_sv(sv.substr(pos, n));
+	is_true(sub_sv.size() == (n < sv.size() - pos) ? n : sv.size() - pos, "sv.copy(pos, n).size");
+	is_true(sub_sv.data() == sv.data() + pos, "sv.copy(pos, n).data");
+	is_true(sub_sv == sub_expected, "");
 	try {
 		pos = sv.size() + 1;
 		sub_sv = sv.substr(pos, n);
