@@ -280,7 +280,8 @@ void string_view_test()
 	//copy(CharT * dest, size_type count, size_type pos = 0)
 	//Copies the substring [pos, pos + rcount) to the character array pointed to by dest, 
 	//where rcount is the smaller of count and size() - pos.
-	is_true(rlen == (n < f_sv.size() - pos) ? n : f_sv.size() - pos, "f_sv.copy(str_copy, n, pos)");
+	size_t len_expected{ (n < f_sv.size() - pos) ? n : f_sv.size() - pos };
+	is_true(rlen == len_expected, "f_sv.copy(str_copy, n, pos)");
 	is_zero(strcmp(str_copy, copy_expected), "str_copy == copy_expected");
 	try {
 		//throw std::out_of_range exception if pos > size() 
@@ -304,7 +305,8 @@ void string_view_test()
 	//substr(size_type pos = 0, size_type count = npos)
 	//Returns a view of the substring [pos, pos + rcount), 
 	//where rcount is the smaller of count and size() - pos
-	is_true(sub_sv.size() == (n < sv.size() - pos) ? n : sv.size() - pos, "sv.copy(pos, n).size");
+	len_expected = (n < sv.size() - pos) ? n : sv.size() - pos;
+	is_true(sub_sv.size() == len_expected, "sv.copy(pos, n).size");
 	is_true(sub_sv.data() == sv.data() + pos, "sv.copy(pos, n).data");
 	is_true(sub_sv == sub_expected, "");
 	try {
