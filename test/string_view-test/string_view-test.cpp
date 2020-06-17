@@ -230,8 +230,8 @@ void string_view_test()
 	for (size_t i = 0; i < size && iteratorTest; ++i, ++rit)
 		iteratorTest = (rit != rendIt && *rit == svrExpected[i]);
 
-	is_true(iteratorTest, "reverse iterator order and content");
-	is_true(rit == rendIt, "reverse iterator termination");
+	is_true(iteratorTest, "reverse const iterator order and content");
+	is_true(rit == rendIt, "reverse const iterator termination");
 
 	//iterator on empty string_view: the loop body should not execute
 	iteratorTest = true;
