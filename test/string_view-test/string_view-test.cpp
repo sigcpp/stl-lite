@@ -24,7 +24,7 @@ void string_view_test()
 	//1. Construction and assignment
 	//2. Capacity
 
-	// Default constructor. Constructs an empty string_view. 
+	//default constructor. Constructs an empty string_view. 
 	string_view empty_sv;
 	is_zero(empty_sv.size(), "empty_sv.size()");
 	is_true(empty_sv.length() == empty_sv.size(), "empty_sv.length() == empty_sv.size()");
@@ -37,13 +37,13 @@ void string_view_test()
 	is_true(sv.length() == sv.size(), "sv.length() == sv.size()");
 	is_false(sv.empty(), "!sv.empty()");
 
-	//Constructs a view of the first 5 characters of the C-string
+	//constructs a view of the first 5 characters of the C-string
 	string_view f_sv(c_hw, 5);
 	is_true(f_sv.size() == 5, "f_sv.size()");
 	is_true(f_sv.length() == f_sv.size(), "f_sv.length() == f_sv.size()");
 	is_false(f_sv.empty(), "!f_sv.empty()");
 
-	//Constructs a view of the first 5 characters of the character array
+	//constructs a view of the first 5 characters of the character array
 	const char a_hw[]{ 'h','e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!' };
 	string_view sv_a(a_hw, 5);
 	is_true(sv_a.size() == 5, "sv_a.size()");
@@ -64,51 +64,68 @@ void string_view_test()
 
 
 	//3. Non-member comparison functions
-	string_view ua("A");	//uppercase a
-	string_view la("a");	//lowercase a
-	string_view aua("A");	//another uppercase a
-	char csA[]{ "A" };		//C-string A
-	char csB[]{ "B" };		//C-string B
+	string_view sv_empty;
+	string_view sv_A1("A");
+	string_view sv_a1("a");
+	string_view sv_A2("A");
+	char zA[]{ "A" };
+	char zB[]{ "B" };
 
-	is_false(ua == la, "ua == la");
-	is_true(ua == aua, "ua == aua");
-	is_true(aua == ua, "aua == ua");
-	is_true(ua == csA, "ua == csA");
-	is_true(la != csB, "la != csB");
-	is_false(ua != aua, "ua != aua");
-	is_true(ua != la, "ua != la");
-	is_false(ua != csA, "!(ua != csA)");
-	is_true(ua != csB, "ua != csB");
+	is_false(sv_empty == sv_A1, "sv_empty == sv_A1");
+	is_false(sv_A1 == sv_empty, "sv_A1 == sv_empty");
+	is_false(sv_empty == zA, "sv_empty == zA");
+	is_false(zA == sv_empty, "zA == sv_empty");
+	is_false(sv_A1 == sv_a1, "sv_A1 == sv_a1");
+	is_true(sv_A1 == sv_A2, "sv_A1 == sv_A2");
+	is_true(sv_A2 == sv_A1, "sv_A2 == sv_A1");
+	is_true(sv_A1 == zA, "sv_A1 == zA");
+	is_true(sv_a1 != zB, "sv_a1 != zB");
+	is_false(sv_A1 != sv_A2, "sv_A1 != sv_A2");
+	is_true(sv_A1 != sv_a1, "sv_A1 != sv_a1");
+	is_false(sv_A1 != zA, "!(sv_A1 != zA)");
+	is_true(sv_A1 != zB, "sv_A1 != zB");
+	is_true(sv_empty != sv_A1, "sv_empty != sv_A1");
+	is_true(sv_A1 != sv_empty, "sv_A1 != sv_empty");
+	is_true(sv_empty != zA, "sv_empty != zA");
+	is_true(zA != sv_empty, "zA != sv_empty");
 
-	is_false(ua > la, "ua > la");
-	is_true(ua < la, "ua > la");
-	is_true(la > ua, "la > ua");
-	is_false(la < ua, "!(la < ua)");
-	is_false(ua > aua, "!(ua > aua)");
-	is_false(ua < aua, "!(ua < aua)");
-	is_false(ua > csA, "!(ua > csA)");
-	is_false(ua < csA, "!(ua < csA)");
-	is_false(ua > csB, "!(ua > csB)");
-	is_true(ua < csB, "ua < csB");
+	is_false(sv_empty > sv_A1, "sv_empty > sv_A1");
+	is_true(sv_empty < sv_A1, "sv_empty < sv_A1");
+	is_false(sv_empty > zA, "sv_empty > zA");
+	is_true(sv_empty < zA, "sv_empty < zA");
+	is_false(sv_A1 > sv_a1, "sv_A1 > sv_a1");
+	is_true(sv_A1 < sv_a1, "sv_A1 > sv_a1");
+	is_true(sv_a1 > sv_A1, "sv_a1 > sv_A1");
+	is_false(sv_a1 < sv_A1, "!(sv_a1 < sv_A1)");
+	is_false(sv_A1 > sv_A2, "!(sv_A1 > sv_A2)");
+	is_false(sv_A1 < sv_A2, "!(sv_A1 < sv_A2)");
+	is_false(sv_A1 > zA, "!(sv_A1 > zA)");
+	is_false(sv_A1 < zA, "!(sv_A1 < zA)");
+	is_false(sv_A1 > zB, "!(sv_A1 > zB)");
+	is_true(sv_A1 < zB, "sv_A1 < zB");
 
-	is_false(ua >= la, "ua >= la");
-	is_true(ua <= la, "ua >= la");
-	is_true(la >= ua, "la >= ua");
-	is_false(la <= ua, "la >= ua");
-	is_true(ua >= aua, "ua >= la");
-	is_true(ua <= aua, "ua >= la");
-
-	is_true(ua >= csA, "ua >= la");
-	is_true(ua <= csA, "ua >= la");
-	is_false(ua >= csB, "ua >= la");
-	is_true(ua <= csB, "ua >= la");
+	is_false(sv_empty >= sv_A1, "sv_empty >= sv_A1");
+	is_true(sv_empty <= sv_A1, "sv_empty <= sv_A1");
+	is_false(sv_empty >= zA, "sv_empty >= zA");
+	is_true(sv_empty <= zA, "sv_empty <= zA");
+	is_false(sv_A1 >= sv_a1, "sv_A1 >= sv_a1");
+	is_true(sv_A1 <= sv_a1, "sv_A1 <= sv_a1");
+	is_true(sv_a1 >= sv_A1, "sv_a1 >= sv_A1");
+	is_false(sv_a1 <= sv_A1, "sv_a1 <= sv_A1");
+	is_true(sv_A1 >= sv_A2, "sv_A1 >= sv_A2");
+	is_true(sv_A1 <= sv_A2, "sv_A1 <= sv_A2");
+	is_true(sv_A1 >= zA, "sv_A1 >= zA");
+	is_true(sv_A1 <= zA, "sv_A1 <= zA");
+	is_false(sv_A1 >= zB, "sv_A1 >= zB");
+	is_true(sv_A1 <= zB, "sv_A1 <= zB");
 
 
 	//4. Element data and access
+	//default constructor and data test
 	is_true(empty_sv.data() == nullptr, "empty_sv.data()");
 
 	//c_hw is defined earlier as const C-string "hello, world!"
-	//default constructor and data test
+	//constructor and data test
 	string_view sv_1(c_hw);
 	is_true(sv_1.data() == c_hw, "sv_1.data()");
 
@@ -127,7 +144,7 @@ void string_view_test()
 	is_true(sv_1.front() == c_hw[0], "sv_1.front()");
 	is_true(sv_1.back() == c_hw[sv_1.size() - 1], "sv_1.back()");
 
-	//Constructs a view of the first count characters of the character array and data test
+	//constructs a view of the first count characters of the character array and data test
 	const char* str_2 = "fixed length";
 	string_view sv_2(str_2, 5);
 	is_true(sv_2.data() == str_2, "sv_2.data()");
@@ -143,7 +160,7 @@ void string_view_test()
 	is_true(sv_2.front() == str_2[0], "sv_2.front()");
 	is_true(sv_2.back() == str_2[sv_2.size() - 1], "sv_2.back()");
 
-	//Copy constructor and data test
+	//copy constructor and data test
 	string_view sv_3(str_2);
 	is_true(sv_3.data() == str_2, "sv_3.data()");
 
@@ -249,7 +266,7 @@ void string_view_test()
 	is_true(sv.data() == data_expected, "sv.remove_suffix().data()");
 	is_true(sv.size() == size_expected, "sv.remove_suffix().size()");
 
-	//swap(exchanges the values of *this and s.)
+	//swap(exchanges the values of *this and s)
 	string_view o_sv("lunch!");
 	string_view s_sv("dinner");
 	char owExpected[]{ "lunch!" };
