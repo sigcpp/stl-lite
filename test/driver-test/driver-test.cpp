@@ -11,10 +11,10 @@
 * Tester for test-stl-lite driver
 */
 
-#include "verifiers.h"
-#include "options.h"
-#include "tester.h"
-#include "utils.h"
+#include "../verifiers.h"
+#include "../options.h"
+#include "../tester.h"
+#include "../utils.h"
 
 #include <iostream>
 #include <string_view>
