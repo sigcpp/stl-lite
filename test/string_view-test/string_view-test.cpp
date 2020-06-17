@@ -268,16 +268,19 @@ void string_view_test()
 	is_true(sv.data() == data_expected, "sv.remove_suffix().data()");
 	is_true(sv.size() == size_expected, "sv.remove_suffix().size()");
 
-	//swap(exchanges the values of *this and s)
-	string_view o_sv("lunch!");
-	string_view s_sv("dinner");
-	char owExpected[]{ "lunch!" };
-	char swExpected[]{ "dinner" };
-	o_sv.swap(s_sv);
-	bool swapTest = true;
-	for (std::size_t idx = 0; idx < o_sv.size() && swapTest; ++idx)
-		swapTest = o_sv[idx] == swExpected[idx] && s_sv[idx] == owExpected[idx];
-	is_true(swapTest, "o_sv.swap(s_sv)");
+	
+	//swap
+	char c_lunch[]{ "lunch!" };
+	char c_dinner[]{ "dinner" };
+	string_view o_sv(c_lunch);
+	string_view other_sv(c_dinner);
+
+	o_sv.swap(other_sv);
+	bool swap_test = o_sv.data() == c_dinner && o_sv.size() == sizeof(c_dinner) - 1 && 
+		other_sv.data() == c_lunch && other_sv.size() == sizeof(c_lunch) - 1;
+
+	is_true(swap_test, "o_sv.swap(other_sv)");
+
 
 	//7. String operations
 	//copy
