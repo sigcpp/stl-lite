@@ -63,7 +63,6 @@ void string_view_test()
 
 	//assignment
 	string_view sv_a = sv_c;
-
 	is_true(sv_a.size() == sv_c.size(), "sv_a.size() == sv_c.size()");
 	is_true(sv_a.length() == sv_a.size(), "sv_a.length() == sv_a.size()");
 	is_true(sv_a.empty() == sv_c.empty(), "sv_a.empty() == sv_c.empty()");
@@ -73,56 +72,56 @@ void string_view_test()
 	string_view sv_A1{ "A" };
 	string_view sv_a1{ "a" };
 	string_view sv_A2{ "A" };
-	char zA[]{ "A" };
-	char zB[]{ "B" };
+	char z_A[]{ "A" };
+	char z_B[]{ "B" };
 
 	is_false(sv_empty == sv_A1, "sv_empty == sv_A1");
 	is_false(sv_A1 == sv_empty, "sv_A1 == sv_empty");
-	is_false(sv_empty == zA, "sv_empty == zA");
-	is_false(zA == sv_empty, "zA == sv_empty");
+	is_false(sv_empty == z_A, "sv_empty == z_A");
+	is_false(z_A == sv_empty, "z_A == sv_empty");
 	is_false(sv_A1 == sv_a1, "sv_A1 == sv_a1");
 	is_true(sv_A1 == sv_A2, "sv_A1 == sv_A2");
 	is_true(sv_A2 == sv_A1, "sv_A2 == sv_A1");
-	is_true(sv_A1 == zA, "sv_A1 == zA");
-	is_true(sv_a1 != zB, "sv_a1 != zB");
+	is_true(sv_A1 == z_A, "sv_A1 == z_A");
+	is_true(sv_a1 != z_B, "sv_a1 != z_B");
 	is_false(sv_A1 != sv_A2, "sv_A1 != sv_A2");
 	is_true(sv_A1 != sv_a1, "sv_A1 != sv_a1");
-	is_false(sv_A1 != zA, "!(sv_A1 != zA)");
-	is_true(sv_A1 != zB, "sv_A1 != zB");
+	is_false(sv_A1 != z_A, "!(sv_A1 != z_A)");
+	is_true(sv_A1 != z_B, "sv_A1 != z_B");
 	is_true(sv_empty != sv_A1, "sv_empty != sv_A1");
 	is_true(sv_A1 != sv_empty, "sv_A1 != sv_empty");
-	is_true(sv_empty != zA, "sv_empty != zA");
-	is_true(zA != sv_empty, "zA != sv_empty");
+	is_true(sv_empty != z_A, "sv_empty != z_A");
+	is_true(z_A != sv_empty, "z_A != sv_empty");
 
 	is_false(sv_empty > sv_A1, "sv_empty > sv_A1");
 	is_true(sv_empty < sv_A1, "sv_empty < sv_A1");
-	is_false(sv_empty > zA, "sv_empty > zA");
-	is_true(sv_empty < zA, "sv_empty < zA");
+	is_false(sv_empty > z_A, "sv_empty > z_A");
+	is_true(sv_empty < z_A, "sv_empty < z_A");
 	is_false(sv_A1 > sv_a1, "sv_A1 > sv_a1");
 	is_true(sv_A1 < sv_a1, "sv_A1 < sv_a1");
 	is_true(sv_a1 > sv_A1, "sv_a1 > sv_A1");
 	is_false(sv_a1 < sv_A1, "sv_a1 < sv_A1");
 	is_false(sv_A1 > sv_A2, "sv_A1 > sv_A2");
 	is_false(sv_A1 < sv_A2, "sv_A1 < sv_A2");
-	is_false(sv_A1 > zA, "sv_A1 > zA");
-	is_false(sv_A1 < zA, "sv_A1 < zA");
-	is_false(sv_A1 > zB, "sv_A1 > zB");
-	is_true(sv_A1 < zB, "sv_A1 < zB");
+	is_false(sv_A1 > z_A, "sv_A1 > z_A");
+	is_false(sv_A1 < z_A, "sv_A1 < z_A");
+	is_false(sv_A1 > z_B, "sv_A1 > z_B");
+	is_true(sv_A1 < z_B, "sv_A1 < z_B");
 
 	is_false(sv_empty >= sv_A1, "sv_empty >= sv_A1");
 	is_true(sv_empty <= sv_A1, "sv_empty <= sv_A1");
-	is_false(sv_empty >= zA, "sv_empty >= zA");
-	is_true(sv_empty <= zA, "sv_empty <= zA");
+	is_false(sv_empty >= z_A, "sv_empty >= z_A");
+	is_true(sv_empty <= z_A, "sv_empty <= z_A");
 	is_false(sv_A1 >= sv_a1, "sv_A1 >= sv_a1");
 	is_true(sv_A1 <= sv_a1, "sv_A1 <= sv_a1");
 	is_true(sv_a1 >= sv_A1, "sv_a1 >= sv_A1");
 	is_false(sv_a1 <= sv_A1, "sv_a1 <= sv_A1");
 	is_true(sv_A1 >= sv_A2, "sv_A1 >= sv_A2");
 	is_true(sv_A1 <= sv_A2, "sv_A1 <= sv_A2");
-	is_true(sv_A1 >= zA, "sv_A1 >= zA");
-	is_true(sv_A1 <= zA, "sv_A1 <= zA");
-	is_false(sv_A1 >= zB, "sv_A1 >= zB");
-	is_true(sv_A1 <= zB, "sv_A1 <= zB");
+	is_true(sv_A1 >= z_A, "sv_A1 >= z_A");
+	is_true(sv_A1 <= z_A, "sv_A1 <= z_A");
+	is_false(sv_A1 >= z_B, "sv_A1 >= z_B");
+	is_true(sv_A1 <= z_B, "sv_A1 <= z_B");
 
 
 	//4. Element data and access
@@ -207,54 +206,54 @@ void string_view_test()
 	string_view sv_iter{ z_expected };
 
 	size = sizeof(z_expected) - 1;
-	bool iteratorTest{ true };
+	bool iterator_test{ true };
 
 	//forward iterator
-	auto it = sv_iter.begin(), endIt = sv_iter.end();
-	for (size_t i = 0; i < size && iteratorTest; ++i, ++it)
-		iteratorTest = (it != endIt && *it == z_expected[i]);
+	auto it = sv_iter.begin(), end_it = sv_iter.end();
+	for (size_t i = 0; i < size && iterator_test; ++i, ++it)
+		iterator_test = (it != end_it && *it == z_expected[i]);
 
-	is_true(iteratorTest, "forward iterator order and content");
-	is_true(it == endIt, "forward iterator termination");
+	is_true(iterator_test, "forward iterator order and content");
+	is_true(it == end_it, "forward iterator termination");
 
 	//const forward iterator
-	iteratorTest = true;
+	iterator_test = true;
 	it = sv_iter.cbegin();
-	endIt = sv_iter.cend();
-	for (size_t i = 0; i < size && iteratorTest; ++i, ++it)
-		iteratorTest = (it != endIt && *it == z_expected[i]);
+	end_it = sv_iter.cend();
+	for (size_t i = 0; i < size && iterator_test; ++i, ++it)
+		iterator_test = (it != end_it && *it == z_expected[i]);
 
-	is_true(iteratorTest, "forward const iterator order and content");
-	is_true(it == endIt, "forward const iterator termination");
+	is_true(iterator_test, "forward const iterator order and content");
+	is_true(it == end_it, "forward const iterator termination");
 
 	//reverse iterator
 	string_view sv_reverse{ "987654321" };
-	char svrExpected[]{ "123456789" };
+	char c_reverse_expected[]{ "123456789" };
 
-	size = sizeof(svrExpected) - 1;
-	iteratorTest = true;
-	auto rit = sv_reverse.rbegin(), rendIt = sv_reverse.rend();
-	for (size_t i = 0; i < size && iteratorTest; ++i, ++rit)
-		iteratorTest = (rit != rendIt && *rit == svrExpected[i]);
+	size = sizeof(c_reverse_expected) - 1;
+	iterator_test = true;
+	auto r_it = sv_reverse.rbegin(), rend_it = sv_reverse.rend();
+	for (size_t i = 0; i < size && iterator_test; ++i, ++r_it)
+		iterator_test = (r_it != rend_it && *r_it == c_reverse_expected[i]);
 
-	is_true(iteratorTest, "reverse iterator order and content");
-	is_true(rit == rendIt, "reverse iterator termination");
+	is_true(iterator_test, "reverse iterator order and content");
+	is_true(r_it == rend_it, "reverse iterator termination");
 
 	//const reverse iterator
-	iteratorTest = true;
-	rit = sv_reverse.crbegin();
-	rendIt = sv_reverse.crend();
-	for (size_t i = 0; i < size && iteratorTest; ++i, ++rit)
-		iteratorTest = (rit != rendIt && *rit == svrExpected[i]);
+	iterator_test = true;
+	r_it = sv_reverse.crbegin();
+	rend_it = sv_reverse.crend();
+	for (size_t i = 0; i < size && iterator_test; ++i, ++r_it)
+		iterator_test = (r_it != rend_it && *r_it == c_reverse_expected[i]);
 
-	is_true(iteratorTest, "reverse const iterator order and content");
-	is_true(rit == rendIt, "reverse const iterator termination");
+	is_true(iterator_test, "reverse const iterator order and content");
+	is_true(r_it == rend_it, "reverse const iterator termination");
 
 	//iterator on empty string_view: the loop body should not execute
-	iteratorTest = true;
+	iterator_test = true;
 	for (const auto emp : sv_empty)
-		iteratorTest = false;
-	is_true(iteratorTest, "iterator on empty array");
+		iterator_test = false;
+	is_true(iterator_test, "iterator on empty array");
 
 
 	//6. Modifiers
@@ -291,14 +290,21 @@ void string_view_test()
 	size_t rlen, pos{ 0 };
 	size_t n = 4;
 
+	size_t len_expected{ n };
+	char* p{ z_copy_expected };
+
 	//sv_f is defined earlier as string_view "hello"
 	rlen = sv_f.copy(z_copy, n, pos);
 	//copy(CharT * dest, size_type count, size_type pos = 0)
 	//Copies the substring [pos, pos + rcount) to the character array pointed to by dest, 
 	//where rcount is the smaller of count and size() - pos.
-	size_t len_expected = (n < sv_f.size() - pos) ? n : sv_f.size() - pos;
-	is_true(rlen == len_expected, "sv_f.copy(z_copy, n, pos)");
-	is_zero(strcmp(z_copy, z_copy_expected), "z_copy == z_copy_expected");
+	if (n >= sv_f.size() - pos) {
+		len_expected = sv_f.size() - pos;
+		p = z_copy;
+	}
+	is_true(rlen == len_expected, "sv_f.copy(z_copy, n, pos).length");
+	is_zero(strcmp(z_copy, p), "z_copy == z_copy_expected");
+
 	try {
 		//throw std::out_of_range exception if pos > size() 
 		sv_f.copy(z_copy, n, sv_f.size() + 1);
@@ -316,15 +322,18 @@ void string_view_test()
 	pos = 4;
 	n = 5;
 	string_view sub_expected{ "thing" };
+	len_expected = n;
 
 	string_view sub_sv{ sv.substr(pos, n) };
 	//substr(size_type pos = 0, size_type count = npos)
 	//Returns a view of the substring [pos, pos + rcount), 
 	//where rcount is the smaller of count and size() - pos
-	len_expected = (n < sv.size() - pos) ? n : sv.size() - pos;
+	if (n > sv.size() - pos) {
+		len_expected = sv.size() - pos;
+	}
 	is_true(sub_sv.size() == len_expected, "sv.copy(pos, n).size");
 	is_true(sub_sv.data() == sv.data() + pos, "sv.copy(pos, n).data");
-	is_true(sub_sv == sub_expected, "");
+	is_true(sub_sv == sub_expected, "sv.copy(pos, n)");
 	try {
 		//throw std::out_of_range exception if pos > size() 
 		pos = sv.size() + 1;
@@ -345,8 +354,8 @@ void string_view_test()
 
 	is_positive(sv_a_to_e.compare(sv_A_to_E), "sv_a_to_e.compare(sv_A_to_E)");
 	is_negative(sv_A_to_E.compare(sv_a_to_e), "sv_A_to_E.compare(sv_a_to_e)");
-	is_zero(sv_a_to_e.compare(0, 3, sv_a_to_c), "sv_a_to_e.compare(0, 3, sv_A_to_E)");
-	is_negative(sv_A_to_E.compare(0, 3, sv_a_to_c), "sv_a_to_e.compare(0, 3, sv_A_to_E)");
+	is_zero(sv_a_to_e.compare(0, 3, sv_a_to_c), "sv_a_to_e.compare(0, 3, sv_a_to_c)");
+	is_negative(sv_A_to_E.compare(0, 3, sv_a_to_c), "sv_A_to_E.compare(0, 3, sv_a_to_c)");
 	is_negative(sv_a_to_c.compare(sv_a_to_e), "sv_a_to_c.compare(sv_a_to_e) < 0");
 	is_positive(sv_a_to_c.compare(sv_A_to_E), "sv_a_to_c.compare(sv_A_to_E) > 0");
 	is_positive(sv_a_to_e.compare(1, 1, sv_A_to_E, 1, 1), "sv_a_to_e.compare(1, 1, sv_A_to_E, 1, 1)");
@@ -358,14 +367,14 @@ void string_view_test()
 	is_positive(sv_a_to_c.compare(sv_empty), "sv_a_to_c.compare(sv_empty)");
 
 	const char* a_ABC{ "ABC" };
-	is_positive(sv_a_to_e.compare(a_ABC), "sv_a_to_e.compare(str)");
-	is_zero(sv_A_to_E.compare(0, 3, a_ABC), "sv_empty.compare(0, 5, str)");
-	is_positive(sv_a_to_c.compare(a_ABC), "sv_empty.compare(0, 5, str, 5)");
+	is_positive(sv_a_to_e.compare(a_ABC), "sv_a_to_e.compare(a_ABC)");
+	is_zero(sv_A_to_E.compare(0, 3, a_ABC), "sv_A_to_E.compare(0, 3, a_ABC)");
+	is_positive(sv_a_to_c.compare(a_ABC), "sv_a_to_c.compare(a_ABC)");
 
 
 	//8. Searching
-	//    0         1 
-	//    01234567890123456
+	//                   0         1 
+	//                   01234567890123456
 	string_view sv_ats{ "access to success" };
 	is_true(sv_ats.find("ce") == 2, "sv_ats.find(str)");
 	is_true(sv_ats.rfind("ce") == 13, "sv_ats.rfind(str)");
