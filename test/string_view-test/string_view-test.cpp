@@ -300,9 +300,13 @@ void string_view_test()
 
 	//f_sv is defined earlier as string_view "hello"
 	rlen = f_sv.copy(str_copy, n, pos);
+	//copy(CharT * dest, size_type count, size_type pos = 0)
+	//Copies the substring [pos, pos + rcount) to the character array pointed to by dest, 
+	//where rcount is the smaller of count and size() - pos.
 	is_true(rlen == (n < f_sv.size() - pos) ? n : f_sv.size() - pos, "f_sv.copy(str_copy, n, pos)");
 	is_zero(strcmp(str_copy, copy_expected), "str_copy == copy_expected");
 	try {
+		//throw std::out_of_range exception if pos > size() 
 		f_sv.copy(str_copy, n, f_sv.size() + 1);
 		is_true(false, "f_sv.copy(str_copy, n, pos), should not be executed.");
 	}
@@ -320,10 +324,14 @@ void string_view_test()
 	string_view sub_expected{ "thing" };
 
 	string_view sub_sv(sv.substr(pos, n));
+	//substr(size_type pos = 0, size_type count = npos)
+	//Returns a view of the substring [pos, pos + rcount), 
+	//where rcount is the smaller of count and size() - pos
 	is_true(sub_sv.size() == (n < sv.size() - pos) ? n : sv.size() - pos, "sv.copy(pos, n).size");
 	is_true(sub_sv.data() == sv.data() + pos, "sv.copy(pos, n).data");
 	is_true(sub_sv == sub_expected, "");
 	try {
+		//throw std::out_of_range exception if pos > size() 
 		pos = sv.size() + 1;
 		sub_sv = sv.substr(pos, n);
 		is_true(false, "sv.substr(pos, n), should not be executed.");
