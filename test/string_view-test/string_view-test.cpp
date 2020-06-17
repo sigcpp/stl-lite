@@ -25,55 +25,54 @@ void string_view_test()
 	//2. Capacity
 
 	//default constructor. Constructs an empty string_view. 
-	string_view empty_sv;
-	is_zero(empty_sv.size(), "empty_sv.size()");
-	is_true(empty_sv.length() == empty_sv.size(), "empty_sv.length() == empty_sv.size()");
-	is_true(empty_sv.empty(), "empty_sv.empty()");
-	is_true(empty_sv.data() == nullptr, "empty_sv.data() == nullptr");
+	string_view sv_empty;
+	is_zero(sv_empty.size(), "sv_empty.size()");
+	is_true(sv_empty.length() == sv_empty.size(), "sv_empty.length() == sv_empty.size()");
+	is_true(sv_empty.empty(), "sv_empty.empty()");
+	is_true(sv_empty.data() == nullptr, "sv_empty.data() == nullptr");
 
 	//constructs a string_view with const char[]
-	const char c_hw[]{ "hello, world!" };
-	string_view sv{ c_hw };
+	const char z_hw[]{ "hello, world!" };
+	string_view sv{ z_hw };
 	is_true(sv.size() == 13, "sv.size()");
 	is_true(sv.length() == sv.size(), "sv.length() == sv.size()");
 	is_false(sv.empty(), "!sv.empty()");
-	is_true(sv.data() == c_hw, "sv.data() == c_hw");
+	is_true(sv.data() == z_hw, "sv.data() == z_hw");
 
 	//constructs a view of the first 5 characters of the C-string
-	string_view f_sv{ c_hw, 5 };
-	is_true(f_sv.size() == 5, "f_sv.size()");
-	is_true(f_sv.length() == f_sv.size(), "f_sv.length() == f_sv.size()");
-	is_false(f_sv.empty(), "!f_sv.empty()");
-	is_true(f_sv.data() == c_hw, "f_sv.data() == c_hw");
+	string_view sv_f{ z_hw, 5 };
+	is_true(sv_f.size() == 5, "sv_f.size()");
+	is_true(sv_f.length() == sv_f.size(), "sv_f.length() == sv_f.size()");
+	is_false(sv_f.empty(), "!sv_f.empty()");
+	is_true(sv_f.data() == z_hw, "sv_f.data() == z_hw");
 
 	//constructs a view of the first 5 characters of the character array
 	const char a_hw[]{ 'h','e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!' };
-	string_view sv_a{ a_hw, 5 };
-	is_true(sv_a.size() == 5, "sv_a.size()");
-	is_true(sv_a.length() == sv_a.size(), "sv_a.length() == sv_a.size()");
-	is_false(sv_a.empty(), "!sv_a.empty()");
-	is_true(sv_a.data() == a_hw, "sv_a.data() == a_hw");
+	string_view sv_h{ a_hw, 5 };
+	is_true(sv_h.size() == 5, "sv_h.size()");
+	is_true(sv_h.length() == sv_h.size(), "sv_h.length() == sv_h.size()");
+	is_false(sv_h.empty(), "!sv_h.empty()");
+	is_true(sv_h.data() == a_hw, "sv_h.data() == a_hw");
 
 	//copy constructor
-	string_view c_sv{ f_sv };
-	is_true(c_sv.size() == f_sv.size(), "c_sv.size() == f_sv.size()");
-	is_true(c_sv.length() == c_sv.size(), "c_sv.length() == c_sv.size()");
-	is_true(c_sv.empty() == f_sv.empty(), "c_sv.empty() == f_sv.empty()");
-	is_true(c_sv.data() == c_hw, "c_sv.data() == c_hw");
+	string_view sv_c{ sv_f };
+	is_true(sv_c.size() == sv_f.size(), "sv_c.size() == sv_f.size()");
+	is_true(sv_c.length() == sv_c.size(), "sv_c.length() == sv_c.size()");
+	is_true(sv_c.empty() == sv_f.empty(), "sv_c.empty() == sv_f.empty()");
+	is_true(sv_c.data() == z_hw, "sv_c.data() == z_hw");
 
 	//assignment
-	string_view a_sv = c_sv;
+	string_view sv_a = sv_c;
 
-	is_true(a_sv.size() == c_sv.size(), "a_sv.size() == c_sv.size()");
-	is_true(a_sv.length() == a_sv.size(), "a_sv.length() == a_sv.size()");
-	is_true(a_sv.empty() == c_sv.empty(), "a_sv.empty() == c_sv.empty()");
-	is_true(a_sv.data() == c_sv.data(), "a_sv.data() == c_sv.data()");
+	is_true(sv_a.size() == sv_c.size(), "sv_a.size() == sv_c.size()");
+	is_true(sv_a.length() == sv_a.size(), "sv_a.length() == sv_a.size()");
+	is_true(sv_a.empty() == sv_c.empty(), "sv_a.empty() == sv_c.empty()");
+	is_true(sv_a.data() == sv_c.data(), "sv_a.data() == sv_c.data()");
 
 	//3. Non-member comparison functions
-	string_view sv_empty;
-	string_view sv_A1("A");
-	string_view sv_a1("a");
-	string_view sv_A2("A");
+	string_view sv_A1{ "A" };
+	string_view sv_a1{ "a" };
+	string_view sv_A2{ "A" };
 	char zA[]{ "A" };
 	char zB[]{ "B" };
 
@@ -127,75 +126,93 @@ void string_view_test()
 
 
 	//4. Element data and access
-
-	//c_hw is defined earlier as const C-string "hello, world!"
-	//constructor and data test
-	string_view sv_1(c_hw);
-	is_true(sv_1[0] == c_hw[0], "sv_1[0]");
-	is_true(sv_1[3] == c_hw[3], "sv_1[3]");
-	is_true(sv_1[6] == c_hw[6], "sv_1[6]");
-	is_true(sv_1[9] == c_hw[9], "sv_1[9]");
-	is_true(sv_1[12] == c_hw[12], "sv_1[12]");
-
-	is_true(sv_1.at(0) == c_hw[0], "sv_1.at(0)");
-	is_true(sv_1.at(3) == c_hw[3], "sv_1.at(3)");
-	is_true(sv_1.at(6) == c_hw[6], "sv_1.at(6)");
-	is_true(sv_1.at(9) == c_hw[9], "sv_1.at(9)");
-	is_true(sv_1.at(12) == c_hw[12], "sv_1.at(12)");
-
-	is_true(sv_1.front() == c_hw[0], "sv_1.front()");
-	is_true(sv_1.back() == c_hw[sv_1.size() - 1], "sv_1.back()");
-
-	//constructs a view of the first count characters of the character array and data test
-	const char* str_2 = "fixed length";
-	string_view sv_2(str_2, 5);
-
-	is_true(sv_2[0] == str_2[0], "sv_2[0]");
-	is_true(sv_2[2] == str_2[2], "sv_2[2]");
-	is_true(sv_2[4] == str_2[4], "sv_2[4]");
-
-	is_true(sv_2.at(0) == str_2[0], "sv_2.at(0)");
-	is_true(sv_2.at(2) == str_2[2], "sv_2.at(2)");
-	is_true(sv_2.at(4) == str_2[4], "sv_2.at(4)");
-
-	is_true(sv_2.front() == str_2[0], "sv_2.front()");
-	is_true(sv_2.back() == str_2[sv_2.size() - 1], "sv_2.back()");
-
-
 	//member access
-	char c_member_access_data[]{ "nice is good" };
-	string_view sv_3(c_member_access_data);
-	size_t size = sv_3.size();
+	char z_member_access_data[]{ "nice is good" };
+	string_view sv_1{ z_member_access_data };
+	size_t size{ sv_1.size() };
 
 	//front and back
-	is_true(sv_3.front() == c_member_access_data[0], "sv_3.front()");
-	is_true(sv_3.back() == c_member_access_data[size-1], "sv_3.back()");
+	is_true(sv_1.front() == z_member_access_data[0], "sv_1.front()");
+	is_true(sv_1.back() == z_member_access_data[size - 1], "sv_1.back()");
 
 	//subscript operator
 	bool access_test{ true };
 	for (size_t i = 0; i < size && access_test; ++i)
-		access_test = (sv_3[i] == c_member_access_data[i]);
-	is_true(access_test, "sv_3 subscript");
+		access_test = (sv_1[i] == z_member_access_data[i]);
+	is_true(access_test, "sv_1 subscript");
 
 	//at
 	access_test = true;
 	for (size_t i = 0; i < size && access_test; ++i)
-		access_test = (sv_3.at(i) == c_member_access_data[i]);
+		access_test = (sv_1.at(i) == z_member_access_data[i]);
+	is_true(access_test, "sv_1.at");
+
+	//constructs a view of the first count characters of the character array
+	//z_member_access_data is defined earlier as const C-string "nice is good"
+	string_view sv_2{ z_member_access_data, 7 };
+	size = 7;
+
+	is_true(sv_2.front() == z_member_access_data[0], "sv_2.front()");
+	is_true(sv_2.back() == z_member_access_data[size - 1], "sv_2.back()");
+
+	access_test = true;
+	for (size_t i = 0; i < size && access_test; ++i)
+		access_test = (sv_2[i] == z_member_access_data[i]);
+	is_true(access_test, "sv_2 subscript");
+
+	access_test = true;
+	for (size_t i = 0; i < size && access_test; ++i)
+		access_test = (sv_2.at(i) == z_member_access_data[i]);
+	is_true(access_test, "sv_2.at");
+
+	//copy constructor
+	//sv_1 is defined earlier as string_view "nice is good"
+	string_view sv_3{ sv_1 };
+	size = sv_3.size();
+
+	is_true(sv_3.front() == sv_1[0], "sv_3.front()");
+	is_true(sv_3.back() == sv_1[size - 1], "sv_3.back()");
+
+	access_test = true;
+	for (size_t i = 0; i < size && access_test; ++i)
+		access_test = (sv_3[i] == sv_1[i]);
+	is_true(access_test, "sv_3 subscript");
+
+	access_test = true;
+	for (size_t i = 0; i < size && access_test; ++i)
+		access_test = (sv_3.at(i) == sv_1[i]);
 	is_true(access_test, "sv_3.at");
 
+	//assignment
+	//sv_1 is defined earlier as string_view "nice is good"
+	string_view sv_4 = sv_1;
+	size = sv_4.size();
+
+	is_true(sv_4.front() == sv_1[0], "sv_4.front()");
+	is_true(sv_4.back() == sv_1[size - 1], "sv_4.back()");
+
+	access_test = true;
+	for (size_t i = 0; i < size && access_test; ++i)
+		access_test = (sv_4[i] == sv_1[i]);
+	is_true(access_test, "sv_4 subscript");
+
+	access_test = true;
+	for (size_t i = 0; i < size && access_test; ++i)
+		access_test = (sv_4.at(i) == sv_1[i]);
+	is_true(access_test, "sv_4.at");
 
 	//5. Iterator support
 	//forward iterators
-	char sExpected[]{ "support" };
-	string_view sv_iter(sExpected);
+	char z_expected[]{ "support" };
+	string_view sv_iter{ z_expected };
 
-	size = sizeof(sExpected) - 1;
+	size = sizeof(z_expected) - 1;
 	bool iteratorTest{ true };
 
 	//forward iterator
 	auto it = sv_iter.begin(), endIt = sv_iter.end();
 	for (size_t i = 0; i < size && iteratorTest; ++i, ++it)
-		iteratorTest = (it != endIt && *it == sExpected[i]);
+		iteratorTest = (it != endIt && *it == z_expected[i]);
 
 	is_true(iteratorTest, "forward iterator order and content");
 	is_true(it == endIt, "forward iterator termination");
@@ -205,13 +222,13 @@ void string_view_test()
 	it = sv_iter.cbegin();
 	endIt = sv_iter.cend();
 	for (size_t i = 0; i < size && iteratorTest; ++i, ++it)
-		iteratorTest = (it != endIt && *it == sExpected[i]);
+		iteratorTest = (it != endIt && *it == z_expected[i]);
 
 	is_true(iteratorTest, "forward const iterator order and content");
 	is_true(it == endIt, "forward const iterator termination");
 
 	//reverse iterator
-	string_view sv_reverse("987654321");
+	string_view sv_reverse{ "987654321" };
 	char svrExpected[]{ "123456789" };
 
 	size = sizeof(svrExpected) - 1;
@@ -235,7 +252,7 @@ void string_view_test()
 
 	//iterator on empty string_view: the loop body should not execute
 	iteratorTest = true;
-	for (const auto emp : empty_sv)
+	for (const auto emp : sv_empty)
 		iteratorTest = false;
 	is_true(iteratorTest, "iterator on empty array");
 
@@ -245,48 +262,47 @@ void string_view_test()
 	size_t size_expected{ sv.size() - 1 };
 
 	sv.remove_prefix(1);
-	is_true(sv.data() == data_expected, "sv.remove_prefix().data()");
 	is_true(sv.size() == size_expected, "sv.remove_prefix().size()");
+	is_true(sv.data() == data_expected, "sv.remove_prefix().data()");
 
 	data_expected = sv.data();
 	size_expected--;
 	sv.remove_suffix(1);
-	is_true(sv.data() == data_expected, "sv.remove_suffix().data()");
 	is_true(sv.size() == size_expected, "sv.remove_suffix().size()");
+	is_true(sv.data() == data_expected, "sv.remove_suffix().data()");
 
-	
 	//swap
-	char c_lunch[]{ "lunch!" };
-	char c_dinner[]{ "dinner" };
-	string_view o_sv(c_lunch);
-	string_view other_sv(c_dinner);
+	char z_lunch[]{ "lunch!" };
+	char z_dinner[]{ "dinner" };
+	string_view o_sv{ z_lunch };
+	string_view other_sv{ z_dinner };
 
 	o_sv.swap(other_sv);
-	bool swap_test = o_sv.data() == c_dinner && o_sv.size() == sizeof(c_dinner) - 1 && 
-		other_sv.data() == c_lunch && other_sv.size() == sizeof(c_lunch) - 1;
+	bool swap_test = o_sv.data() == z_dinner && o_sv.size() == sizeof(z_dinner) - 1 &&
+		other_sv.data() == z_lunch && other_sv.size() == sizeof(z_lunch) - 1;
 
 	is_true(swap_test, "o_sv.swap(other_sv)");
 
 
 	//7. String operations
 	//copy
-	char str_copy[]{ "chips" };
-	char copy_expected[]{ "hells" };
+	char z_copy[]{ "chips" };
+	char z_copy_expected[]{ "hells" };
 	size_t rlen, pos{ 0 };
 	size_t n = 4;
 
-	//f_sv is defined earlier as string_view "hello"
-	rlen = f_sv.copy(str_copy, n, pos);
+	//sv_f is defined earlier as string_view "hello"
+	rlen = sv_f.copy(z_copy, n, pos);
 	//copy(CharT * dest, size_type count, size_type pos = 0)
 	//Copies the substring [pos, pos + rcount) to the character array pointed to by dest, 
 	//where rcount is the smaller of count and size() - pos.
-	size_t len_expected{ (n < f_sv.size() - pos) ? n : f_sv.size() - pos };
-	is_true(rlen == len_expected, "f_sv.copy(str_copy, n, pos)");
-	is_zero(strcmp(str_copy, copy_expected), "str_copy == copy_expected");
+	size_t len_expected = (n < sv_f.size() - pos) ? n : sv_f.size() - pos;
+	is_true(rlen == len_expected, "sv_f.copy(z_copy, n, pos)");
+	is_zero(strcmp(z_copy, z_copy_expected), "z_copy == z_copy_expected");
 	try {
 		//throw std::out_of_range exception if pos > size() 
-		f_sv.copy(str_copy, n, f_sv.size() + 1);
-		is_true(false, "f_sv.copy(str_copy, n, pos), should not be executed.");
+		sv_f.copy(z_copy, n, sv_f.size() + 1);
+		is_true(false, "sv_f.copy(z_copy, n, pos), should not be executed.");
 	}
 	catch (const std::out_of_range&) {
 		is_true(true, "if pos > size(), then throw out_of_range exception");
@@ -301,7 +317,7 @@ void string_view_test()
 	n = 5;
 	string_view sub_expected{ "thing" };
 
-	string_view sub_sv(sv.substr(pos, n));
+	string_view sub_sv{ sv.substr(pos, n) };
 	//substr(size_type pos = 0, size_type count = npos)
 	//Returns a view of the substring [pos, pos + rcount), 
 	//where rcount is the smaller of count and size() - pos
@@ -323,52 +339,52 @@ void string_view_test()
 	}
 
 	//compare 
-	string_view s1("abcde");
-	string_view s2("ABCDE");
-	string_view s3("abc");
+	string_view sv_a_to_e{ "abcde" };
+	string_view sv_A_to_E{ "ABCDE" };
+	string_view sv_a_to_c{ "abc" };
 
-	is_positive(s1.compare(s2), "s1.compare(s2)");
-	is_negative(s2.compare(s1), "s2.compare(s1)");
-	is_zero(s1.compare(0, 3, s3), "s1.compare(0, 3, s2)");
-	is_negative(s2.compare(0, 3, s3), "s1.compare(0, 3, s2)");
-	is_negative(s3.compare(s1), "s3.compare(s1) < 0");
-	is_positive(s3.compare(s2), "s3.compare(s2) > 0");
-	is_positive(s1.compare(1, 1, s2, 1, 1), "s1.compare(1, 1, s2, 1, 1)");
-	is_negative(s2.compare(1, 1, s3, 1, 1), "s2.compare(1, 1, s3, 1, 1)");
-	is_zero(s3.compare(1, 1, s1, 1, 1), "s3.compare(1, 1, s1, 1, 1)");
+	is_positive(sv_a_to_e.compare(sv_A_to_E), "sv_a_to_e.compare(sv_A_to_E)");
+	is_negative(sv_A_to_E.compare(sv_a_to_e), "sv_A_to_E.compare(sv_a_to_e)");
+	is_zero(sv_a_to_e.compare(0, 3, sv_a_to_c), "sv_a_to_e.compare(0, 3, sv_A_to_E)");
+	is_negative(sv_A_to_E.compare(0, 3, sv_a_to_c), "sv_a_to_e.compare(0, 3, sv_A_to_E)");
+	is_negative(sv_a_to_c.compare(sv_a_to_e), "sv_a_to_c.compare(sv_a_to_e) < 0");
+	is_positive(sv_a_to_c.compare(sv_A_to_E), "sv_a_to_c.compare(sv_A_to_E) > 0");
+	is_positive(sv_a_to_e.compare(1, 1, sv_A_to_E, 1, 1), "sv_a_to_e.compare(1, 1, sv_A_to_E, 1, 1)");
+	is_negative(sv_A_to_E.compare(1, 1, sv_a_to_c, 1, 1), "sv_A_to_E.compare(1, 1, sv_a_to_c, 1, 1)");
+	is_zero(sv_a_to_c.compare(1, 1, sv_a_to_e, 1, 1), "sv_a_to_c.compare(1, 1, sv_a_to_e, 1, 1)");
 
 	//compare empty string_view
-	is_negative(empty_sv.compare(s1), "empty_sv.compare(s1)");
-	is_positive(s3.compare(empty_sv), "s3.compare(empty_sv)");
+	is_negative(sv_empty.compare(sv_a_to_e), "sv_empty.compare(sv_a_to_e)");
+	is_positive(sv_a_to_c.compare(sv_empty), "sv_a_to_c.compare(sv_empty)");
 
-	const char* str = "ABC";
-	is_positive(s1.compare(str), "s1.compare(str)");
-	is_zero(s2.compare(0, 3, str), "empty_sv.compare(0, 5, str)");
-	is_positive(s3.compare(str), "empty_sv.compare(0, 5, str, 5)");
+	const char* a_ABC{ "ABC" };
+	is_positive(sv_a_to_e.compare(a_ABC), "sv_a_to_e.compare(str)");
+	is_zero(sv_A_to_E.compare(0, 3, a_ABC), "sv_empty.compare(0, 5, str)");
+	is_positive(sv_a_to_c.compare(a_ABC), "sv_empty.compare(0, 5, str, 5)");
 
 
 	//8. Searching
 	//    0         1 
 	//    01234567890123456
-	sv = "access to success";
-	is_true(sv.find("ce") == 2, "sv.find(str)");
-	is_true(sv.rfind("ce") == 13, "sv.rfind(str)");
-	is_zero(sv.find(""), "sv.find(str)");
-	is_true(sv.rfind("") == sv.size(), "sv.rfind(str)");
-	is_true(sv.find("TO") == string_view::npos, "sv.find(str)");
-	is_true(sv.rfind("as") == string_view::npos, "sv.rfind(str)");
+	string_view sv_ats{ "access to success" };
+	is_true(sv_ats.find("ce") == 2, "sv_ats.find(str)");
+	is_true(sv_ats.rfind("ce") == 13, "sv_ats.rfind(str)");
+	is_zero(sv_ats.find(""), "sv_ats.find(str)");
+	is_true(sv_ats.rfind("") == sv_ats.size(), "sv_ats.rfind(str)");
+	is_true(sv_ats.find("TO") == string_view::npos, "sv_ats.find(str)");
+	is_true(sv_ats.rfind("as") == string_view::npos, "sv_ats.rfind(str)");
 
-	is_true(sv.find_first_of("cess") == 1, "sv.find_first_of(str)");
-	is_true(sv.find_last_of("cce") == 14, "sv.find_last_of(str)");
-	is_true(sv.find_first_of("") == string_view::npos, "sv.find_first_of(str)");
-	is_true(sv.find_last_of("") == string_view::npos, "sv.find_last_of(str)");
-	is_true(sv.find_first_of("sT") == 4, "sv.find_first_of(str)");
-	is_true(sv.find_last_of("wc") == 13, "sv.find_last_of(str)");
+	is_true(sv_ats.find_first_of("cess") == 1, "sv_ats.find_first_of(str)");
+	is_true(sv_ats.find_last_of("cce") == 14, "sv_ats.find_last_of(str)");
+	is_true(sv_ats.find_first_of("") == string_view::npos, "sv_ats.find_first_of(str)");
+	is_true(sv_ats.find_last_of("") == string_view::npos, "sv_ats.find_last_of(str)");
+	is_true(sv_ats.find_first_of("sT") == 4, "sv_ats.find_first_of(str)");
+	is_true(sv_ats.find_last_of("wc") == 13, "sv_ats.find_last_of(str)");
 
-	is_true(sv.find_first_not_of("ac") == 3, "sv.find_first_not_of(str)");
-	is_true(sv.find_last_not_of("cess") == 11, "sv.find_last_not_of(str)");
-	is_zero(sv.find_first_not_of("success"), "sv.find_first_not_of(str)");
-	is_true(sv.find_last_not_of("success") == 9, "sv.find_last_not_of(str)");
-	is_zero(sv.find_first_not_of(""), "sv.find_first_not_of(str)");
-	is_true(sv.find_last_not_of("") == 16, "sv.find_last_not_of(str)");
+	is_true(sv_ats.find_first_not_of("ac") == 3, "sv_ats.find_first_not_of(str)");
+	is_true(sv_ats.find_last_not_of("cess") == 11, "sv_ats.find_last_not_of(str)");
+	is_zero(sv_ats.find_first_not_of("success"), "sv_ats.find_first_not_of(str)");
+	is_true(sv_ats.find_last_not_of("success") == 9, "sv_ats.find_last_not_of(str)");
+	is_zero(sv_ats.find_first_not_of(""), "sv_ats.find_first_not_of(str)");
+	is_true(sv_ats.find_last_not_of("") == 16, "sv_ats.find_last_not_of(str)");
 }
