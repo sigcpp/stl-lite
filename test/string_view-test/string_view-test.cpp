@@ -33,14 +33,14 @@ void string_view_test()
 
 	//constructs a string_view with const char[]
 	const char c_hw[]{ "hello, world!" };
-	string_view sv(c_hw);
+	string_view sv{ c_hw };
 	is_true(sv.size() == 13, "sv.size()");
 	is_true(sv.length() == sv.size(), "sv.length() == sv.size()");
 	is_false(sv.empty(), "!sv.empty()");
 	is_true(sv.data() == c_hw, "sv.data() == c_hw");
 
 	//constructs a view of the first 5 characters of the C-string
-	string_view f_sv(c_hw, 5);
+	string_view f_sv{ c_hw, 5 };
 	is_true(f_sv.size() == 5, "f_sv.size()");
 	is_true(f_sv.length() == f_sv.size(), "f_sv.length() == f_sv.size()");
 	is_false(f_sv.empty(), "!f_sv.empty()");
@@ -48,14 +48,14 @@ void string_view_test()
 
 	//constructs a view of the first 5 characters of the character array
 	const char a_hw[]{ 'h','e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!' };
-	string_view sv_a(a_hw, 5);
+	string_view sv_a{ a_hw, 5 };
 	is_true(sv_a.size() == 5, "sv_a.size()");
 	is_true(sv_a.length() == sv_a.size(), "sv_a.length() == sv_a.size()");
 	is_false(sv_a.empty(), "!sv_a.empty()");
 	is_true(sv_a.data() == a_hw, "sv_a.data() == a_hw");
 
 	//copy constructor
-	string_view c_sv(f_sv);
+	string_view c_sv{ f_sv };
 	is_true(c_sv.size() == f_sv.size(), "c_sv.size() == f_sv.size()");
 	is_true(c_sv.length() == c_sv.size(), "c_sv.length() == c_sv.size()");
 	is_true(c_sv.empty() == f_sv.empty(), "c_sv.empty() == f_sv.empty()");
@@ -205,8 +205,13 @@ void string_view_test()
 
 	bool iteratorTest{ true };
 	size_t size = sizeof(sExpected) - 1;
-	auto it = sv_iter.begin(), endIt = sv_iter.end();
-	//For the testing of iterators, 
+	//returns an iterator or an const_iterator pointing to the first character of the view.
+	//depending on the const-qualification of the object it is called on.
+	auto it = sv_iter.begin();
+	//returns an iterator or an const_iterator pointing to the character following the last 
+	//character of the view depending on the const-qualification of the object it is called on.
+	auto endIt = sv_iter.end();
+	//for the testing of iterators, 
 	//we must ensure that the iterator loops through an entire C-string (it != endIt), 
 	//and each char must be equal(*it == sExpected[i]).
 	for (size_t i = 0; i < size && iteratorTest; ++i, ++it)
@@ -216,7 +221,9 @@ void string_view_test()
 	is_true(it == endIt, "forward iterator termination");
 
 	iteratorTest = true;
+	//Returns a const_iterator pointing to the first character of the view.
 	it = sv_iter.cbegin();
+	//Returns a const_iterator pointing to the character following the last character of the view.
 	endIt = sv_iter.cend();
 	for (size_t i = 0; i < size && iteratorTest; ++i, ++it)
 		iteratorTest = (it != endIt && *it == sExpected[i]);
@@ -230,7 +237,11 @@ void string_view_test()
 
 	iteratorTest = true;
 	size = sizeof(svrExpected) - 1;
-	auto rit = sv_reverse.rbegin(), rendIt = sv_reverse.rend();
+	//returns a reverse iterator or const_iterator pointing to the first character of the reversed view.
+	auto rit = sv_reverse.rbegin();
+	//returns a reverse iterator or const_iterator to the character following 
+	//the last character of the reversed view.
+	auto rendIt = sv_reverse.rend();
 	for (size_t i = 0; i < size && iteratorTest; ++i, ++rit)
 		iteratorTest = (rit != rendIt && *rit == svrExpected[i]);
 
@@ -238,7 +249,9 @@ void string_view_test()
 	is_true(rit == rendIt, "reverse iterator termination");
 
 	iteratorTest = true;
+	//returns a reverse const_iterator to the first character of the reversed view.
 	rit = sv_reverse.crbegin();
+	//returns a reverse const_iterator to the character following the last character of the reversed view.
 	rendIt = sv_reverse.crend();
 	for (size_t i = 0; i < size && iteratorTest; ++i, ++rit)
 		iteratorTest = (rit != rendIt && *rit == svrExpected[i]);
@@ -277,7 +290,6 @@ void string_view_test()
 	for (std::size_t idx = 0; idx < o_sv.size() && swapTest; ++idx)
 		swapTest = o_sv[idx] == swExpected[idx] && s_sv[idx] == owExpected[idx];
 	is_true(swapTest, "o_sv.swap(s_sv)");
-
 
 	//7. String operations
 	//copy
