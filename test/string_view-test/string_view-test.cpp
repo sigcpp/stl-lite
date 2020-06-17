@@ -201,7 +201,6 @@ void string_view_test()
 	is_true(access_test, "sv_4.at");
 
 	//5. Iterator support
-	//forward iterators
 	char z_expected[]{ "support" };
 	string_view sv_iter{ z_expected };
 
