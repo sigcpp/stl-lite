@@ -170,13 +170,14 @@ void test_element_access()
 		access_test = (sv.at(i) == z_member_access_data[i]);
 	is_true(access_test, "sv.at");
 
+	//test pos >= sv.size() case
 	try {
-		//throw std::out_of_range if pos >= size().
-		static_cast<void>(sv.at(sv.size() + 1));	//ignore the nodiscard attribute
-		is_true(false, "sv.at(sv.size() + 1), should not be executed.");
+		//use `static_cast<void>` to ignore the `nodiscard` attribute
+		static_cast<void>(sv.at(sv.size() + 1));
+		is_true(false, "sv.at(pos) should not be executed.");
 	}
 	catch (const std::out_of_range&) {
-		is_true(true, "if pos > size(), then throw out_of_range exception");
+		is_true(true, "Throw an expected exception.");
 	}
 	catch (...) {
 		is_true(false, "Throw an unexpected exception.");
@@ -269,33 +270,33 @@ void test_operations()
 
 void test_operation_copy()
 {
-	char z_copy[]{ "chips" };
-	char z_copy_expected[]{ "hells" };
-	size_t rlen, pos{ 0 };
-	size_t n = 4;
-
-	size_t len_expected{ n };
-	char* p{ z_copy_expected };
-
 	string_view sv_f{ "hello" };
-	rlen = sv_f.copy(z_copy, n, pos);
-	//copy(CharT * dest, size_type count, size_type pos = 0)
-	//Copies the substring [pos, pos + rcount) to the character array pointed to by dest, 
-	//where rcount is the smaller of count and size() - pos.
-	if (n >= sv_f.size() - pos) {
-		len_expected = sv_f.size() - pos;
-		p = z_copy;
-	}
-	is_true(rlen == len_expected, "sv_f.copy(z_copy, n, pos).length");
-	is_zero(strcmp(z_copy, p), "z_copy == z_copy_expected");
+	char z_copy[]{ "chips" };
+	size_t n{ 4 }, pos{ 0 };
 
+	//copies the substring [pos, pos + rlen) to the character array pointed to by `z_copy`, 
+	//where `rlen` is the smaller of `n` and `size() - pos`.
+	size_t rlen = sv_f.copy(z_copy, n, pos);
+
+	const char* p_expected{ "hells" };
+
+	//let `len_expected` be the smaller of `n` and `size() - pos`.
+	size_t len_expected{ n };
+	if (n > sv_f.size() - pos) {
+		len_expected = sv_f.size() - pos;
+		p_expected = z_copy;
+	}
+
+	is_true(rlen == len_expected, "sv_f.copy(z_copy, n, pos).length");
+	is_zero(std::strncmp(z_copy, p_expected, 5), "z_copy == z_copy_expected");
+
+	//test pos >= sv_f.size() case
 	try {
-		//throw std::out_of_range exception if pos > size() 
 		sv_f.copy(z_copy, n, sv_f.size() + 1);
-		is_true(false, "sv_f.copy(z_copy, n, pos), should not be executed.");
+		is_true(false, "sv_f.copy() should not be executed.");
 	}
 	catch (const std::out_of_range&) {
-		is_true(true, "if pos > size(), then throw out_of_range exception");
+		is_true(true, "Thrown an expected exception.");
 	}
 	catch (...) {
 		is_true(false, "Throw an unexpected exception.");
@@ -308,30 +309,33 @@ void test_operation_substr()
 	string_view sv = "something";
 	size_t pos{ 4 };
 	size_t n{ 5 };
-	string_view sub_expected{ "thing" };
-	size_t len_expected{ n };
 
-	string_view sub_sv{ sv.substr(pos, n) };
-	//substr(size_type pos = 0, size_type count = npos)
-	//Returns a view of the substring [pos, pos + rcount), 
-	//where rcount is the smaller of count and size() - pos
+	//returns a view of the substring `[pos, pos + n)`
+	string_view sub_sv = sv.substr(pos, n);
+
+	//let `len_expected` be the smaller of `n` and `size() - pos`.
+	size_t len_expected{ n };
 	if (n > sv.size() - pos) {
 		len_expected = sv.size() - pos;
 	}
+
 	is_true(sub_sv.size() == len_expected, "sv.copy(pos, n).size");
 	is_true(sub_sv.data() == sv.data() + pos, "sv.copy(pos, n).data");
+
+	string_view sub_expected{ "thing" };
 	is_true(sub_sv == sub_expected, "sv.copy(pos, n)");
+
+	//test pos >= sv_f.size() case
 	try {
-		//throw std::out_of_range exception if pos > size() 
 		pos = sv.size() + 1;
 		sub_sv = sv.substr(pos, n);
-		is_true(false, "sv.substr(pos, n), should not be executed.");
+		is_true(false, "sv.substr(), should not be executed.");
 	}
 	catch (const std::out_of_range&) {
-		is_true(true, "if pos > size(), then throw out_of_range exception");
+		is_true(true, "Throw an expected exception");
 	}
 	catch (...) {
-		is_true(false, "sv.substr(pos, n), throw an unexpected exception.");
+		is_true(false, "Throw an unexpected exception.");
 	}
 }
 
