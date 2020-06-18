@@ -1,6 +1,6 @@
 /*
 * driver-test.cpp
-* Nick DeMarco
+* Nick DeMarco; Sean Murthy
 * (c) 2020 sigcpp https://sigcpp.github.io. See LICENSE.MD
 *
 * Attribution and copyright notice must be retained.
