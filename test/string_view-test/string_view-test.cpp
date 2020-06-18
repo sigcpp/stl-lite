@@ -46,7 +46,7 @@ void test_operation_copy();
 void test_operation_substr();
 void test_operation_compare();
 
-//test 8. Searching
+//test 7. Searching
 void test_searching();
 
 void string_view_test()
@@ -102,7 +102,8 @@ void test_member()
 
 	//assignment
 	const char z_h[]{ "hello" };
-	string_view sv_a = z_h;
+	string_view sv_a;
+	sv_a = z_h;
 	is_true(sv_a.size() == sizeof(z_h) - 1, "sv_a.size() == sizeof(z_h) - 1");
 	is_true(sv_a.length() == sv_a.size(), "sv_a.length() == sv_a.size()");
 	is_false(sv_a.empty(), "sv_a.empty()");
@@ -250,9 +251,10 @@ void test_element_access_copy()
 
 void test_element_access_assign()
 {
-	//assignment
 	char z_member_access_data[]{ "nice is good" };
-	string_view sv_assign = z_member_access_data;
+	string_view sv_assign;
+	//assignment
+	sv_assign = z_member_access_data;
 	size_t size{ sv_assign.size() };
 
 	is_true(sv_assign.front() == z_member_access_data[0], "sv_assign.front()");
