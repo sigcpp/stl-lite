@@ -23,7 +23,7 @@
 void driver_test();
 void test_get_options();
 void compare(const Options& received, const Options& expected, const std::string& test_case);
-void parse_cmd_line_and_compare(char* args[], const std::string& cmd_line, const Options& expected, const std::string& test_case);
+void parse_cmd_line_and_compare(const std::string& cmd_line, const Options& expected, const std::string& test_case);
 
 //unit test for the test driver
 void driver_test()
