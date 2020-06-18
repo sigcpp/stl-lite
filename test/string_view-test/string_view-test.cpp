@@ -148,21 +148,7 @@ void test_non_member_comparison()
 }
 
 
-void test_element_access_ctor();
-void test_element_access_count();
-void test_element_access_copy();
-void test_element_access_assign();
-
 void test_element_access()
-{
-	test_element_access_ctor();
-	test_element_access_count();
-	test_element_access_copy();
-	test_element_access_assign();
-}
-
-
-void test_element_access_ctor()
 {
 	char z_member_access_data[]{ "nice is good" };
 	string_view sv{ z_member_access_data };
@@ -183,73 +169,18 @@ void test_element_access_ctor()
 	for (size_t i = 0; i < size && access_test; ++i)
 		access_test = (sv.at(i) == z_member_access_data[i]);
 	is_true(access_test, "sv.at");
-}
 
-
-void test_element_access_count()
-{
-	//constructs a view of the first count characters of the character array
-	const char z_member_access_data[]{ "nice is good" };
-	string_view sv_count{ z_member_access_data, 7 };
-	size_t size{ 7 };
-
-	is_true(sv_count.front() == z_member_access_data[0], "sv_count.front()");
-	is_true(sv_count.back() == z_member_access_data[size - 1], "sv_count.back()");
-
-	bool access_test{ true };
-	for (size_t i = 0; i < size && access_test; ++i)
-		access_test = (sv_count[i] == z_member_access_data[i]);
-	is_true(access_test, "sv_count subscript");
-
-	access_test = true;
-	for (size_t i = 0; i < size && access_test; ++i)
-		access_test = (sv_count.at(i) == z_member_access_data[i]);
-	is_true(access_test, "sv_count.at");
-}
-
-
-void test_element_access_copy()
-{
-	char z_member_access_data[]{ "nice is good" };
-	string_view sv_temp{ z_member_access_data };
-	string_view sv_copy{ sv_temp };
-	size_t size{ sv_copy.size() };
-
-	is_true(sv_copy.front() == sv_temp[0], "sv_copy.front()");
-	is_true(sv_copy.back() == sv_temp[size - 1], "sv_copy.back()");
-
-	bool access_test = true;
-	for (size_t i = 0; i < size && access_test; ++i)
-		access_test = (sv_copy[i] == sv_temp[i]);
-	is_true(access_test, "sv_copy subscript");
-
-	access_test = true;
-	for (size_t i = 0; i < size && access_test; ++i)
-		access_test = (sv_copy.at(i) == sv_temp[i]);
-	is_true(access_test, "sv_copy.at");
-}
-
-
-void test_element_access_assign()
-{
-	char z_member_access_data[]{ "nice is good" };
-	string_view sv_assign;
-	//assignment
-	sv_assign = z_member_access_data;
-	size_t size{ sv_assign.size() };
-
-	is_true(sv_assign.front() == z_member_access_data[0], "sv_assign.front()");
-	is_true(sv_assign.back() == z_member_access_data[size - 1], "sv_assign.back()");
-
-	bool access_test = true;
-	for (size_t i = 0; i < size && access_test; ++i)
-		access_test = (sv_assign[i] == z_member_access_data[i]);
-	is_true(access_test, "sv_assign subscript");
-
-	access_test = true;
-	for (size_t i = 0; i < size && access_test; ++i)
-		access_test = (sv_assign.at(i) == z_member_access_data[i]);
-	is_true(access_test, "sv_assign.at");
+	try {
+		//throw std::out_of_range if pos >= size().
+		static_cast<void>(sv.at(sv.size() + 1));	//ignore the nodiscard attribute
+		is_true(false, "sv.at(sv.size() + 1), should not be executed.");
+	}
+	catch (const std::out_of_range&) {
+		is_true(true, "if pos > size(), then throw out_of_range exception");
+	}
+	catch (...) {
+		is_true(false, "Throw an unexpected exception.");
+	}
 }
 
 
