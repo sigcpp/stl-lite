@@ -106,6 +106,7 @@ void test_non_member_comparison()
 	is_true(sv_A1 == sv_A2, "sv_A1 == sv_A2");
 	is_true(sv_A2 == sv_A1, "sv_A2 == sv_A1");
 	is_true(sv_A1 == z_A, "sv_A1 == z_A");
+
 	is_true(sv_a1 != z_B, "sv_a1 != z_B");
 	is_false(sv_A1 != sv_A2, "sv_A1 != sv_A2");
 	is_true(sv_A1 != sv_a1, "sv_A1 != sv_a1");
@@ -117,33 +118,35 @@ void test_non_member_comparison()
 	is_true(z_A != sv_empty, "z_A != sv_empty");
 
 	is_false(sv_empty > sv_A1, "sv_empty > sv_A1");
-	is_true(sv_empty < sv_A1, "sv_empty < sv_A1");
 	is_false(sv_empty > z_A, "sv_empty > z_A");
-	is_true(sv_empty < z_A, "sv_empty < z_A");
 	is_false(sv_A1 > sv_a1, "sv_A1 > sv_a1");
-	is_true(sv_A1 < sv_a1, "sv_A1 < sv_a1");
 	is_true(sv_a1 > sv_A1, "sv_a1 > sv_A1");
-	is_false(sv_a1 < sv_A1, "sv_a1 < sv_A1");
 	is_false(sv_A1 > sv_A2, "sv_A1 > sv_A2");
-	is_false(sv_A1 < sv_A2, "sv_A1 < sv_A2");
 	is_false(sv_A1 > z_A, "sv_A1 > z_A");
-	is_false(sv_A1 < z_A, "sv_A1 < z_A");
 	is_false(sv_A1 > z_B, "sv_A1 > z_B");
+
+	is_true(sv_empty < sv_A1, "sv_empty < sv_A1");
+	is_true(sv_empty < z_A, "sv_empty < z_A");
+	is_true(sv_A1 < sv_a1, "sv_A1 < sv_a1");
+	is_false(sv_a1 < sv_A1, "sv_a1 < sv_A1");
+	is_false(sv_A1 < sv_A2, "sv_A1 < sv_A2");
+	is_false(sv_A1 < z_A, "sv_A1 < z_A");
 	is_true(sv_A1 < z_B, "sv_A1 < z_B");
 
 	is_false(sv_empty >= sv_A1, "sv_empty >= sv_A1");
-	is_true(sv_empty <= sv_A1, "sv_empty <= sv_A1");
 	is_false(sv_empty >= z_A, "sv_empty >= z_A");
-	is_true(sv_empty <= z_A, "sv_empty <= z_A");
 	is_false(sv_A1 >= sv_a1, "sv_A1 >= sv_a1");
-	is_true(sv_A1 <= sv_a1, "sv_A1 <= sv_a1");
 	is_true(sv_a1 >= sv_A1, "sv_a1 >= sv_A1");
-	is_false(sv_a1 <= sv_A1, "sv_a1 <= sv_A1");
 	is_true(sv_A1 >= sv_A2, "sv_A1 >= sv_A2");
-	is_true(sv_A1 <= sv_A2, "sv_A1 <= sv_A2");
 	is_true(sv_A1 >= z_A, "sv_A1 >= z_A");
-	is_true(sv_A1 <= z_A, "sv_A1 <= z_A");
 	is_false(sv_A1 >= z_B, "sv_A1 >= z_B");
+
+	is_true(sv_empty <= sv_A1, "sv_empty <= sv_A1");
+	is_true(sv_empty <= z_A, "sv_empty <= z_A");
+	is_true(sv_A1 <= sv_a1, "sv_A1 <= sv_a1");
+	is_false(sv_a1 <= sv_A1, "sv_a1 <= sv_A1");
+	is_true(sv_A1 <= sv_A2, "sv_A1 <= sv_A2");
+	is_true(sv_A1 <= z_A, "sv_A1 <= z_A");
 	is_true(sv_A1 <= z_B, "sv_A1 <= z_B");
 }
 
@@ -212,8 +215,7 @@ void test_iterator_forward()
 
 	//const forward iterator
 	iterator_test = true;
-	it = sv_iter.cbegin();
-	end_it = sv_iter.cend();
+	it = sv_iter.cbegin(), end_it = sv_iter.cend();
 	for (size_t i = 0; i < size && iterator_test; ++i, ++it)
 		iterator_test = (it != end_it && *it == z_expected[i]);
 
@@ -239,8 +241,7 @@ void test_iterator_reverse()
 
 	//const reverse iterator
 	iterator_test = true;
-	r_it = sv_reverse.crbegin();
-	rend_it = sv_reverse.crend();
+	r_it = sv_reverse.crbegin(), rend_it = sv_reverse.crend();
 	for (size_t i = 0; i < size && iterator_test; ++i, ++r_it)
 		iterator_test = (r_it != rend_it && *r_it == z_reverse_expected[i]);
 
@@ -278,10 +279,9 @@ void test_operation_copy()
 	//where `rlen` is the smaller of `n` and `size() - pos`.
 	size_t rlen = sv_f.copy(z_copy, n, pos);
 
-	const char* p_expected{ "hells" };
-
 	//let `len_expected` be the smaller of `n` and `size() - pos`.
 	size_t len_expected{ n };
+	const char* p_expected{ "hells" };
 	if (n > sv_f.size() - pos) {
 		len_expected = sv_f.size() - pos;
 		p_expected = z_copy;
@@ -310,15 +310,14 @@ void test_operation_substr()
 	size_t pos{ 4 };
 	size_t n{ 5 };
 
-	//returns a view of the substring `[pos, pos + n)`
-	string_view sub_sv = sv.substr(pos, n);
-
 	//let `len_expected` be the smaller of `n` and `size() - pos`.
 	size_t len_expected{ n };
 	if (n > sv.size() - pos) {
 		len_expected = sv.size() - pos;
 	}
 
+	//returns a view of the substring `[pos, pos + n)`
+	string_view sub_sv = sv.substr(pos, n);
 	is_true(sub_sv.size() == len_expected, "sv.copy(pos, n).size");
 	is_true(sub_sv.data() == sv.data() + pos, "sv.copy(pos, n).data");
 
@@ -361,10 +360,10 @@ void test_operation_compare()
 	is_negative(sv_empty.compare(sv_a_to_e), "sv_empty.compare(sv_a_to_e)");
 	is_positive(sv_a_to_c.compare(sv_empty), "sv_a_to_c.compare(sv_empty)");
 
-	const char* a_ABC{ "ABC" };
-	is_positive(sv_a_to_e.compare(a_ABC), "sv_a_to_e.compare(a_ABC)");
-	is_zero(sv_A_to_E.compare(0, 3, a_ABC), "sv_A_to_E.compare(0, 3, a_ABC)");
-	is_positive(sv_a_to_c.compare(a_ABC), "sv_a_to_c.compare(a_ABC)");
+	const char* p_ABC{ "ABC" };
+	is_positive(sv_a_to_e.compare(p_ABC), "sv_a_to_e.compare(a_ABC)");
+	is_zero(sv_A_to_E.compare(0, 3, p_ABC), "sv_A_to_E.compare(0, 3, a_ABC)");
+	is_positive(sv_a_to_c.compare(p_ABC), "sv_a_to_c.compare(a_ABC)");
 }
 
 
@@ -374,24 +373,27 @@ void test_finders()
 	//                   01234567890123456
 	string_view sv_ats{ "access to success" };
 	is_true(sv_ats.find("ce") == 2, "sv_ats.find(str)");
-	is_true(sv_ats.rfind("ce") == 13, "sv_ats.rfind(str)");
 	is_zero(sv_ats.find(""), "sv_ats.find(str)");
-	is_true(sv_ats.rfind("") == sv_ats.size(), "sv_ats.rfind(str)");
 	is_true(sv_ats.find("TO") == string_view::npos, "sv_ats.find(str)");
+
+	is_true(sv_ats.rfind("ce") == 13, "sv_ats.rfind(str)");
+	is_true(sv_ats.rfind("") == sv_ats.size(), "sv_ats.rfind(str)");
 	is_true(sv_ats.rfind("as") == string_view::npos, "sv_ats.rfind(str)");
 
 	is_true(sv_ats.find_first_of("cess") == 1, "sv_ats.find_first_of(str)");
-	is_true(sv_ats.find_last_of("cce") == 14, "sv_ats.find_last_of(str)");
 	is_true(sv_ats.find_first_of("") == string_view::npos, "sv_ats.find_first_of(str)");
-	is_true(sv_ats.find_last_of("") == string_view::npos, "sv_ats.find_last_of(str)");
 	is_true(sv_ats.find_first_of("sT") == 4, "sv_ats.find_first_of(str)");
+
+	is_true(sv_ats.find_last_of("cce") == 14, "sv_ats.find_last_of(str)");
+	is_true(sv_ats.find_last_of("") == string_view::npos, "sv_ats.find_last_of(str)");
 	is_true(sv_ats.find_last_of("wc") == 13, "sv_ats.find_last_of(str)");
 
 	is_true(sv_ats.find_first_not_of("ac") == 3, "sv_ats.find_first_not_of(str)");
-	is_true(sv_ats.find_last_not_of("cess") == 11, "sv_ats.find_last_not_of(str)");
 	is_zero(sv_ats.find_first_not_of("success"), "sv_ats.find_first_not_of(str)");
-	is_true(sv_ats.find_last_not_of("success") == 9, "sv_ats.find_last_not_of(str)");
 	is_zero(sv_ats.find_first_not_of(""), "sv_ats.find_first_not_of(str)");
+
+	is_true(sv_ats.find_last_not_of("cess") == 11, "sv_ats.find_last_not_of(str)");
+	is_true(sv_ats.find_last_not_of("success") == 9, "sv_ats.find_last_not_of(str)");
 	is_true(sv_ats.find_last_not_of("") == 16, "sv_ats.find_last_not_of(str)");
 }
 
@@ -400,15 +402,17 @@ void test_modifiers()
 {
 	string_view sv{ "hello, world!" };
 
-	//remove prefix
 	const char* data_expected{ sv.data() + 1 };
 	size_t size_expected{ sv.size() - 1 };
+
+	//remove prefix
 	sv.remove_prefix(1);
 	is_true(sv.size() == size_expected, "sv.remove_prefix().size()");
 	is_true(sv.data() == data_expected, "sv.remove_prefix().data()");
 
-	//remove suffix
 	size_expected--;
+
+	//remove suffix
 	sv.remove_suffix(1);
 	is_true(sv.size() == size_expected, "sv.remove_suffix().size()");
 	is_true(sv.data() == data_expected, "sv.remove_suffix().data()");
