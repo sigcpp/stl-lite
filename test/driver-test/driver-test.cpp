@@ -33,6 +33,7 @@ void driver_test()
 	test_get_options();
 }
 
+
 void parse_cmd_line_and_compare(const std::string& cmd_line, const Options& expected,
 	const std::string& test_case)
 {
@@ -282,6 +283,7 @@ void test_get_options()
 	expected_options.header_text = "a_very_very_very_very_very_very_very_very_very_very_long_header_text";
 	parse_cmd_line_and_compare(cmd_line, expected_options, "cmd-line 29");
 }
+
 
 //compares received Options object data members to expected Options object data members
 //see fn declaration of is_true for the behavior of the comparison
