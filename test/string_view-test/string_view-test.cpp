@@ -19,58 +19,36 @@
 
 using std::string_view;
 
-//test 1. Construction, Assignment, and Capacity
-void test_member();
-
-//test 2. Non-member comparison functions
+void test_ctors_and_assignment();
 void test_non_member_comparison();
-
-//test 3. Element data and access
 void test_element_access();
-void test_element_access_ctor();
-void test_element_access_count();
-void test_element_access_copy();
-void test_element_access_assign();
-
-//test 4. Iterator support
 void test_iterator();
-void test_iterator_forward();
-void test_iterator_reverse();
-
-//test 5. Modifiers
-void test_modifier();
-
-//test 6. String operations
-void test_operation();
-void test_operation_copy();
-void test_operation_substr();
-void test_operation_compare();
-
-//test 7. Searching
-void test_searching();
+void test_modifiers();
+void test_operations();
+void test_finders();
 
 void string_view_test()
 {
-	test_member();
+	test_ctors_and_assignment();
 	test_non_member_comparison();
 	test_element_access();
 	test_iterator();
-	test_modifier();
-	test_operation();
-	test_searching();
+	test_modifiers();
+	test_operations();
+	test_finders();
 }
 
 
-void test_member()
+void test_ctors_and_assignment()
 {
-	//default constructor. Constructs an empty string_view. 
+	//default ctor
 	string_view sv_empty;
 	is_zero(sv_empty.size(), "sv_empty.size()");
 	is_true(sv_empty.length() == sv_empty.size(), "sv_empty.length() == sv_empty.size()");
 	is_true(sv_empty.empty(), "sv_empty.empty()");
 	is_true(sv_empty.data() == nullptr, "sv_empty.data() == nullptr");
 
-	//constructs a string_view with const char[]
+	//custom ctor, C-string
 	const char z_hw[]{ "hello, world!" };
 	string_view sv{ z_hw };
 	is_true(sv.size() == 13, "sv.size()");
@@ -78,14 +56,14 @@ void test_member()
 	is_false(sv.empty(), "!sv.empty()");
 	is_true(sv.data() == z_hw, "sv.data() == z_hw");
 
-	//constructs a view of the first 5 characters of the C-string
+	//custom ctor, first few characters of C-string
 	string_view sv_f{ z_hw, 5 };
 	is_true(sv_f.size() == 5, "sv_f.size()");
 	is_true(sv_f.length() == sv_f.size(), "sv_f.length() == sv_f.size()");
 	is_false(sv_f.empty(), "!sv_f.empty()");
 	is_true(sv_f.data() == z_hw, "sv_f.data() == z_hw");
 
-	//constructs a view of the first 5 characters of the character array
+	//custom ctor, first few characters of non-C-string char array
 	const char a_hw[]{ 'h','e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!' };
 	string_view sv_h{ a_hw, 5 };
 	is_true(sv_h.size() == 5, "sv_h.size()");
@@ -93,7 +71,7 @@ void test_member()
 	is_false(sv_h.empty(), "!sv_h.empty()");
 	is_true(sv_h.data() == a_hw, "sv_h.data() == a_hw");
 
-	//copy constructor
+	//copy ctor
 	string_view sv_c{ sv_f };
 	is_true(sv_c.size() == sv_f.size(), "sv_c.size() == sv_f.size()");
 	is_true(sv_c.length() == sv_c.size(), "sv_c.length() == sv_c.size()");
@@ -170,6 +148,11 @@ void test_non_member_comparison()
 }
 
 
+void test_element_access_ctor();
+void test_element_access_count();
+void test_element_access_copy();
+void test_element_access_assign();
+
 void test_element_access()
 {
 	test_element_access_ctor();
@@ -181,7 +164,6 @@ void test_element_access()
 
 void test_element_access_ctor()
 {
-	//member access
 	char z_member_access_data[]{ "nice is good" };
 	string_view sv{ z_member_access_data };
 	size_t size{ sv.size() };
@@ -228,7 +210,6 @@ void test_element_access_count()
 
 void test_element_access_copy()
 {
-	//copy constructor
 	char z_member_access_data[]{ "nice is good" };
 	string_view sv_temp{ z_member_access_data };
 	string_view sv_copy{ sv_temp };
@@ -272,6 +253,9 @@ void test_element_access_assign()
 }
 
 
+void test_iterator_forward();
+void test_iterator_reverse();
+
 void test_iterator()
 {
 	test_iterator_reverse();
@@ -281,47 +265,12 @@ void test_iterator()
 
 void test_iterator_forward()
 {
-	//reverse iterator
-	string_view sv_reverse{ "987654321" };
-	char c_reverse_expected[]{ "123456789" };
-
-	size_t size = sizeof(c_reverse_expected) - 1;
-	bool iterator_test{ true };
-	auto r_it = sv_reverse.rbegin(), rend_it = sv_reverse.rend();
-	for (size_t i = 0; i < size && iterator_test; ++i, ++r_it)
-		iterator_test = (r_it != rend_it && *r_it == c_reverse_expected[i]);
-
-	is_true(iterator_test, "reverse iterator order and content");
-	is_true(r_it == rend_it, "reverse iterator termination");
-
-	//const reverse iterator
-	iterator_test = true;
-	r_it = sv_reverse.crbegin();
-	rend_it = sv_reverse.crend();
-	for (size_t i = 0; i < size && iterator_test; ++i, ++r_it)
-		iterator_test = (r_it != rend_it && *r_it == c_reverse_expected[i]);
-
-	is_true(iterator_test, "reverse const iterator order and content");
-	is_true(r_it == rend_it, "reverse const iterator termination");
-
-	//iterator on empty string_view: the loop body should not execute
-	string_view sv_empty;
-	iterator_test = true;
-	for (const auto emp : sv_empty)
-		iterator_test = false;
-	is_true(iterator_test, "iterator on empty array");
-}
-
-
-void test_iterator_reverse()
-{
 	char z_expected[]{ "support" };
 	string_view sv_iter{ z_expected };
 
+	//non-const forward iterator
 	size_t size = sizeof(z_expected) - 1;
 	bool iterator_test{ true };
-
-	//forward iterator
 	auto it = sv_iter.begin(), end_it = sv_iter.end();
 	for (size_t i = 0; i < size && iterator_test; ++i, ++it)
 		iterator_test = (it != end_it && *it == z_expected[i]);
@@ -341,7 +290,45 @@ void test_iterator_reverse()
 }
 
 
-void test_operation()
+void test_iterator_reverse()
+{
+	string_view sv_reverse{ "987654321" };
+	char z_reverse_expected[]{ "123456789" };
+
+	//non-const reverse iterator
+	size_t size = sizeof(z_reverse_expected) - 1;
+	bool iterator_test{ true };
+	auto r_it = sv_reverse.rbegin(), rend_it = sv_reverse.rend();
+	for (size_t i = 0; i < size && iterator_test; ++i, ++r_it)
+		iterator_test = (r_it != rend_it && *r_it == z_reverse_expected[i]);
+
+	is_true(iterator_test, "reverse iterator order and content");
+	is_true(r_it == rend_it, "reverse iterator termination");
+
+	//const reverse iterator
+	iterator_test = true;
+	r_it = sv_reverse.crbegin();
+	rend_it = sv_reverse.crend();
+	for (size_t i = 0; i < size && iterator_test; ++i, ++r_it)
+		iterator_test = (r_it != rend_it && *r_it == z_reverse_expected[i]);
+
+	is_true(iterator_test, "reverse const iterator order and content");
+	is_true(r_it == rend_it, "reverse const iterator termination");
+
+	//iterator on empty string_view: the loop body should not execute
+	string_view sv_empty;
+	iterator_test = true;
+	for (const auto emp : sv_empty)
+		iterator_test = false;
+	is_true(iterator_test, "iterator on empty array");
+}
+
+
+void test_operation_copy();
+void test_operation_substr();
+void test_operation_compare();
+
+void test_operations()
 {
 	test_operation_copy();
 	test_operation_substr();
@@ -351,7 +338,6 @@ void test_operation()
 
 void test_operation_copy()
 {
-	//copy
 	char z_copy[]{ "chips" };
 	char z_copy_expected[]{ "hells" };
 	size_t rlen, pos{ 0 };
@@ -388,7 +374,6 @@ void test_operation_copy()
 
 void test_operation_substr()
 {
-	//substr
 	string_view sv = "something";
 	size_t pos{ 4 };
 	size_t n{ 5 };
@@ -422,7 +407,6 @@ void test_operation_substr()
 
 void test_operation_compare()
 {
-	//compare 
 	string_view sv_a_to_e{ "abcde" };
 	string_view sv_A_to_E{ "ABCDE" };
 	string_view sv_a_to_c{ "abc" };
@@ -449,7 +433,7 @@ void test_operation_compare()
 }
 
 
-void test_searching()
+void test_finders()
 {
 	//                   0         1 
 	//                   01234567890123456
@@ -477,17 +461,18 @@ void test_searching()
 }
 
 
-void test_modifier()
+void test_modifiers()
 {
 	string_view sv{ "hello, world!" };
+
+	//remove prefix
 	const char* data_expected{ sv.data() + 1 };
 	size_t size_expected{ sv.size() - 1 };
-
 	sv.remove_prefix(1);
 	is_true(sv.size() == size_expected, "sv.remove_prefix().size()");
 	is_true(sv.data() == data_expected, "sv.remove_prefix().data()");
 
-	data_expected = sv.data();
+	//remove suffix
 	size_expected--;
 	sv.remove_suffix(1);
 	is_true(sv.size() == size_expected, "sv.remove_suffix().size()");
