@@ -173,17 +173,16 @@ void test_element_access()
 		access_test = (sv.at(i) == z_member_access_data[i]);
 	is_true(access_test, "sv.at");
 
-	//test pos >= sv.size() case
+	//index out of bounds: at function should throw std::out_of_range
 	try {
-		//use `static_cast<void>` to ignore the `nodiscard` attribute
-		static_cast<void>(sv.at(sv.size() + 1));
-		is_true(false, "sv.at(pos) should not be executed.");
+		static_cast<void>(sv.at(sv.size() + 1)); //static_cast result to suppress nodiscard warning
+		is_true(false, "sv.at bounds check");
 	}
 	catch (const std::out_of_range&) {
-		is_true(true, "Throw an expected exception.");
+		is_true(true, "sv.at bounds check");
 	}
 	catch (...) {
-		is_true(false, "Throw an unexpected exception.");
+		is_true(false, "sv.at bounds check incorrect exception");
 	}
 }
 
@@ -271,70 +270,76 @@ void test_operations()
 
 void test_operation_copy()
 {
-	string_view sv_f{ "hello" };
-	char z_copy[]{ "chips" };
-	size_t n{ 4 }, pos{ 0 };
+	//               01234
+	string_view sv{ "chips" };
 
-	//copies the substring [pos, pos + rlen) to the character array pointed to by `z_copy`, 
-	//where `rlen` is the smaller of `n` and `size() - pos`.
-	size_t rlen = sv_f.copy(z_copy, n, pos);
+	//copy(z, n, pos) copies at most rlen chars, where  rlen is the smaller of n and size()-pos
+	//throws std::out_of_range if pos > size()
+	
+	//copy 4 characters from position 0: should return 4 and "chip" should be copied
+	char z_expected_1[]{ "chip" };
+	char z_copy[10]; //intentionally larger capacity than needed
+	size_t rlen = sv.copy(z_copy, 4, 0);
 
-	//let `len_expected` be the smaller of `n` and `size() - pos`.
-	size_t len_expected{ n };
-	const char* p_expected{ "hells" };
-	if (n > sv_f.size() - pos) {
-		len_expected = sv_f.size() - pos;
-		p_expected = z_copy;
-	}
+	is_true(rlen == 4, "sv.copy(z_copy, 4, 0).length");
+	is_zero(std::strncmp(z_copy, z_expected_1, 4), "z_copy == z_expected_1");
 
-	is_true(rlen == len_expected, "sv_f.copy(z_copy, n, pos).length");
-	is_zero(std::strncmp(z_copy, p_expected, 5), "z_copy == z_copy_expected");
+	//copy 4 characters from position 3: should return 2 and "ps" should be copied
+	char z_expected_2[]{ "ps" };
+	rlen = sv.copy(z_copy, 4, 3);
 
-	//test pos >= sv_f.size() case
+	is_true(rlen == 2, "sv.copy(z_copy, 3, 4).length");
+	is_zero(std::strncmp(z_copy, z_expected_2, 2), "z_copy == z_expected_2");
+
+	//starting copy past size(): should throw std::out_of_range
 	try {
-		sv_f.copy(z_copy, n, sv_f.size() + 1);
-		is_true(false, "sv_f.copy() should not be executed.");
+		sv.copy(z_copy, 4, sv.size() + 1);
+		is_true(false, "sv.copy() pos > size");
 	}
 	catch (const std::out_of_range&) {
-		is_true(true, "Thrown an expected exception.");
+		is_true(true, "sv.copy() pos > size");
 	}
 	catch (...) {
-		is_true(false, "Throw an unexpected exception.");
+		is_true(false, "sv.copy() pos > size incorrect exception");
 	}
 }
 
 
 void test_operation_substr()
 {
-	string_view sv = "something";
-	size_t pos{ 4 };
-	size_t n{ 5 };
+	//               01234
+	string_view sv{ "chips" };
 
-	//let `len_expected` be the smaller of `n` and `size() - pos`.
-	size_t len_expected{ n };
-	if (n > sv.size() - pos) {
-		len_expected = sv.size() - pos;
-	}
+	//substr(pos, n) returns substr with at most rlen chars, where  rlen is the smaller of n and size()-pos
+	//data() of substr should also come from data of original sv: no new data should be created
+	//throws std::out_of_range if pos > size()
 
-	//returns a view of the substring `[pos, pos + n)`
-	string_view sub_sv = sv.substr(pos, n);
-	is_true(sub_sv.size() == len_expected, "sv.copy(pos, n).size");
-	is_true(sub_sv.data() == sv.data() + pos, "sv.copy(pos, n).data");
+	//4 chars from position 0: should return "chip"
+	string_view sv_expected{ "chip" };
+	string_view sv_result = sv.substr(0, 4);
 
-	string_view sub_expected{ "thing" };
-	is_true(sub_sv == sub_expected, "sv.copy(pos, n)");
+	is_true(sv_result.size() == 4, "sv.substr(0, 4).size");
+	is_true(sv_result.data() == sv.data(), "sv.substr(0, 4).data");
+	is_true(sv_result == sv_expected, "sv.substr(0, 4)");
 
-	//test pos >= sv_f.size() case
+	//4 chars from position 3: should return "ps"
+	sv_expected = "ps";
+	sv_result = sv.substr(3, 4);
+
+	is_true(sv_result.size() == 2, "sv.substr(3, 4).size");
+	is_true(sv_result.data() == sv.data() + 3, "sv.substr(3, 4).data");
+	is_true(sv_result == sv_expected, "sv.substr(3, 4)");
+
+	//starting substr past size(): should throw std::out_of_range
 	try {
-		pos = sv.size() + 1;
-		sub_sv = sv.substr(pos, n);
-		is_true(false, "sv.substr(), should not be executed.");
+		sv_result = sv.substr(sv.size() + 1);
+		is_true(false, "sv.substr() pos > size");
 	}
 	catch (const std::out_of_range&) {
-		is_true(true, "Throw an expected exception");
+		is_true(true, "sv.substr() pos > size");
 	}
 	catch (...) {
-		is_true(false, "Throw an unexpected exception.");
+		is_true(false, "sv.substr() pos > size incorrect exception");
 	}
 }
 
