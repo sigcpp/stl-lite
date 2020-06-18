@@ -74,8 +74,7 @@ void test_get_options()
 	parse_cmd_line_and_compare(cmd_line_2, cmd_line_2_expected, "cmd_line_2");
 }
 
-//compares received Options object data members to expected Options object data members
-//see fn declaration of is_true for the behavior of the comparison
+//perform pair-wise comparison of members in received options and expected options
 void compare(const Options& received, const Options& expected, const std::string& test_case)
 {
 	is_true(received.header == expected.header, (test_case + " header").data());
