@@ -31,9 +31,12 @@ void driver_test()
 	test_get_options();
 }
 
-void parse_cmd_line_and_compare(char* args[], const std::string& cmd_line, const Options& expected, 
+void parse_cmd_line_and_compare(const std::string& cmd_line, const Options& expected,
 	const std::string& test_case)
 {
+	//this is meant to replicate the main() parameter char* argv[]
+	//size 100 was chosen to ensure enough room for many options in a single command-line.
+	char* args[100];
 	std::vector<std::string> v = split(cmd_line, ' ');
 	std::size_t size = v.size();
 	for (std::size_t i = 0; i < size; ++i)
@@ -47,10 +50,6 @@ void parse_cmd_line_and_compare(char* args[], const std::string& cmd_line, const
 //unit test for get_options
 void test_get_options()
 {
-	//this is meant to replicate the main() parameter char* argv[]
-	//size 100 was chosen to ensure enough room for many options in a single command-line.
-	char* args[100];
-
 	Options o;
 	o.command_name = "array_test";
 
@@ -59,20 +58,20 @@ void test_get_options()
 	//default arguments
 	const string cmd_line_0("C:/Libraries/stl-lite/array_test.exe");
 	Options cmd_line_0_expected = o;
-	parse_cmd_line_and_compare(args, cmd_line_0, cmd_line_0_expected, "cmd_line_0");
+	parse_cmd_line_and_compare(cmd_line_0, cmd_line_0_expected, "cmd_line_0");
 
 	//single name-value option supplied
 	const string cmd_line_1("C:/Libraries/stl-lite/array_test.exe -h no");
 	Options cmd_line_1_expected = o;
 	cmd_line_1_expected.header = false;
 	cmd_line_1_expected.header_text = "";
-	parse_cmd_line_and_compare(args, cmd_line_1, cmd_line_1_expected, "cmd_line_1");
+	parse_cmd_line_and_compare(cmd_line_1, cmd_line_1_expected, "cmd_line_1");
 
 	const string cmd_line_2("C:/Libraries/stl-lite/array_test.exe -h yes");
 	Options cmd_line_2_expected = o;
 	cmd_line_2_expected.header = true;
 	cmd_line_2_expected.header_text = "Running $suite";
-	parse_cmd_line_and_compare(args, cmd_line_2, cmd_line_2_expected, "cmd_line_2");
+	parse_cmd_line_and_compare(cmd_line_2, cmd_line_2_expected, "cmd_line_2");
 }
 
 //compares received Options object data members to expected Options object data members
