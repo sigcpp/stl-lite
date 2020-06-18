@@ -36,7 +36,7 @@ void driver_test()
 void parse_cmd_line_and_compare(std::string& cmd_line, const Options& expected,
 	const std::string& test_case)
 {
-	//this is meant to replicate the main() parameter char* argv[]
+	//args mimics the argv parameter in main
 	//size 100 was chosen to ensure enough room for many options in a single command-line.
 	char* args[100];
 	std::vector<std::string> v = split(cmd_line, ' ');
