@@ -175,7 +175,7 @@ void run_suites(const Options& options)
 
 
 //the following functions assume they are called only from main so that the parameters are always correct
-//assertion and error handling are included by design
+//assertion and error handling are omitted by design
 
 static int show_error_and_usage(const char* message, const char* program_path, driver_error_code ec)
 {
