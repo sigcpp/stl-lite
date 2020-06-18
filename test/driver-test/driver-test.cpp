@@ -22,14 +22,25 @@
 
 void driver_test();
 void test_get_options();
-void reset_default_options(Options& o);
 void compare(const Options& received, const Options& expected, const std::string& test_case);
-std::vector<std::pair<std::string, Options>> generate_cmdline_option_pairs();
+void parse_cmd_line_and_compare(char* args[], const std::string& cmd_line, const Options& expected, const std::string& test_case);
 
 //unit test for the test driver
 void driver_test()
 {
 	test_get_options();
+}
+
+void parse_cmd_line_and_compare(char* args[], const std::string& cmd_line, const Options& expected, 
+	const std::string& test_case)
+{
+	std::vector<std::string> v = split(cmd_line, ' ');
+	std::size_t size = v.size();
+	for (std::size_t i = 0; i < size; ++i)
+		args[i] = v[i].data();
+
+	Options received = get_options(args, size);
+	compare(received, expected, test_case);
 }
 
 
@@ -40,36 +51,29 @@ void test_get_options()
 	//size 100 was chosen to ensure enough room for many options in a single command-line.
 	char* args[100];
 
-	const std::vector<std::pair<std::string, Options>> args_and_options = generate_cmdline_option_pairs();
-	std::size_t cmd_line_number{ 0 };
-	for (auto iter = args_and_options.begin(); iter != args_and_options.end(); ++iter)
-	{
-		std::vector<std::string> v = split(iter->first, ' ');
-		for (std::size_t i = 0; i < v.size(); ++i)
-			args[i] = v[i].data();
+	Options o;
+	o.command_name = "array_test";
 
-		Options o = get_options(args, v.size());
+	using std::string;
+	
+	//default arguments
+	const string cmd_line_0("C:/Libraries/stl-lite/array_test.exe");
+	Options cmd_line_0_expected = o;
+	parse_cmd_line_and_compare(args, cmd_line_0, cmd_line_0_expected, "cmd_line_0");
 
-		compare(o, iter->second, "cmd_line_" + std::to_string(cmd_line_number));
-		++cmd_line_number;
-	}
+	//single name-value option supplied
+	const string cmd_line_1("C:/Libraries/stl-lite/array_test.exe -h no");
+	Options cmd_line_1_expected = o;
+	cmd_line_1_expected.header = false;
+	cmd_line_1_expected.header_text = "";
+	parse_cmd_line_and_compare(args, cmd_line_1, cmd_line_1_expected, "cmd_line_1");
+
+	const string cmd_line_2("C:/Libraries/stl-lite/array_test.exe -h yes");
+	Options cmd_line_2_expected = o;
+	cmd_line_2_expected.header = true;
+	cmd_line_2_expected.header_text = "Running $suite";
+	parse_cmd_line_and_compare(args, cmd_line_2, cmd_line_2_expected, "cmd_line_2");
 }
-
-
-//resets given Options& parameter data members to the default values
-void reset_default_options(Options& o)
-{
-	o.header = true;
-	o.summary = true;
-	o.header_text = "Running $suite";
-	o.prm = pass_report_mode::indicate;
-	o.fail_threshold = 0;
-	o.fom = file_open_mode::no_file;
-	o.output_filepath = "";
-	o.command_name = "array_test"; //default command_name is empty but this is expected value for all tests
-	o.suites_to_run = "";
-}
-
 
 //compares received Options object data members to expected Options object data members
 //see fn declaration of is_true for the behavior of the comparison
@@ -86,28 +90,8 @@ void compare(const Options& received, const Options& expected, const std::string
 	is_true(received.suites_to_run == expected.suites_to_run, (test_case + " suites to run").data());
 }
 
-
-//generates a vector of pairs that holds a dummy command line and the expected Options object that would
-//be created from get_options parsing the command line.
-std::vector<std::pair<std::string, Options>> generate_cmdline_option_pairs()
-{
-	std::vector<std::pair<std::string, Options>> args_and_options;
-	Options o;
-
-	using std::string;
-
-	//default arguments
-	const string cmd_line_0("C:/Libraries/stl-lite/array_test.exe");
-	o.command_name = "array_test";
-	args_and_options.push_back({ cmd_line_0, o });
-	reset_default_options(o);
-
-	//single name-value option supplied
-	const string cmd_line_1("C:/Libraries/stl-lite/array_test.exe -h no");
-	o.header = false;
-	o.header_text = "";
-	args_and_options.push_back({ cmd_line_1, o });
-	reset_default_options(o);
+/*
+	Test cases to reformat and put into test_get_options
 
 	const string cmd_line_2("C:/Libraries/stl-lite/array_test.exe -h yes");
 	o.header = true;
@@ -320,6 +304,4 @@ std::vector<std::pair<std::string, Options>> generate_cmdline_option_pairs()
 	o.header = true;
 	o.header_text = "a_very_very_very_very_very_very_very_very_very_very_long_header_text";
 	args_and_options.push_back({ cmd_line_29, o });
-
-	return args_and_options;
-}
+*/
