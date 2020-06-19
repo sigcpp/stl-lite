@@ -8,7 +8,7 @@
 * - Copyright notice cannot be altered
 * Attribution and copyright info may be relocated but they must be conspicuous.
 *
-* Intialize tester and start unit tests
+* Intialize tester from cmd-line and run unit tests
 */
 
 #include <iostream>
@@ -18,6 +18,7 @@
 #include <filesystem>
 #include <unordered_map>
 #include <algorithm>
+#include <sstream>
 #include <cassert>
 
 #include "utils.h"
@@ -25,24 +26,40 @@
 #include "tester.h"
 #include "options.h"
 #include "options-exceptions.h"
+#include "verifier-exceptions.h"
+
 
 //error codes returned back from main are negative
-enum class error_code {
-	cmd_line_initial = -1, file_initial = -2, unexpected_typed_initial = -3, unexpected_untyped_initial = -4,
-	cmd_line_run = -6, file_run = -7, suite_add_run = -8, unexpected_typed_run = -9,
-	unexpected_untyped_run = -10
+enum class driver_error_code {
+	no_error = 0,
+
+	//anticipated errors in getting and applying options
+	cmd_line_options = -1, file_options = -2,
+
+	//unanticipated errors in getting and applying options
+	unexpected_typed_options = -51, unexpected_untyped_options = -52,
+
+	//anticipated in run_suites, but before any test is actually run
+	cmd_line_run_suites = -101, test_suite_add = -101,
+
+	//anticipated in run_suites, likely at least one test may have been done
+	file_run_suites = -121, fail_threshold_met = -122,
+
+	//anticipated in run_suites, not known if a test may have been run
+	unexpected_typed_run_suites = -171, unexpected_untyped_run_suites = -172
 };
 
 
 void run_suites(const Options& options);
-static int show_error(const char* message, error_code ec);
+static std::string format_error_message(const char* message, driver_error_code ec);
+static int show_error(const char* message, driver_error_code ec);
 static void show_usage(const char* program_path);
-static int show_error_and_usage(const char* message, const char* program_path, error_code ec);
+static int show_error_and_usage(const char* message, const char* program_path, driver_error_code ec);
 
 
-//return  < 0: error
+//return  < 0: error; including fail threshold met
 //return == 0: no error, no tests failed
-//return  > 0: no error, tests failed; number of failed tests returned
+//return  > 0: no error, some tests failed but fail threshold not met; number of failed tests returned
 int main(int argc, char* argv[])
 {
 	Options options;
@@ -53,41 +70,68 @@ int main(int argc, char* argv[])
 		apply_options(options, fileOut);
 	}
 	catch (const cmd_line_error& cle) {
-		return show_error_and_usage(cle.what(), argv[0], error_code::cmd_line_initial);
+		return show_error_and_usage(cle.what(), argv[0], driver_error_code::cmd_line_options);
 	}
 	catch (const file_error& fe) {
-		return show_error_and_usage(fe.what(), argv[0], error_code::file_initial);
+		return show_error_and_usage(fe.what(), argv[0], driver_error_code::file_options);
 	}
 	catch (const std::exception& e) {
-		auto message = format_message("Unexpected error", e.what());
-		return show_error(message.data(), error_code::unexpected_typed_initial);
+		const auto message = format_message("Unexpected error", e.what());
+		return show_error(message.data(), driver_error_code::unexpected_typed_options);
 	}
 	catch (...) {
-		show_error("Unexpected error", error_code::unexpected_untyped_initial);
+		return show_error("Unexpected error", driver_error_code::unexpected_untyped_options);
 	}
 
+	//no errors in getting and applying options: OK to run test suites
 
+	driver_error_code error_code{ driver_error_code::no_error };
+	std::string message;
 	try {
 		run_suites(options);
 	}
+
+	//errors where it is certain no tests have yet been run
 	catch (const cmd_line_error& cle) {
-		show_error_and_usage(cle.what(), argv[0], error_code::cmd_line_run);
+		return show_error_and_usage(cle.what(), argv[0], driver_error_code::cmd_line_run_suites);
 	}
 	catch (const test_suite_add_error& tae) {
-		show_error(tae.what(), error_code::suite_add_run);
-	}
-	catch (const std::exception& e) {
-		auto message = format_message("Unexpected error", e.what());
-		show_error(message.data(), error_code::unexpected_typed_run);
-	}
-	catch (...) {
-		show_error("Unexpected error", error_code::unexpected_untyped_run);
+		return show_error(tae.what(), driver_error_code::test_suite_add);
 	}
 
+	//errors where one or more tests have likely been run
+	catch (const fail_threshold_met_error& fte) {
+		error_code = driver_error_code::fail_threshold_met;
+		message = fte.what();
+	}
+
+	//errors where we do not know if tests have been run
+	catch (const std::exception& e) {
+		error_code = driver_error_code::unexpected_typed_run_suites;
+		message = format_message("Unexpected error", e.what());
+	}
+	catch (...) {
+		error_code = driver_error_code::unexpected_untyped_run_suites;
+		message = "Unexpected error";
+	}
+
+	//log message to output destination, and also to screen if output is file
+	if (error_code != driver_error_code::no_error) {
+		message = '\n' + format_error_message(message.data(), error_code) + '\n';
+		log_line(message.data());
+		if (options.fom != file_open_mode::no_file)
+			std::cout << message << '\n'; //not calling show_error because message is already formatted 
+	}
+
+	//print summary because one or more tests may have been run
 	if (options.summary)
 		summarize_tests();
 
-	return get_tests_failed_total();
+	//return totaly tests failed only if there was no error: the caller should know if there was an error
+	if (error_code == driver_error_code::no_error)
+		return get_tests_failed_total();
+	else
+		return static_cast<int>(error_code);
 }
 
 
@@ -133,7 +177,7 @@ void run_suites(const Options& options)
 //the following functions assume they are called only from main so that the parameters are always correct
 //assertion and error handling are included by design
 
-static int show_error_and_usage(const char* message, const char* program_path, error_code ec)
+static int show_error_and_usage(const char* message, const char* program_path, driver_error_code ec)
 {
 	show_error(message, ec);
 	std::cout << '\n';
@@ -143,11 +187,18 @@ static int show_error_and_usage(const char* message, const char* program_path, e
 }
 
 
-static int show_error(const char* message, error_code ec)
+static std::string format_error_message(const char* message, driver_error_code ec)
 {
-	int code{ static_cast<int>(ec) };
-	std::cout << "Error " << code << "; " << message << '\n';
-	return code;
+	std::stringstream result;
+	result << "Error " << static_cast<int>(ec) << "; " << message;
+	return result.str();
+}
+
+
+static int show_error(const char* message, driver_error_code ec)
+{
+	std::cout << format_error_message(message, ec) << '\n';
+	return static_cast<int>(ec);
 }
 
 
