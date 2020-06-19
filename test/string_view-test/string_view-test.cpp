@@ -273,7 +273,7 @@ void test_operation_copy()
 	//               01234
 	string_view sv{ "chips" };
 
-	//copy(z, n, pos) copies at most rlen chars, where  rlen is the smaller of n and size()-pos
+	//copy(z, n, pos) copies at most rlen chars, where rlen is the smaller of n and size()-pos
 	//throws std::out_of_range if pos > size()
 	
 	//copy 4 characters from position 0: should return 4 and "chip" should be copied
@@ -310,7 +310,7 @@ void test_operation_substr()
 	//               01234
 	string_view sv{ "chips" };
 
-	//substr(pos, n) returns substr with at most rlen chars, where  rlen is the smaller of n and size()-pos
+	//substr(pos, n) returns substr with at most rlen chars, where rlen is the smaller of n and size()-pos
 	//data() of substr should also come from data of original sv: no new data should be created
 	//throws std::out_of_range if pos > size()
 
