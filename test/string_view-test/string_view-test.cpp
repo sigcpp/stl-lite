@@ -225,13 +225,13 @@ void test_iterator_forward()
 
 void test_iterator_reverse()
 {
-	string_view sv_reverse{ "987654321" };
+	string_view sv{ "987654321" };
 	char z_reverse_expected[]{ "123456789" };
 
 	//non-const reverse iterator
 	size_t size = sizeof(z_reverse_expected) - 1;
 	bool iterator_test{ true };
-	auto r_it = sv_reverse.rbegin(), rend_it = sv_reverse.rend();
+	auto r_it = sv.rbegin(), rend_it = sv.rend();
 	for (size_t i = 0; i < size && iterator_test; ++i, ++r_it)
 		iterator_test = (r_it != rend_it && *r_it == z_reverse_expected[i]);
 
@@ -240,7 +240,7 @@ void test_iterator_reverse()
 
 	//const reverse iterator
 	iterator_test = true;
-	r_it = sv_reverse.crbegin(), rend_it = sv_reverse.crend();
+	r_it = sv.crbegin(), rend_it = sv.crend();
 	for (size_t i = 0; i < size && iterator_test; ++i, ++r_it)
 		iterator_test = (r_it != rend_it && *r_it == z_reverse_expected[i]);
 
@@ -376,30 +376,30 @@ void test_finders()
 {
 	//                   0         1 
 	//                   01234567890123456
-	string_view sv_ats{ "access to success" };
-	is_true(sv_ats.find("ce") == 2, "sv_ats.find(str)");
-	is_zero(sv_ats.find(""), "sv_ats.find(str)");
-	is_true(sv_ats.find("TO") == string_view::npos, "sv_ats.find(str)");
+	string_view sv{ "access to success" };
+	is_true(sv.find("ce") == 2, "sv_ats.find(str)");
+	is_zero(sv.find(""), "sv_ats.find(str)");
+	is_true(sv.find("TO") == string_view::npos, "sv_ats.find(str)");
 
-	is_true(sv_ats.rfind("ce") == 13, "sv_ats.rfind(str)");
-	is_true(sv_ats.rfind("") == sv_ats.size(), "sv_ats.rfind(str)");
-	is_true(sv_ats.rfind("as") == string_view::npos, "sv_ats.rfind(str)");
+	is_true(sv.rfind("ce") == 13, "sv_ats.rfind(str)");
+	is_true(sv.rfind("") == sv.size(), "sv_ats.rfind(str)");
+	is_true(sv.rfind("as") == string_view::npos, "sv_ats.rfind(str)");
 
-	is_true(sv_ats.find_first_of("cess") == 1, "sv_ats.find_first_of(str)");
-	is_true(sv_ats.find_first_of("") == string_view::npos, "sv_ats.find_first_of(str)");
-	is_true(sv_ats.find_first_of("sT") == 4, "sv_ats.find_first_of(str)");
+	is_true(sv.find_first_of("cess") == 1, "sv_ats.find_first_of(str)");
+	is_true(sv.find_first_of("") == string_view::npos, "sv_ats.find_first_of(str)");
+	is_true(sv.find_first_of("sT") == 4, "sv_ats.find_first_of(str)");
 
-	is_true(sv_ats.find_last_of("cce") == 14, "sv_ats.find_last_of(str)");
-	is_true(sv_ats.find_last_of("") == string_view::npos, "sv_ats.find_last_of(str)");
-	is_true(sv_ats.find_last_of("wc") == 13, "sv_ats.find_last_of(str)");
+	is_true(sv.find_last_of("cce") == 14, "sv_ats.find_last_of(str)");
+	is_true(sv.find_last_of("") == string_view::npos, "sv_ats.find_last_of(str)");
+	is_true(sv.find_last_of("wc") == 13, "sv_ats.find_last_of(str)");
 
-	is_true(sv_ats.find_first_not_of("ac") == 3, "sv_ats.find_first_not_of(str)");
-	is_zero(sv_ats.find_first_not_of("success"), "sv_ats.find_first_not_of(str)");
-	is_zero(sv_ats.find_first_not_of(""), "sv_ats.find_first_not_of(str)");
+	is_true(sv.find_first_not_of("ac") == 3, "sv_ats.find_first_not_of(str)");
+	is_zero(sv.find_first_not_of("success"), "sv_ats.find_first_not_of(str)");
+	is_zero(sv.find_first_not_of(""), "sv_ats.find_first_not_of(str)");
 
-	is_true(sv_ats.find_last_not_of("cess") == 11, "sv_ats.find_last_not_of(str)");
-	is_true(sv_ats.find_last_not_of("success") == 9, "sv_ats.find_last_not_of(str)");
-	is_true(sv_ats.find_last_not_of("") == 16, "sv_ats.find_last_not_of(str)");
+	is_true(sv.find_last_not_of("cess") == 11, "sv_ats.find_last_not_of(str)");
+	is_true(sv.find_last_not_of("success") == 9, "sv_ats.find_last_not_of(str)");
+	is_true(sv.find_last_not_of("") == 16, "sv_ats.find_last_not_of(str)");
 }
 
 
