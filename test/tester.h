@@ -16,25 +16,20 @@
 
 #include <iostream>
 #include <type_traits>
-#include <limits>
 
-
-//type and limit of fail threshold
-using fail_threshold_type = unsigned short;
-static constexpr fail_threshold_type max_fail_threshold{ std::numeric_limits<fail_threshold_type>::max() };
 
 enum class pass_report_mode { none, indicate, detail };
 
 void set_header_text(std::string text);
 void set_pass_report_mode(pass_report_mode mode);
-void set_fail_threshold(fail_threshold_type value);
+void set_fail_threshold(int value);
 void set_max_fail_threshold();
 void set_output(std::ostream& o);
 
 void log(const char* s);
 void log_line(const char* s);
 
-unsigned get_tests_failed_total();
+int get_tests_failed_total();
 
 void start_suite(const std::string& name);
 

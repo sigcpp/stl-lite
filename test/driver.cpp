@@ -40,7 +40,7 @@ enum class driver_error_code {
 	unexpected_typed_options = -51, unexpected_untyped_options = -52,
 
 	//anticipated in run_suites, but before any test is actually run
-	cmd_line_run_suites = -101, test_suite_add = -101,
+	cmd_line_run_suites = -101, test_suite_add = -102,
 
 	//anticipated in run_suites, likely at least one test may have been done
 	file_run_suites = -121, fail_threshold_met = -122,
@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 	if (options.summary)
 		summarize_tests();
 
-	//return totaly tests failed only if there was no error: the caller should know if there was an error
+	//return total tests failed only if there was no error: the caller should know if there was an error
 	if (error_code == driver_error_code::no_error)
 		return get_tests_failed_total();
 	else
@@ -175,7 +175,7 @@ void run_suites(const Options& options)
 
 
 //the following functions assume they are called only from main so that the parameters are always correct
-//assertion and error handling are included by design
+//assertion and error handling are omitted by design
 
 static int show_error_and_usage(const char* message, const char* program_path, driver_error_code ec)
 {

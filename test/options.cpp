@@ -208,7 +208,7 @@ bool strtobool(const std::string_view& value)
 //convert text to whole number: reject negative values, out of range values, and text with invalid chars
 //assumes base 10
 //assumes parameter is not empty (caller will have already checked that)
-fail_threshold_type get_fail_threshold(const std::string_view& sv)
+int get_fail_threshold(const std::string_view& sv)
 {
 	assert(sv[0] != '-');
 	if (sv[0] == '-')
@@ -216,7 +216,7 @@ fail_threshold_type get_fail_threshold(const std::string_view& sv)
 
 	constexpr std::string_view value_max{ "max" };
 	if (sv == value_max)
-		return max_fail_threshold;
+		return INT_MAX;
 
 	unsigned short value;
 	auto begin = sv.data(), end = begin + sv.size();

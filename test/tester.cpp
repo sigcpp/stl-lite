@@ -35,8 +35,8 @@ void set_pass_report_mode(pass_report_mode mode)
 }
 
 
-static fail_threshold_type fail_threshold{ 0 };
-void set_fail_threshold(fail_threshold_type value)
+static int fail_threshold{ 0 };
+void set_fail_threshold(int value)
 {
 	fail_threshold = value;
 }
@@ -44,7 +44,7 @@ void set_fail_threshold(fail_threshold_type value)
 
 void set_max_fail_threshold()
 {
-	fail_threshold = max_fail_threshold;
+	fail_threshold = INT_MAX;
 }
 
 
@@ -67,12 +67,12 @@ void log_line(const char* s)
 }
 
 
-static unsigned tests_done_total;
-static unsigned tests_done_suite;
-static unsigned tests_failed_total;
-static unsigned tests_failed_suite;
+int tests_done_total;
+int tests_done_suite;
+int tests_failed_total;
+int tests_failed_suite;
 
-unsigned get_tests_failed_total()
+int get_tests_failed_total()
 {
 	return tests_failed_total;
 }
