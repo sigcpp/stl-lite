@@ -212,7 +212,7 @@ void test_get_options_single_p(const Options& template_options)
 	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -p none";
 	Options expected_options = template_options;
 	expected_options.prm = pass_report_mode::none;
-	test_cmd_line(cmd_line, expected_options, "cmd_line 3");
+	test_cmd_line(cmd_line, expected_options, "cmd-line 3");
 
 	cmd_line = "C:/Libraries/stl-lite/array_test.exe -p indicate";
 	expected_options = template_options;
