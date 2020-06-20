@@ -59,7 +59,7 @@ void test_get_options_nominal()
 	cmd_line = "C:/Libraries/stl-lite/array_test.exe -p none";
 	expected_options = template_options;
 	expected_options.prm = pass_report_mode::none;
-	test_cmd_line(cmd_line, expected_options, "cmd_line_3");
+	test_cmd_line(cmd_line, expected_options, "cmd_line 3");
 
 	cmd_line = "C:/Libraries/stl-lite/array_test.exe -p indicate";
 	expected_options = template_options;
