@@ -23,32 +23,45 @@ void test_get_options_nominal();
 void verify_options(const Options& received, const Options& expected, const std::string& test_case);
 void test_cmd_line(const std::string& cmd_line, const Options& expected);
 
-//unit test for the test driver
+
+//unit tests for the test driver
 void driver_test()
 {
 	test_get_options_nominal();
 }
 
 
-void test_get_options_default(const Options& template_options);
-void test_get_options_single(const Options& template_options);
-void test_get_options_combine(const Options& template_options);
-void test_get_options_multiple_suites(const Options& template_options);
-void test_get_options_specific(const Options& template_options);
-void test_get_options_edge_case(const Options& template_options);
+//helper function to create options with specific values for selected members
+//can avoid this function with designated initializers in C++20
+static Options get_template_options()
+{
+	Options o;
+	o.command_name = "array_test";
+	return o;
+}
+
+//template options used to setup expected options in all nominal tests of get_options
+//use designated initializers in C++20 instead of calling get_template_options
+static const Options template_options = get_template_options();
+
+
+void test_get_options_default();
+void test_get_options_single();
+void test_get_options_combine();
+void test_get_options_multiple_suites();
+void test_get_options_specific();
+void test_get_options_edge_case();
+
 
 //unit test for nominal behavior of get_options
 void test_get_options_nominal()
 {
-	Options template_options;
-	template_options.command_name = "array_test";
-
-	test_get_options_default(template_options);
-	test_get_options_single(template_options);
-	test_get_options_combine(template_options);
-	test_get_options_multiple_suites(template_options);
-	test_get_options_specific(template_options);
-	test_get_options_edge_case(template_options);
+	test_get_options_default();
+	test_get_options_single();
+	test_get_options_combine();
+	test_get_options_multiple_suites();
+	test_get_options_specific();
+	test_get_options_edge_case();
 }
 
 
@@ -70,7 +83,7 @@ void test_cmd_line(const std::string& cmd_line, const Options& expected)
 }
 
 
-void test_get_options_default(const Options& template_options)
+void test_get_options_default()
 {
 	//default arguments
 	std::string cmd_line("C:/Libraries/stl-lite/array_test.exe");
@@ -78,38 +91,38 @@ void test_get_options_default(const Options& template_options)
 }
 
 
-void test_get_options_single_h(const Options& template_options);
-void test_get_options_single_p(const Options& template_options);
-void test_get_options_single_s(const Options& template_options);
-void test_get_options_single_t(const Options& template_options);
-void test_get_options_single_fx(const Options& template_options);
-void test_get_options_single_run(const Options& template_options);
+void test_get_options_single_h();
+void test_get_options_single_p();
+void test_get_options_single_s();
+void test_get_options_single_t();
+void test_get_options_single_fx();
+void test_get_options_single_run();
 
-void test_get_options_single(const Options& template_options)
+void test_get_options_single()
 {
 	//single name-value option supplied
-	test_get_options_single_h(template_options);
-	test_get_options_single_p(template_options);
-	test_get_options_single_s(template_options);
-	test_get_options_single_t(template_options);
-	test_get_options_single_fx(template_options);
-	test_get_options_single_run(template_options);
+	test_get_options_single_h();
+	test_get_options_single_p();
+	test_get_options_single_s();
+	test_get_options_single_t();
+	test_get_options_single_fx();
+	test_get_options_single_run();
 }
 
 
-void test_get_options_combine_h(const Options& template_options);
-void test_get_options_combine_p(const Options& template_options);
-void test_get_options_combine_random(const Options& template_options);
+void test_get_options_combine_h();
+void test_get_options_combine_p();
+void test_get_options_combine_random();
 
-void test_get_options_combine(const Options& template_options)
+void test_get_options_combine()
 {
-	test_get_options_combine_h(template_options);
-	test_get_options_combine_p(template_options);
-	test_get_options_combine_random(template_options);
+	test_get_options_combine_h();
+	test_get_options_combine_p();
+	test_get_options_combine_random();
 }
 
 
-void test_get_options_multiple_suites(const Options& template_options)
+void test_get_options_multiple_suites()
 {
 	//multiple suites as values for -run
 	std::string cmd_line = "C:/stl-lite/array_test.exe -run array_test;string_view_test;driver_test";
@@ -119,7 +132,7 @@ void test_get_options_multiple_suites(const Options& template_options)
 }
 
 
-void test_get_options_specific(const Options& template_options)
+void test_get_options_specific()
 {
 	//every option specified
 	std::string cmd_line =
@@ -163,7 +176,7 @@ void test_get_options_specific(const Options& template_options)
 }
 
 
-void test_get_options_edge_case(const Options& template_options)
+void test_get_options_edge_case()
 {
 	//edge case: fail threshold
 	std::string cmd_line = "C:/stl-lite/array_test.exe -t max";
@@ -193,7 +206,7 @@ void test_get_options_edge_case(const Options& template_options)
 }
 
 
-void test_get_options_single_h(const Options& template_options)
+void test_get_options_single_h()
 {
 	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -h no";
 	Options expected_options = template_options;
@@ -209,7 +222,7 @@ void test_get_options_single_h(const Options& template_options)
 }
 
 
-void test_get_options_single_p(const Options& template_options)
+void test_get_options_single_p()
 {
 	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -p none";
 	Options expected_options = template_options;
@@ -228,7 +241,7 @@ void test_get_options_single_p(const Options& template_options)
 }
 
 
-void test_get_options_single_s(const Options& template_options)
+void test_get_options_single_s()
 {
 	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -s no";
 	Options expected_options = template_options;
@@ -242,7 +255,7 @@ void test_get_options_single_s(const Options& template_options)
 }
 
 
-void test_get_options_single_t(const Options& template_options)
+void test_get_options_single_t()
 {
 	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -t 5";
 	Options expected_options = template_options;
@@ -251,7 +264,7 @@ void test_get_options_single_t(const Options& template_options)
 }
 
 
-void test_get_options_single_fx(const Options& template_options)
+void test_get_options_single_fx()
 {
 	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -fn $cmd";
 	Options expected_options = template_options;
@@ -276,7 +289,7 @@ void test_get_options_single_fx(const Options& template_options)
 }
 
 
-void test_get_options_single_run(const Options& template_options)
+void test_get_options_single_run()
 {
 	std::string cmd_line = "C:/stl-lite/array_test.exe -run array_test";
 	Options expected_options = template_options;
@@ -285,7 +298,7 @@ void test_get_options_single_run(const Options& template_options)
 }
 
 
-void test_get_options_combine_h(const Options& template_options)
+void test_get_options_combine_h()
 {
 	//no header but header text supplied
 	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -h no -ht should_be_ignored";
@@ -303,7 +316,7 @@ void test_get_options_combine_h(const Options& template_options)
 }
 
 
-void test_get_options_combine_p(const Options& template_options)
+void test_get_options_combine_p()
 {
 	//prm auto when fom != no_file
 	std::string cmd_line = "C:/stl-lite/array_test.exe -p auto -fn $cmd";
@@ -335,7 +348,7 @@ void test_get_options_combine_p(const Options& template_options)
 }
 
 
-void test_get_options_combine_random(const Options& template_options)
+void test_get_options_combine_random()
 {
 	//random combinations of options
 	std::string cmd_line = "C:/stl-lite/array_test.exe -h no -s yes -p detail -t 3 -fn new_test";
