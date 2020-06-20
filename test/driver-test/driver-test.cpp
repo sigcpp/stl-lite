@@ -11,10 +11,8 @@
 * Unit tests for test driver
 */
 
-#include <iostream>
 #include <vector>
 #include <string>
-#include <string_view>
 
 #include "../verifiers.h"
 #include "../options.h"
