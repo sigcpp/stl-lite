@@ -112,13 +112,13 @@ void test_get_options_single()
 
 void test_get_options_combine_h();
 void test_get_options_combine_p();
-void test_get_options_combine_random();
+void test_get_options_combine_arbitrary();
 
 void test_get_options_combine()
 {
 	test_get_options_combine_h();
 	test_get_options_combine_p();
-	test_get_options_combine_random();
+	test_get_options_combine_arbitrary();
 }
 
 
@@ -348,7 +348,7 @@ void test_get_options_combine_p()
 }
 
 
-void test_get_options_combine_random()
+void test_get_options_combine_arbitrary()
 {
 	//random combinations of options
 	std::string cmd_line = "C:/stl-lite/array_test.exe -h no -s yes -p detail -t 3 -fn new_test";
