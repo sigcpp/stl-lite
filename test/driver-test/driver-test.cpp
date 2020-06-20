@@ -240,7 +240,7 @@ void test_get_options_nominal()
 	test_cmd_line(cmd_line, expected_options, "cmd-line 26");
 
 	//edge case: fail threshold
-	cmd_line = "C:/stl-lite/array_test.exe -t max"
+	cmd_line = "C:/stl-lite/array_test.exe -t max";
 	expected_options = template_options;
 	expected_options.fail_threshold = USHRT_MAX; //this may change due to changes made in milestone 5
 	test_cmd_line(cmd_line, expected_options, "cmd-line 27");
