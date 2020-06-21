@@ -97,6 +97,7 @@ void test_get_options_single_s();
 void test_get_options_single_t();
 void test_get_options_single_fx();
 void test_get_options_single_run();
+void test_get_options_command_name();
 
 void test_get_options_single()
 {
@@ -107,6 +108,7 @@ void test_get_options_single()
 	test_get_options_single_t();
 	test_get_options_single_fx();
 	test_get_options_single_run();
+	test_get_options_command_name();
 }
 
 
@@ -203,6 +205,14 @@ void test_get_options_edge_case()
 	expected_options.header = true;
 	expected_options.header_text = "a_very_very_very_very_very_very_very_very_very_very_long_header_text";
 	test_cmd_line(cmd_line, expected_options);
+
+	//edge case: command_name
+	cmd_line =
+		"C:/a_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_long_command_name";
+	expected_options = template_options;
+	expected_options.command_name =
+		"a_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_long_command_name";
+	test_cmd_line(cmd_line, expected_options);
 }
 
 
@@ -297,6 +307,23 @@ void test_get_options_single_run()
 	test_cmd_line(cmd_line, expected_options);
 }
 
+void test_get_options_command_name()
+{
+	std::string cmd_line = "C:/test_suites/some_more_test_suites/even_more_test_suites/a_test_suite.exe";
+	Options expected_options = template_options;
+	expected_options.command_name = "a_test_suite";
+	test_cmd_line(cmd_line, expected_options);
+
+	cmd_line = "D:/a_folder/another_folder/yet_another_folder/edwall/test.exe";
+	expected_options = template_options;
+	expected_options.command_name = "test";
+	test_cmd_line(cmd_line, expected_options);
+
+	cmd_line = "E:/sample_test.exe";
+	expected_options = template_options;
+	expected_options.command_name = "sample_test";
+	test_cmd_line(cmd_line, expected_options);
+}
 
 void test_get_options_combine_h()
 {
@@ -362,10 +389,11 @@ void test_get_options_combine_arbitrary()
 	expected_options.output_filepath = "new_test.out";
 	test_cmd_line(cmd_line, expected_options);
 
-	cmd_line = "C:/stl-lite/array_test.exe -h yes -ht Running_$cmd_now -p none";
+	cmd_line = "C:/stl-lite/map_test.exe -h yes -ht Running_$cmd_now -p none";
 	expected_options = template_options;
+	expected_options.command_name = "map_test";
 	expected_options.header = true;
-	expected_options.header_text = "Running_array_test_now";
+	expected_options.header_text = "Running_map_test_now";
 	expected_options.prm = pass_report_mode::none;
 	test_cmd_line(cmd_line, expected_options);
 
@@ -377,7 +405,7 @@ void test_get_options_combine_arbitrary()
 	expected_options.output_filepath = "array_test.out";
 	test_cmd_line(cmd_line, expected_options);
 
-	cmd_line = "C:/stl-lite/array_test.exe -h no -s no -p detail -t 2 -fa a_file -run a_test_suite";
+	cmd_line = "C:/stl-lite/stl-lite_test.exe -h no -s no -p detail -t 2 -fa a_file -run a_test_suite";
 	expected_options = template_options;
 	expected_options.header = false;
 	expected_options.header_text = "";
@@ -387,6 +415,7 @@ void test_get_options_combine_arbitrary()
 	expected_options.fom = file_open_mode::append;
 	expected_options.output_filepath = "a_file.out";
 	expected_options.suites_to_run = "a_test_suite";
+	expected_options.command_name = "stl-lite_test";
 	test_cmd_line(cmd_line, expected_options);
 }
 
