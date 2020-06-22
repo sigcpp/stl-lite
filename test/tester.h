@@ -17,24 +17,23 @@
 #include <iostream>
 #include <type_traits>
 
+
 enum class pass_report_mode { none, indicate, detail };
 
 void set_header_text(std::string text);
 void set_pass_report_mode(pass_report_mode mode);
-void set_fail_threshold(unsigned short value);
+void set_fail_threshold(int value);
 void set_max_fail_threshold();
 void set_output(std::ostream& o);
 
 void log(const char* s);
 void log_line(const char* s);
 
-unsigned get_tests_failed_total();
+int get_tests_failed_total();
 
 void start_suite(const std::string& name);
 
 void summarize_suite();
 void summarize_tests();
-
-void verify(bool success, const char* msg);
 
 #endif
