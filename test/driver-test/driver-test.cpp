@@ -407,7 +407,7 @@ void test_get_options_edge_case()
 	//edge case: fail threshold
 	std::string cmd_line = "C:/stl-lite/array_test.exe -t max";
 	Options expected_options = template_options;
-	expected_options.fail_threshold = USHRT_MAX; //this may change due to changes made in milestone 5
+	expected_options.fail_threshold = INT_MAX;
 	test_cmd_line(cmd_line, expected_options, "cmd-line 34");
 
 	//edge case: output filepath
