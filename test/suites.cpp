@@ -89,6 +89,7 @@ START_SUITES_COLLECTION //same as void build_suites_collection() {
 
 	TEST_SUITE(array_test);
 	TEST_SUITE(driver_test);
+	TEST_SUITE(string_view_test);
 
 // do not add/edit anything after this line
 END_SUITES_COLLECTION	// same as }

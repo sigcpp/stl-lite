@@ -18,6 +18,8 @@
 
 #include "utils.h"
 #include "tester.h"
+#include "verifier-exceptions.h"
+
 
 static std::string headerText("Running $suite:");
 void set_header_text(std::string text)
@@ -33,8 +35,8 @@ void set_pass_report_mode(pass_report_mode mode)
 }
 
 
-static unsigned short fail_threshold{ 0 };
-void set_fail_threshold(unsigned short value)
+static int fail_threshold{ 0 };
+void set_fail_threshold(int value)
 {
 	fail_threshold = value;
 }
@@ -42,7 +44,7 @@ void set_fail_threshold(unsigned short value)
 
 void set_max_fail_threshold()
 {
-	fail_threshold = USHRT_MAX;
+	fail_threshold = INT_MAX;
 }
 
 
@@ -65,12 +67,12 @@ void log_line(const char* s)
 }
 
 
-static unsigned tests_done_total;
-static unsigned tests_done_suite;
-static unsigned tests_failed_total;
-static unsigned tests_failed_suite;
+int tests_done_total;
+int tests_done_suite;
+int tests_failed_total;
+int tests_failed_suite;
 
-unsigned get_tests_failed_total()
+int get_tests_failed_total()
 {
 	return tests_failed_total;
 }
@@ -167,8 +169,10 @@ void verify(bool success, const char* hint)
 		message << "Test# " << tests_done_suite << ": FAIL (" << hint << ")\n";
 		last_output_ended_in_linebreak = true;
 
-		if (tests_failed_total > fail_threshold)
-			throw message.str();
+		if (tests_failed_total > fail_threshold) {
+			*pOut << message.str();
+			throw fail_threshold_met_error();
+		}
 	}
 
 	*pOut << message.str();
