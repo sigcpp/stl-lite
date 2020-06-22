@@ -21,7 +21,7 @@
 
 void test_get_options_nominal();
 void verify_options(const Options& received, const Options& expected, const std::string& test_case);
-void test_cmd_line(const std::string& cmd_line, const Options& expected);
+void test_cmd_line(const std::string& cmd_line, const Options& expected, const std::string& test_case);
 
 
 //unit tests for the test driver
@@ -66,7 +66,7 @@ void test_get_options_nominal()
 
 
 //parse cmd-line to array similar to main's argv and verify if get_options returns expected options
-void test_cmd_line(const std::string& cmd_line, const Options& expected)
+void test_cmd_line(const std::string& cmd_line, const Options& expected, const std::string& test_case)
 {
 	//set size to 100 to ensure enough room for many options in a single cmd-line
 	char* args[100];
@@ -76,8 +76,6 @@ void test_cmd_line(const std::string& cmd_line, const Options& expected)
 	for (std::size_t i = 0; i < size; ++i)
 		args[i] = v[i].data();
 
-	static unsigned short count{ 0 };
-	const std::string test_case{ "cmd-line " + std::to_string(count++) };
 	Options received = get_options(args, size);
 	verify_options(received, expected, test_case);
 }
@@ -87,7 +85,7 @@ void test_get_options_default()
 {
 	//default arguments
 	std::string cmd_line("C:/Libraries/stl-lite/array_test.exe");
-	test_cmd_line(cmd_line, template_options);
+	test_cmd_line(cmd_line, template_options, "cmd-line 1");
 }
 
 
@@ -124,13 +122,239 @@ void test_get_options_combine()
 }
 
 
+void test_get_options_single_h()
+{
+	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -h no";
+	Options expected_options = template_options;
+	expected_options.header = false;
+	expected_options.header_text = "";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 2");
+
+	cmd_line = "C:/Libraries/stl-lite/array_test.exe -h yes";
+	expected_options = template_options;
+	expected_options.header = true;
+	expected_options.header_text = "Running $suite";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 3");
+}
+
+
+void test_get_options_single_p()
+{
+	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -p none";
+	Options expected_options = template_options;
+	expected_options.prm = pass_report_mode::none;
+	test_cmd_line(cmd_line, expected_options, "cmd-line 4");
+
+	cmd_line = "C:/Libraries/stl-lite/array_test.exe -p indicate";
+	expected_options = template_options;
+	expected_options.prm = pass_report_mode::indicate;
+	test_cmd_line(cmd_line, expected_options, "cmd-line 5");
+
+	cmd_line = "C:/Libraries/stl-lite/array_test.exe -p detail";
+	expected_options = template_options;
+	expected_options.prm = pass_report_mode::detail;
+	test_cmd_line(cmd_line, expected_options, "cmd-line 6");
+}
+
+
+void test_get_options_single_s()
+{
+	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -s no";
+	Options expected_options = template_options;
+	expected_options.summary = false;
+	test_cmd_line(cmd_line, expected_options, "cmd-line 7");
+
+	cmd_line = "C:/Libraries/stl-lite/array_test.exe -s yes";
+	expected_options = template_options;
+	expected_options.summary = true;
+	test_cmd_line(cmd_line, expected_options, "cmd-line 8");
+}
+
+
+void test_get_options_single_t()
+{
+	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -t 5";
+	Options expected_options = template_options;
+	expected_options.fail_threshold = 5;
+	test_cmd_line(cmd_line, expected_options, "cmd-line 9");
+}
+
+
+void test_get_options_single_fx()
+{
+	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -fn $cmd";
+	Options expected_options = template_options;
+	expected_options.fom = file_open_mode::new_file;
+	expected_options.output_filepath = "array_test.out";
+	expected_options.prm = pass_report_mode::none;
+	test_cmd_line(cmd_line, expected_options, "cmd-line 10");
+
+	cmd_line = "C:/Libraries/stl-lite/array_test.exe -fo $cmd";
+	expected_options = template_options;
+	expected_options.fom = file_open_mode::overwrite;
+	expected_options.output_filepath = "array_test.out";
+	expected_options.prm = pass_report_mode::none;
+	test_cmd_line(cmd_line, expected_options, "cmd-line 11");
+
+	cmd_line = "C:/Libraries/stl-lite/array_test.exe -fa $cmd";
+	expected_options = template_options;
+	expected_options.fom = file_open_mode::append;
+	expected_options.output_filepath = "array_test.out";
+	expected_options.prm = pass_report_mode::none;
+	test_cmd_line(cmd_line, expected_options, "cmd-line 12");
+}
+
+
+void test_get_options_single_run()
+{
+	std::string cmd_line = "C:/stl-lite/array_test.exe -run array_test";
+	Options expected_options = template_options;
+	expected_options.suites_to_run = "array_test";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 13");
+}
+
+void test_get_options_command_name()
+{
+	//different filename
+	std::string cmd_line = "C:/test_suites/some_more_test_suites/even_more_test_suites/a_test_suite.exe";
+	Options expected_options = template_options;
+	expected_options.command_name = "a_test_suite";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 14");
+
+	//different drive letter
+	cmd_line = "D:/a_folder/another_folder/yet_another_folder/edwall/test.exe";
+	expected_options = template_options;
+	expected_options.command_name = "test";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 15");
+
+	//in root directory
+	cmd_line = "E:/sample_test.exe";
+	expected_options = template_options;
+	expected_options.command_name = "sample_test";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 16");
+
+	//no drive letter or path
+	cmd_line = "driver.exe";
+	expected_options = template_options;
+	expected_options.command_name = "driver";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 17");
+
+	//no file extension
+	cmd_line = "F:/test_suites/multi-drive";
+	expected_options = template_options;
+	expected_options.command_name = "multi-drive";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 18");
+
+	//relative path and non-exe extension
+	cmd_line = "bin/driver.com";
+	expected_options = template_options;
+	expected_options.command_name = "driver";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 19");
+}
+
+
+void test_get_options_combine_h()
+{
+	//no header but header text supplied
+	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -h no -ht should_be_ignored";
+	Options expected_options = template_options;
+	expected_options.header = false;
+	expected_options.header_text = "";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 20");
+
+	//header yes and header text supplied
+	cmd_line = "C:/stl-lite/array_test.exe -h yes -ht Running_$cmd";
+	expected_options = template_options;
+	expected_options.header = true;
+	expected_options.header_text = "Running_array_test";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 21");
+}
+
+
+void test_get_options_combine_p()
+{
+	//prm auto when fom != no_file
+	std::string cmd_line = "C:/stl-lite/array_test.exe -p auto -fn $cmd";
+	Options expected_options = template_options;
+	expected_options.prm = pass_report_mode::none;
+	expected_options.fom = file_open_mode::new_file;
+	expected_options.output_filepath = "array_test.out";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 22");
+
+	cmd_line = "C:/stl-lite/array_test.exe -p auto -fo $cmd";
+	expected_options = template_options;
+	expected_options.prm = pass_report_mode::none;
+	expected_options.fom = file_open_mode::overwrite;
+	expected_options.output_filepath = "array_test.out";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 23");
+
+	cmd_line = "C:/stl-lite/array_test.exe -p auto -fa $cmd";
+	expected_options = template_options;
+	expected_options.prm = pass_report_mode::none;
+	expected_options.fom = file_open_mode::append;
+	expected_options.output_filepath = "array_test.out";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 24");
+
+	//prm auto when fom == no_file
+	cmd_line = "C:/stl-lite/array_test.exe -p auto";
+	expected_options = template_options;
+	expected_options = template_options;
+	test_cmd_line(cmd_line, expected_options, "cmd-line 25");
+}
+
+
+void test_get_options_combine_arbitrary()
+{
+	//random combinations of options
+	std::string cmd_line = "C:/stl-lite/array_test.exe -h no -s yes -p detail -t 3 -fn new_test";
+	Options expected_options = template_options;
+	expected_options.header = false;
+	expected_options.header_text = "";
+	expected_options.summary = true;
+	expected_options.prm = pass_report_mode::detail;
+	expected_options.fail_threshold = 3;
+	expected_options.fom = file_open_mode::new_file;
+	expected_options.output_filepath = "new_test.out";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 26");
+
+	cmd_line = "C:/stl-lite/map_test.exe -h yes -ht Running_$cmd_now -p none";
+	expected_options = template_options;
+	expected_options.command_name = "map_test";
+	expected_options.header = true;
+	expected_options.header_text = "Running_map_test_now";
+	expected_options.prm = pass_report_mode::none;
+	test_cmd_line(cmd_line, expected_options, "cmd-line 27");
+
+	cmd_line = "C:/stl-lite/array_test.exe -h yes -fn $cmd -p detail -fo $cmd -p auto";
+	expected_options = template_options;
+	expected_options.header = true;
+	expected_options.fom = file_open_mode::overwrite;
+	expected_options.prm = pass_report_mode::none;
+	expected_options.output_filepath = "array_test.out";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 28");
+
+	cmd_line = "C:/stl-lite/stl-lite_test.exe -h no -s no -p detail -t 2 -fa a_file -run a_test_suite";
+	expected_options = template_options;
+	expected_options.header = false;
+	expected_options.header_text = "";
+	expected_options.summary = false;
+	expected_options.prm = pass_report_mode::detail;
+	expected_options.fail_threshold = 2;
+	expected_options.fom = file_open_mode::append;
+	expected_options.output_filepath = "a_file.out";
+	expected_options.suites_to_run = "a_test_suite";
+	expected_options.command_name = "stl-lite_test";
+	test_cmd_line(cmd_line, expected_options, "cmd-line 29");
+}
+
+
 void test_get_options_multiple_suites()
 {
 	//multiple suites as values for -run
 	std::string cmd_line = "C:/stl-lite/array_test.exe -run array_test;string_view_test;driver_test";
 	Options expected_options = template_options;
 	expected_options.suites_to_run = "array_test;string_view_test;driver_test";
-	test_cmd_line(cmd_line, expected_options);
+	test_cmd_line(cmd_line, expected_options, "cmd-line 30");
 }
 
 
@@ -148,7 +372,7 @@ void test_get_options_specific()
 	expected_options.fom = file_open_mode::append;
 	expected_options.output_filepath = "a_file.out";
 	expected_options.suites_to_run = "tester";
-	test_cmd_line(cmd_line, expected_options);
+	test_cmd_line(cmd_line, expected_options, "cmd-line 31");
 
 	cmd_line =
 		"C:/stl-lite/array_test.exe -h yes -ht Running_$cmd -s no -p indicate -t 10 -fo a_file -run tester";
@@ -161,7 +385,7 @@ void test_get_options_specific()
 	expected_options.fom = file_open_mode::overwrite;
 	expected_options.output_filepath = "a_file.out";
 	expected_options.suites_to_run = "tester";
-	test_cmd_line(cmd_line, expected_options);
+	test_cmd_line(cmd_line, expected_options, "cmd-line 32");
 
 	cmd_line =
 		"C:/stl-lite/array_test.exe -h no -ht $cmd -s yes -p none -t 2 -fn a_file -run tester";
@@ -174,7 +398,7 @@ void test_get_options_specific()
 	expected_options.fom = file_open_mode::new_file;
 	expected_options.output_filepath = "a_file.out";
 	expected_options.suites_to_run = "tester";
-	test_cmd_line(cmd_line, expected_options);
+	test_cmd_line(cmd_line, expected_options, "cmd-line 33");
 }
 
 
@@ -184,7 +408,7 @@ void test_get_options_edge_case()
 	std::string cmd_line = "C:/stl-lite/array_test.exe -t max";
 	Options expected_options = template_options;
 	expected_options.fail_threshold = USHRT_MAX; //this may change due to changes made in milestone 5
-	test_cmd_line(cmd_line, expected_options);
+	test_cmd_line(cmd_line, expected_options, "cmd-line 34");
 
 	//edge case: output filepath
 	//max filepath length in Windows, Linux and OS X is 255 characters
@@ -196,7 +420,7 @@ void test_get_options_edge_case()
 	expected_options.output_filepath =
 		"a_very_very_very_very_very_very_very_very_very_very_very_very_long_filename.out";
 	expected_options.prm = pass_report_mode::none;
-	test_cmd_line(cmd_line, expected_options);
+	test_cmd_line(cmd_line, expected_options, "cmd-line 35");
 
 	//edge case: header text
 	cmd_line =
@@ -204,7 +428,7 @@ void test_get_options_edge_case()
 	expected_options = template_options;
 	expected_options.header = true;
 	expected_options.header_text = "a_very_very_very_very_very_very_very_very_very_very_long_header_text";
-	test_cmd_line(cmd_line, expected_options);
+	test_cmd_line(cmd_line, expected_options, "cmd-line 36");
 
 	//edge case: command_name
 	cmd_line =
@@ -212,211 +436,7 @@ void test_get_options_edge_case()
 	expected_options = template_options;
 	expected_options.command_name =
 		"a_very_very_very_very_very_very_very_very_very_very_very_very_very_very_very_long_command_name";
-	test_cmd_line(cmd_line, expected_options);
-}
-
-
-void test_get_options_single_h()
-{
-	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -h no";
-	Options expected_options = template_options;
-	expected_options.header = false;
-	expected_options.header_text = "";
-	test_cmd_line(cmd_line, expected_options);
-
-	cmd_line = "C:/Libraries/stl-lite/array_test.exe -h yes";
-	expected_options = template_options;
-	expected_options.header = true;
-	expected_options.header_text = "Running $suite";
-	test_cmd_line(cmd_line, expected_options);
-}
-
-
-void test_get_options_single_p()
-{
-	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -p none";
-	Options expected_options = template_options;
-	expected_options.prm = pass_report_mode::none;
-	test_cmd_line(cmd_line, expected_options);
-
-	cmd_line = "C:/Libraries/stl-lite/array_test.exe -p indicate";
-	expected_options = template_options;
-	expected_options.prm = pass_report_mode::indicate;
-	test_cmd_line(cmd_line, expected_options);
-
-	cmd_line = "C:/Libraries/stl-lite/array_test.exe -p detail";
-	expected_options = template_options;
-	expected_options.prm = pass_report_mode::detail;
-	test_cmd_line(cmd_line, expected_options);
-}
-
-
-void test_get_options_single_s()
-{
-	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -s no";
-	Options expected_options = template_options;
-	expected_options.summary = false;
-	test_cmd_line(cmd_line, expected_options);
-
-	cmd_line = "C:/Libraries/stl-lite/array_test.exe -s yes";
-	expected_options = template_options;
-	expected_options.summary = true;
-	test_cmd_line(cmd_line, expected_options);
-}
-
-
-void test_get_options_single_t()
-{
-	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -t 5";
-	Options expected_options = template_options;
-	expected_options.fail_threshold = 5;
-	test_cmd_line(cmd_line, expected_options);
-}
-
-
-void test_get_options_single_fx()
-{
-	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -fn $cmd";
-	Options expected_options = template_options;
-	expected_options.fom = file_open_mode::new_file;
-	expected_options.output_filepath = "array_test.out";
-	expected_options.prm = pass_report_mode::none;
-	test_cmd_line(cmd_line, expected_options);
-
-	cmd_line = "C:/Libraries/stl-lite/array_test.exe -fo $cmd";
-	expected_options = template_options;
-	expected_options.fom = file_open_mode::overwrite;
-	expected_options.output_filepath = "array_test.out";
-	expected_options.prm = pass_report_mode::none;
-	test_cmd_line(cmd_line, expected_options);
-
-	cmd_line = "C:/Libraries/stl-lite/array_test.exe -fa $cmd";
-	expected_options = template_options;
-	expected_options.fom = file_open_mode::append;
-	expected_options.output_filepath = "array_test.out";
-	expected_options.prm = pass_report_mode::none;
-	test_cmd_line(cmd_line, expected_options);
-}
-
-
-void test_get_options_single_run()
-{
-	std::string cmd_line = "C:/stl-lite/array_test.exe -run array_test";
-	Options expected_options = template_options;
-	expected_options.suites_to_run = "array_test";
-	test_cmd_line(cmd_line, expected_options);
-}
-
-void test_get_options_command_name()
-{
-	std::string cmd_line = "C:/test_suites/some_more_test_suites/even_more_test_suites/a_test_suite.exe";
-	Options expected_options = template_options;
-	expected_options.command_name = "a_test_suite";
-	test_cmd_line(cmd_line, expected_options);
-
-	cmd_line = "D:/a_folder/another_folder/yet_another_folder/edwall/test.exe";
-	expected_options = template_options;
-	expected_options.command_name = "test";
-	test_cmd_line(cmd_line, expected_options);
-
-	cmd_line = "E:/sample_test.exe";
-	expected_options = template_options;
-	expected_options.command_name = "sample_test";
-	test_cmd_line(cmd_line, expected_options);
-}
-
-void test_get_options_combine_h()
-{
-	//no header but header text supplied
-	std::string cmd_line = "C:/Libraries/stl-lite/array_test.exe -h no -ht should_be_ignored";
-	Options expected_options = template_options;
-	expected_options.header = false;
-	expected_options.header_text = "";
-	test_cmd_line(cmd_line, expected_options);
-
-	//header yes and header text supplied
-	cmd_line = "C:/stl-lite/array_test.exe -h yes -ht Running_$cmd";
-	expected_options = template_options;
-	expected_options.header = true;
-	expected_options.header_text = "Running_array_test";
-	test_cmd_line(cmd_line, expected_options);
-}
-
-
-void test_get_options_combine_p()
-{
-	//prm auto when fom != no_file
-	std::string cmd_line = "C:/stl-lite/array_test.exe -p auto -fn $cmd";
-	Options expected_options = template_options;
-	expected_options.prm = pass_report_mode::none;
-	expected_options.fom = file_open_mode::new_file;
-	expected_options.output_filepath = "array_test.out";
-	test_cmd_line(cmd_line, expected_options);
-
-	cmd_line = "C:/stl-lite/array_test.exe -p auto -fo $cmd";
-	expected_options = template_options;
-	expected_options.prm = pass_report_mode::none;
-	expected_options.fom = file_open_mode::overwrite;
-	expected_options.output_filepath = "array_test.out";
-	test_cmd_line(cmd_line, expected_options);
-
-	cmd_line = "C:/stl-lite/array_test.exe -p auto -fa $cmd";
-	expected_options = template_options;
-	expected_options.prm = pass_report_mode::none;
-	expected_options.fom = file_open_mode::append;
-	expected_options.output_filepath = "array_test.out";
-	test_cmd_line(cmd_line, expected_options);
-
-	//prm auto when fom == no_file
-	cmd_line = "C:/stl-lite/array_test.exe -p auto";
-	expected_options = template_options;
-	expected_options = template_options;
-	test_cmd_line(cmd_line, expected_options);
-}
-
-
-void test_get_options_combine_arbitrary()
-{
-	//random combinations of options
-	std::string cmd_line = "C:/stl-lite/array_test.exe -h no -s yes -p detail -t 3 -fn new_test";
-	Options expected_options = template_options;
-	expected_options.header = false;
-	expected_options.header_text = "";
-	expected_options.summary = true;
-	expected_options.prm = pass_report_mode::detail;
-	expected_options.fail_threshold = 3;
-	expected_options.fom = file_open_mode::new_file;
-	expected_options.output_filepath = "new_test.out";
-	test_cmd_line(cmd_line, expected_options);
-
-	cmd_line = "C:/stl-lite/map_test.exe -h yes -ht Running_$cmd_now -p none";
-	expected_options = template_options;
-	expected_options.command_name = "map_test";
-	expected_options.header = true;
-	expected_options.header_text = "Running_map_test_now";
-	expected_options.prm = pass_report_mode::none;
-	test_cmd_line(cmd_line, expected_options);
-
-	cmd_line = "C:/stl-lite/array_test.exe -h yes -fn $cmd -p detail -fo $cmd -p auto";
-	expected_options = template_options;
-	expected_options.header = true;
-	expected_options.fom = file_open_mode::overwrite;
-	expected_options.prm = pass_report_mode::none;
-	expected_options.output_filepath = "array_test.out";
-	test_cmd_line(cmd_line, expected_options);
-
-	cmd_line = "C:/stl-lite/stl-lite_test.exe -h no -s no -p detail -t 2 -fa a_file -run a_test_suite";
-	expected_options = template_options;
-	expected_options.header = false;
-	expected_options.header_text = "";
-	expected_options.summary = false;
-	expected_options.prm = pass_report_mode::detail;
-	expected_options.fail_threshold = 2;
-	expected_options.fom = file_open_mode::append;
-	expected_options.output_filepath = "a_file.out";
-	expected_options.suites_to_run = "a_test_suite";
-	expected_options.command_name = "stl-lite_test";
-	test_cmd_line(cmd_line, expected_options);
+	test_cmd_line(cmd_line, expected_options, "cmd-line 37");
 }
 
 
