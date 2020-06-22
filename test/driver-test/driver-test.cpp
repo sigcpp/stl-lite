@@ -13,6 +13,7 @@
 
 #include <vector>
 #include <string>
+#include <climits>
 
 #include "../verifiers.h"
 #include "../options.h"
@@ -39,6 +40,7 @@ static Options get_template_options()
 	o.command_name = "array_test";
 	return o;
 }
+
 
 //template options used to setup expected options in all nominal tests of get_options
 //use designated initializers in C++20 instead of calling get_template_options
@@ -212,6 +214,7 @@ void test_get_options_single_run()
 	expected_options.suites_to_run = "array_test";
 	test_cmd_line(cmd_line, expected_options, "cmd-line 13");
 }
+
 
 void test_get_options_command_name()
 {
