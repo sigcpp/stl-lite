@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="driver-test\driver-test.cpp" />
     <ClCompile Include="array-test\array-test.cpp" />
     <ClCompile Include="driver.cpp" />
     <ClCompile Include="options.cpp" />
